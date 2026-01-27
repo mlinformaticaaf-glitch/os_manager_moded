@@ -30,13 +30,23 @@ import { ServiceOrder, OSStatus, STATUS_CONFIG } from '@/types/serviceOrder';
 
 type ViewMode = 'kanban' | 'list';
 
+const VIEW_MODE_KEY = 'os-view-mode';
+
+function getStoredViewMode(): ViewMode {
+  const stored = localStorage.getItem(VIEW_MODE_KEY);
+  if (stored === 'kanban' || stored === 'list') {
+    return stored;
+  }
+  return 'kanban';
+}
+
 export default function ServiceOrders() {
   const { orders, isLoading, createOrder, updateOrder, updateStatus, deleteOrder } = useServiceOrders();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OSStatus | 'all'>('all');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [viewMode, setViewMode] = useState<ViewMode>('kanban');
+  const [viewMode, setViewMode] = useState<ViewMode>(getStoredViewMode);
   const [formOpen, setFormOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<ServiceOrder | null>(null);
   const [viewingOrder, setViewingOrder] = useState<ServiceOrder | null>(null);
@@ -217,7 +227,14 @@ export default function ServiceOrders() {
 
             {/* View Toggle and New Button */}
             <div className="flex gap-2 sm:gap-3">
-              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+              <Tabs 
+                value={viewMode} 
+                onValueChange={(v) => {
+                  const newMode = v as ViewMode;
+                  setViewMode(newMode);
+                  localStorage.setItem(VIEW_MODE_KEY, newMode);
+                }}
+              >
                 <TabsList className="h-9">
                   <TabsTrigger value="kanban" className="gap-1.5 px-2.5">
                     <LayoutGrid className="h-4 w-4" />
