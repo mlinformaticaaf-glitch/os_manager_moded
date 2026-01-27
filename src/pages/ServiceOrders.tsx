@@ -122,7 +122,7 @@ export default function ServiceOrders() {
   const activeCount = orders.filter(o => !['completed', 'delivered', 'cancelled'].includes(o.status)).length;
 
   return (
-    <MainLayout title="Ordens de Serviço" subtitle={`${activeCount} OS ativas`}>
+    <MainLayout title="Ordens de Serviço" subtitle={`${activeCount} OS ativas`} onNewOS={() => setWizardOpen(true)}>
       <div className="space-y-4 sm:space-y-6">
         {/* Header Actions */}
         <div className="flex flex-col gap-3 sm:gap-4">
