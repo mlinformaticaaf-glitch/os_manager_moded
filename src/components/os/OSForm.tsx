@@ -44,21 +44,22 @@ import { ServiceOrder, ServiceOrderItem, STATUS_CONFIG, PRIORITY_CONFIG } from '
 import { useClients } from '@/hooks/useClients';
 import { useProducts } from '@/hooks/useProducts';
 import { useServices } from '@/hooks/useServices';
-import { Loader2, Plus, Trash2, Package, Wrench, ChevronsUpDown, Check, UserPlus } from 'lucide-react';
+import { useEquipment } from '@/hooks/useEquipment';
+import { formatEquipmentCode } from '@/types/equipment';
+import { Loader2, Plus, Trash2, Package, Wrench, ChevronsUpDown, Check, UserPlus, Monitor } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { ClientForm } from '@/components/clients/ClientForm';
 import { ServiceForm } from '@/components/services/ServiceForm';
 import { ProductForm } from '@/components/products/ProductForm';
+import { EquipmentForm } from '@/components/equipment/EquipmentForm';
 
 const osSchema = z.object({
   client_id: z.string().optional().nullable(),
+  equipment_id: z.string().optional().nullable(),
   status: z.enum(['pending', 'in_progress', 'waiting_parts', 'waiting_approval', 'completed', 'delivered', 'cancelled']),
   priority: z.enum(['low', 'normal', 'high', 'urgent']),
-  equipment: z.string().max(100).optional().or(z.literal('')),
-  brand: z.string().max(50).optional().or(z.literal('')),
-  model: z.string().max(50).optional().or(z.literal('')),
   serial_number: z.string().max(50).optional().or(z.literal('')),
   accessories: z.string().max(200).optional().or(z.literal('')),
   reported_issue: z.string().min(5, 'Descreva o problema relatado').max(1000),
@@ -100,8 +101,10 @@ export function OSForm({
   const { clients, createClient } = useClients();
   const { products, createProduct } = useProducts();
   const { services, createService } = useServices();
+  const { equipment: equipmentList, createEquipment } = useEquipment();
   const activeProducts = products.filter(p => p.active);
   const activeServices = services.filter(s => s.active);
+  const activeEquipment = equipmentList.filter(e => e.active);
   
   const [items, setItems] = useState<ItemFormData[]>([]);
   const [newItem, setNewItem] = useState<ItemFormData>({
@@ -125,21 +128,22 @@ export function OSForm({
   const [serviceSearch, setServiceSearch] = useState('');
   const [productOpen, setProductOpen] = useState(false);
   const [productSearch, setProductSearch] = useState('');
+  const [equipmentOpen, setEquipmentOpen] = useState(false);
+  const [equipmentSearch, setEquipmentSearch] = useState('');
   
   // Dialog states
   const [clientFormOpen, setClientFormOpen] = useState(false);
   const [serviceFormOpen, setServiceFormOpen] = useState(false);
   const [productFormOpen, setProductFormOpen] = useState(false);
+  const [equipmentFormOpen, setEquipmentFormOpen] = useState(false);
 
   const form = useForm<OSFormData>({
     resolver: zodResolver(osSchema),
     defaultValues: {
       client_id: null,
+      equipment_id: null,
       status: 'pending',
       priority: 'normal',
-      equipment: '',
-      brand: '',
-      model: '',
       serial_number: '',
       accessories: '',
       reported_issue: '',
@@ -178,15 +182,21 @@ export function OSForm({
     );
   }, [activeProducts, productSearch]);
 
+  const filteredEquipment = useMemo(() => {
+    if (!equipmentSearch) return activeEquipment;
+    return activeEquipment.filter(e => 
+      e.description.toLowerCase().includes(equipmentSearch.toLowerCase()) ||
+      (e.code && `EQP-${e.code}`.toLowerCase().includes(equipmentSearch.toLowerCase()))
+    );
+  }, [activeEquipment, equipmentSearch]);
+
   useEffect(() => {
     if (open) {
       form.reset({
         client_id: order?.client_id ?? null,
+        equipment_id: order?.equipment_id ?? null,
         status: order?.status ?? 'pending',
         priority: order?.priority ?? 'normal',
-        equipment: order?.equipment ?? '',
-        brand: order?.brand ?? '',
-        model: order?.model ?? '',
         serial_number: order?.serial_number ?? '',
         accessories: order?.accessories ?? '',
         reported_issue: order?.reported_issue ?? '',
@@ -206,6 +216,7 @@ export function OSForm({
       setClientSearch('');
       setServiceSearch('');
       setProductSearch('');
+      setEquipmentSearch('');
     }
   }, [open, order, existingItems, form]);
 
@@ -284,9 +295,7 @@ export function OSForm({
     const cleanedData = {
       ...data,
       estimated_completion: data.estimated_completion?.trim() || null,
-      equipment: data.equipment?.trim() || null,
-      brand: data.brand?.trim() || null,
-      model: data.model?.trim() || null,
+      equipment_id: data.equipment_id || null,
       serial_number: data.serial_number?.trim() || null,
       accessories: data.accessories?.trim() || null,
       diagnosis: data.diagnosis?.trim() || null,
@@ -347,6 +356,15 @@ export function OSForm({
           product_id: newProduct.id,
         }]);
         setProductFormOpen(false);
+      },
+    });
+  };
+
+  const handleCreateEquipment = async (data: { description: string; active: boolean }) => {
+    createEquipment.mutate(data, {
+      onSuccess: (newEquipment) => {
+        form.setValue('equipment_id', newEquipment.id);
+        setEquipmentFormOpen(false);
       },
     });
   };
@@ -518,51 +536,98 @@ export function OSForm({
 
                 {/* === SEÇÃO: EQUIPAMENTO === */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Equipamento</h3>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Monitor className="h-5 w-5" />
+                    Equipamento
+                  </h3>
                   
-                  <div className="grid grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="equipment"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Equipamento</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ex: Notebook" {...field} />
-                          </FormControl>
+                  <FormField
+                    control={form.control}
+                    name="equipment_id"
+                    render={({ field }) => {
+                      const selectedEquipment = equipmentList.find(e => e.id === field.value);
+                      return (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Selecionar Equipamento</FormLabel>
+                          <div className="flex gap-2">
+                            <Popover open={equipmentOpen} onOpenChange={setEquipmentOpen}>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    aria-expanded={equipmentOpen}
+                                    className="flex-1 justify-between font-normal"
+                                  >
+                                    {selectedEquipment 
+                                      ? `${formatEquipmentCode(selectedEquipment.code)} - ${selectedEquipment.description}`
+                                      : "Buscar equipamento..."}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-[400px] p-0" align="start">
+                                <Command shouldFilter={false}>
+                                  <CommandInput 
+                                    placeholder="Buscar por código ou descrição..." 
+                                    value={equipmentSearch}
+                                    onValueChange={setEquipmentSearch}
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>Nenhum equipamento encontrado.</CommandEmpty>
+                                    <CommandGroup>
+                                      {filteredEquipment.map((eq) => (
+                                        <CommandItem
+                                          key={eq.id}
+                                          value={eq.id}
+                                          onSelect={() => {
+                                            field.onChange(eq.id);
+                                            setEquipmentOpen(false);
+                                            setEquipmentSearch('');
+                                          }}
+                                        >
+                                          <Check
+                                            className={cn(
+                                              "mr-2 h-4 w-4",
+                                              field.value === eq.id ? "opacity-100" : "opacity-0"
+                                            )}
+                                          />
+                                          <div className="flex flex-col">
+                                            <span>{formatEquipmentCode(eq.code)} - {eq.description}</span>
+                                          </div>
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => setEquipmentFormOpen(true)}
+                              title="Cadastrar novo equipamento"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                            {field.value && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => field.onChange(null)}
+                                title="Remover equipamento"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                           <FormMessage />
                         </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="brand"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Marca</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ex: Dell" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="model"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Modelo</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ex: Inspiron 15" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                      );
+                    }}
+                  />
 
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
@@ -1045,6 +1110,14 @@ export function OSForm({
         onOpenChange={setProductFormOpen}
         onSubmit={handleCreateProduct}
         isSubmitting={createProduct.isPending}
+      />
+
+      <EquipmentForm
+        open={equipmentFormOpen}
+        onOpenChange={setEquipmentFormOpen}
+        equipment={null}
+        onSubmit={handleCreateEquipment}
+        isSubmitting={createEquipment.isPending}
       />
     </>
   );

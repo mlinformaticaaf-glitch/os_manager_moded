@@ -8,6 +8,7 @@ export interface ServiceOrder {
   id: string;
   user_id: string;
   client_id: string | null;
+  equipment_id: string | null;
   order_number: number;
   status: OSStatus;
   priority: OSPriority;
@@ -35,6 +36,8 @@ export interface ServiceOrder {
   updated_at: string;
   // Joined data - partial client for listing
   client?: { id: string; name: string; phone: string | null; email: string | null } | null;
+  // Joined equipment data
+  equipment_ref?: { id: string; code: number | null; description: string } | null;
   items?: ServiceOrderItem[];
 }
 

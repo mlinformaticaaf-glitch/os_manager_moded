@@ -431,6 +431,7 @@ export type Database = {
           diagnosis: string | null
           discount: number
           equipment: string | null
+          equipment_id: string | null
           estimated_completion: string | null
           id: string
           internal_notes: string | null
@@ -461,6 +462,7 @@ export type Database = {
           diagnosis?: string | null
           discount?: number
           equipment?: string | null
+          equipment_id?: string | null
           estimated_completion?: string | null
           id?: string
           internal_notes?: string | null
@@ -491,6 +493,7 @@ export type Database = {
           diagnosis?: string | null
           discount?: number
           equipment?: string | null
+          equipment_id?: string | null
           estimated_completion?: string | null
           id?: string
           internal_notes?: string | null
@@ -517,6 +520,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
         ]

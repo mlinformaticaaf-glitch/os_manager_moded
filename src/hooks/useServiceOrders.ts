@@ -16,7 +16,8 @@ export function useServiceOrders() {
         .from('service_orders')
         .select(`
           *,
-          client:clients(id, name, phone, email)
+          client:clients(id, name, phone, email),
+          equipment_ref:equipment(id, code, description)
         `)
         .order('created_at', { ascending: false });
 
