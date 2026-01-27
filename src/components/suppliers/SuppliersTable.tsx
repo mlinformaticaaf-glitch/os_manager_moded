@@ -38,6 +38,9 @@ function SupplierCard({ supplier, onEdit, onDelete }: { supplier: Supplier; onEd
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
+              {supplier.code && (
+                <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">#{supplier.code}</span>
+              )}
               <p className="font-medium truncate">{supplier.name}</p>
               <Badge variant={supplier.active ? 'default' : 'secondary'} className="text-[10px] shrink-0">
                 {supplier.active ? 'Ativo' : 'Inativo'}
@@ -126,6 +129,7 @@ export function SuppliersTable({ suppliers, onEdit, onDelete }: SuppliersTablePr
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[70px]">Código</TableHead>
             <TableHead>Fornecedor</TableHead>
             <TableHead className="hidden md:table-cell">Contato</TableHead>
             <TableHead className="hidden lg:table-cell">Localização</TableHead>
@@ -140,6 +144,9 @@ export function SuppliersTable({ suppliers, onEdit, onDelete }: SuppliersTablePr
               className="cursor-pointer hover:bg-muted/50"
               onClick={() => onEdit(supplier)}
             >
+              <TableCell className="font-mono text-muted-foreground">
+                {supplier.code ? `#${supplier.code}` : '-'}
+              </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
                   <div className="hidden sm:flex w-10 h-10 rounded-lg bg-primary/10 items-center justify-center shrink-0">

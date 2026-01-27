@@ -2,6 +2,7 @@ export interface Service {
   id: string;
   user_id: string;
   code: string | null;
+  sequential_code: number | null;
   name: string;
   description: string | null;
   category: string | null;
@@ -13,5 +14,5 @@ export interface Service {
   updated_at: string;
 }
 
-export type ServiceInsert = Omit<Service, 'id' | 'created_at' | 'updated_at'>;
+export type ServiceInsert = Omit<Service, 'id' | 'sequential_code' | 'created_at' | 'updated_at'>;
 export type ServiceUpdate = Partial<Omit<ServiceInsert, 'user_id'>>;

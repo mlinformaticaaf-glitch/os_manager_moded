@@ -1,6 +1,7 @@
 export interface Product {
   id: string;
   user_id: string;
+  code: number | null;
   name: string;
   description: string | null;
   sku: string | null;
@@ -16,7 +17,7 @@ export interface Product {
   updated_at: string;
 }
 
-export type ProductInsert = Omit<Product, 'id' | 'profit_margin' | 'created_at' | 'updated_at'>;
+export type ProductInsert = Omit<Product, 'id' | 'code' | 'profit_margin' | 'created_at' | 'updated_at'>;
 export type ProductUpdate = Partial<Omit<ProductInsert, 'user_id'>>;
 
 export const UNIT_OPTIONS = [

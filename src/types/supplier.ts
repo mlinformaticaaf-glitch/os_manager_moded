@@ -1,6 +1,7 @@
 export interface Supplier {
   id: string;
   user_id: string;
+  code: number | null;
   name: string;
   document: string | null;
   email: string | null;
@@ -15,5 +16,5 @@ export interface Supplier {
   updated_at: string;
 }
 
-export type SupplierInsert = Omit<Supplier, 'id' | 'created_at' | 'updated_at'>;
+export type SupplierInsert = Omit<Supplier, 'id' | 'code' | 'created_at' | 'updated_at'>;
 export type SupplierUpdate = Partial<Omit<SupplierInsert, 'user_id'>>;
