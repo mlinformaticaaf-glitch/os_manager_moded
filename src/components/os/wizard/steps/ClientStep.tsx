@@ -8,6 +8,7 @@ import { useClients } from '@/hooks/useClients';
 import { ClientForm } from '@/components/clients/ClientForm';
 import { Search, Plus, User, Phone, Mail, Check, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatClientCode } from '@/lib/clientUtils';
 import { Client } from '@/types/client';
 
 interface ClientStepProps {
@@ -72,7 +73,12 @@ export function ClientStep({ selectedClientId, onSelect, onNext }: ClientStepPro
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">{selectedClient.name}</p>
+                <div className="flex items-center gap-2">
+                  {selectedClient.code && (
+                    <span className="text-xs font-mono bg-primary/20 text-primary-foreground px-1.5 py-0.5 rounded">{formatClientCode(selectedClient.code)}</span>
+                  )}
+                  <p className="font-semibold truncate">{selectedClient.name}</p>
+                </div>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   {selectedClient.phone && (
                     <span className="flex items-center gap-1">
@@ -198,7 +204,12 @@ function ClientCard({
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">{client.name}</p>
+        <div className="flex items-center gap-2">
+          {client.code && (
+            <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{formatClientCode(client.code)}</span>
+          )}
+          <p className="font-medium truncate">{client.name}</p>
+        </div>
         <p className="text-sm text-muted-foreground truncate">
           {client.phone || client.email || 'Sem contato'}
         </p>
