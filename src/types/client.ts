@@ -1,6 +1,7 @@
 export interface Client {
   id: string;
   user_id: string;
+  code: number | null;
   name: string;
   email: string | null;
   phone: string | null;
@@ -14,5 +15,5 @@ export interface Client {
   updated_at: string;
 }
 
-export type ClientInsert = Omit<Client, 'id' | 'created_at' | 'updated_at'>;
-export type ClientUpdate = Partial<ClientInsert>;
+export type ClientInsert = Omit<Client, 'id' | 'code' | 'created_at' | 'updated_at'>;
+export type ClientUpdate = Partial<Omit<ClientInsert, 'user_id'>>;

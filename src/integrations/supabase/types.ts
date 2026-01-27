@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           address: string | null
           city: string | null
+          code: number | null
           created_at: string
           document: string | null
           email: string | null
@@ -33,6 +34,7 @@ export type Database = {
         Insert: {
           address?: string | null
           city?: string | null
+          code?: number | null
           created_at?: string
           document?: string | null
           email?: string | null
@@ -48,6 +50,7 @@ export type Database = {
         Update: {
           address?: string | null
           city?: string | null
+          code?: number | null
           created_at?: string
           document?: string | null
           email?: string | null
@@ -180,6 +183,7 @@ export type Database = {
         Row: {
           active: boolean
           category: string | null
+          code: number | null
           cost_price: number
           created_at: string
           description: string | null
@@ -197,6 +201,7 @@ export type Database = {
         Insert: {
           active?: boolean
           category?: string | null
+          code?: number | null
           cost_price?: number
           created_at?: string
           description?: string | null
@@ -214,6 +219,7 @@ export type Database = {
         Update: {
           active?: boolean
           category?: string | null
+          code?: number | null
           cost_price?: number
           created_at?: string
           description?: string | null
@@ -500,6 +506,7 @@ export type Database = {
           id: string
           name: string
           sale_price: number
+          sequential_code: number | null
           updated_at: string
           user_id: string
         }
@@ -514,6 +521,7 @@ export type Database = {
           id?: string
           name: string
           sale_price?: number
+          sequential_code?: number | null
           updated_at?: string
           user_id: string
         }
@@ -528,6 +536,7 @@ export type Database = {
           id?: string
           name?: string
           sale_price?: number
+          sequential_code?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -538,6 +547,7 @@ export type Database = {
           active: boolean
           address: string | null
           city: string | null
+          code: number | null
           created_at: string
           document: string | null
           email: string | null
@@ -554,6 +564,7 @@ export type Database = {
           active?: boolean
           address?: string | null
           city?: string | null
+          code?: number | null
           created_at?: string
           document?: string | null
           email?: string | null
@@ -570,6 +581,7 @@ export type Database = {
           active?: boolean
           address?: string | null
           city?: string | null
+          code?: number | null
           created_at?: string
           document?: string | null
           email?: string | null
@@ -589,7 +601,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_next_client_code: { Args: { p_user_id: string }; Returns: number }
       get_next_order_number: { Args: { p_user_id: string }; Returns: number }
+      get_next_product_code: { Args: { p_user_id: string }; Returns: number }
+      get_next_service_code: { Args: { p_user_id: string }; Returns: number }
+      get_next_supplier_code: { Args: { p_user_id: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never

@@ -38,7 +38,12 @@ function ClientCard({ client, onEdit, onDelete }: { client: Client; onEdit: (cli
             <User className="w-5 h-5 text-primary" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-medium truncate">{client.name}</p>
+            <div className="flex items-center gap-2">
+              {client.code && (
+                <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">#{client.code}</span>
+              )}
+              <p className="font-medium truncate">{client.name}</p>
+            </div>
             {client.phone && (
               <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
                 <Phone className="h-3 w-3" />
@@ -119,6 +124,7 @@ export function ClientsTable({ clients, onEdit, onDelete }: ClientsTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[70px]">Código</TableHead>
             <TableHead>Nome</TableHead>
             <TableHead className="hidden md:table-cell">Contato</TableHead>
             <TableHead className="hidden lg:table-cell">CPF/CNPJ</TableHead>
@@ -134,6 +140,9 @@ export function ClientsTable({ clients, onEdit, onDelete }: ClientsTableProps) {
               className="cursor-pointer hover:bg-muted/50"
               onClick={() => onEdit(client)}
             >
+              <TableCell className="font-mono text-muted-foreground">
+                {client.code ? `#${client.code}` : '-'}
+              </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
                   <div className="hidden sm:flex w-9 h-9 rounded-full bg-primary/10 items-center justify-center shrink-0">

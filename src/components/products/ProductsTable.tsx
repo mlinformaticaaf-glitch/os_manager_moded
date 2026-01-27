@@ -55,6 +55,9 @@ function ProductCard({ product, onEdit, onDelete }: { product: Product; onEdit: 
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
+              {product.code && (
+                <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">#{product.code}</span>
+              )}
               <p className="font-medium truncate">{product.name}</p>
               <Badge variant={product.active ? 'default' : 'secondary'} className="text-[10px] shrink-0">
                 {product.active ? 'Ativo' : 'Inativo'}
@@ -147,6 +150,7 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[70px]">Código</TableHead>
             <TableHead>Produto</TableHead>
             <TableHead className="hidden lg:table-cell">SKU</TableHead>
             <TableHead className="hidden md:table-cell">Categoria</TableHead>
@@ -165,6 +169,9 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
               className="cursor-pointer hover:bg-muted/50"
               onClick={() => onEdit(product)}
             >
+              <TableCell className="font-mono text-muted-foreground">
+                {product.code ? `#${product.code}` : '-'}
+              </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
                   <div className="hidden sm:flex w-10 h-10 rounded-lg bg-primary/10 items-center justify-center shrink-0">
