@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Building2, Upload, Trash2, Save, Phone, Mail, MapPin, FileText, QrCode } from "lucide-react";
 import { PIX_KEY_TYPES } from "@/components/os/pix/pixUtils";
 import { ChangePasswordCard } from "@/components/settings/ChangePasswordCard";
+import { DataImportCard } from "@/components/settings/DataImportCard";
 
 const settingsSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -448,6 +449,9 @@ export default function Settings() {
             </div>
           </form>
         </Form>
+
+        {/* Data Import Section */}
+        <DataImportCard />
 
         {/* Change Password Section */}
         <ChangePasswordCard />
