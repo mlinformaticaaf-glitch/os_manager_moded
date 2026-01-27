@@ -19,6 +19,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Card } from '@/components/ui/card';
+import { formatClientCode } from '@/lib/clientUtils';
 
 interface ClientsTableProps {
   clients: Client[];
@@ -40,7 +41,7 @@ function ClientCard({ client, onEdit, onDelete }: { client: Client; onEdit: (cli
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               {client.code && (
-                <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">#{client.code}</span>
+                <span className="text-xs font-mono bg-primary/10 text-primary px-1.5 py-0.5 rounded">{formatClientCode(client.code)}</span>
               )}
               <p className="font-medium truncate">{client.name}</p>
             </div>
@@ -140,8 +141,12 @@ export function ClientsTable({ clients, onEdit, onDelete }: ClientsTableProps) {
               className="cursor-pointer hover:bg-muted/50"
               onClick={() => onEdit(client)}
             >
-              <TableCell className="font-mono text-muted-foreground">
-                {client.code ? `#${client.code}` : '-'}
+              <TableCell>
+                {client.code ? (
+                  <span className="font-mono text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">{formatClientCode(client.code)}</span>
+                ) : (
+                  <span className="text-muted-foreground">-</span>
+                )}
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
