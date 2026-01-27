@@ -13,10 +13,10 @@ import { WizardStep, WizardFormData, WizardItemData, WIZARD_STEPS } from './type
 import { useServiceOrders, useServiceOrderItems } from '@/hooks/useServiceOrders';
 import { ServiceOrder, ServiceOrderItem } from '@/types/serviceOrder';
 import { printOSA4 } from '@/components/os/print/printOS';
-import { formatWhatsAppMessage, openWhatsApp } from '@/components/os/whatsapp/whatsappUtils';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { useClients } from '@/hooks/useClients';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { WizardWhatsAppDialog } from './steps/WizardWhatsAppDialog';
 
 interface OSWizardProps {
   open: boolean;
@@ -48,6 +48,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
   const [completedSteps, setCompletedSteps] = useState<WizardStep[]>([]);
   const [formData, setFormData] = useState<WizardFormData>(initialFormData);
   const [createdOrder, setCreatedOrder] = useState<ServiceOrder | null>(null);
+  const [showWhatsAppDialog, setShowWhatsAppDialog] = useState(false);
 
   const markStepCompleted = useCallback((step: WizardStep) => {
     setCompletedSteps((prev) => (prev.includes(step) ? prev : [...prev, step]));
@@ -187,16 +188,14 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
   }, [createdOrder, formData, clients, settings]);
 
   const handleWhatsApp = useCallback(() => {
-    if (!createdOrder) {
-      console.log('WhatsApp: No created order');
-      return;
-    }
+    setShowWhatsAppDialog(true);
+  }, []);
+
+  const getWhatsAppData = useCallback(() => {
+    if (!createdOrder) return null;
 
     const selectedClient = clients.find((c) => c.id === formData.client_id);
-    if (!selectedClient?.phone) {
-      console.log('WhatsApp: No client phone');
-      return;
-    }
+    if (!selectedClient) return null;
 
     const items: ServiceOrderItem[] = formData.items.map((item, index) => ({
       id: `temp-${index}`,
@@ -211,26 +210,16 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
 
     const orderWithClient: ServiceOrder = {
       ...createdOrder,
-      client: { 
-        id: selectedClient.id, 
-        name: selectedClient.name, 
-        phone: selectedClient.phone || null, 
-        email: selectedClient.email || null 
+      client: {
+        id: selectedClient.id,
+        name: selectedClient.name,
+        phone: selectedClient.phone || null,
+        email: selectedClient.email || null,
       },
     };
 
-    const message = formatWhatsAppMessage({
-      order: orderWithClient,
-      items,
-      companyName: settings?.name || 'Assistência Técnica',
-      footerMessage: settings?.footer_message || 'Obrigado pela preferência!',
-    });
-
-    // Use setTimeout to ensure the click event is fully processed before opening new window
-    setTimeout(() => {
-      openWhatsApp(selectedClient.phone, message);
-    }, 100);
-  }, [createdOrder, formData, clients, settings]);
+    return { order: orderWithClient, items };
+  }, [createdOrder, formData, clients]);
 
   const handleClose = useCallback(() => {
     onOpenChange(false);
@@ -311,16 +300,31 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
     }
   };
 
+  const whatsAppData = getWhatsAppData();
+
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] p-0 gap-0">
-        <div className="p-6 border-b">
-          <WizardProgress currentStep={currentStep} completedSteps={completedSteps} />
-        </div>
-        <ScrollArea className="max-h-[calc(90vh-120px)]">
-          <div className="p-6">{renderStep()}</div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] p-0 gap-0">
+          <div className="p-6 border-b">
+            <WizardProgress currentStep={currentStep} completedSteps={completedSteps} />
+          </div>
+          <ScrollArea className="max-h-[calc(90vh-120px)]">
+            <div className="p-6">{renderStep()}</div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {whatsAppData && (
+        <WizardWhatsAppDialog
+          open={showWhatsAppDialog}
+          onOpenChange={setShowWhatsAppDialog}
+          order={whatsAppData.order}
+          items={whatsAppData.items}
+          companyName={settings?.name || 'Assistência Técnica'}
+          footerMessage={settings?.footer_message || 'Obrigado pela preferência!'}
+        />
+      )}
+    </>
   );
 }
