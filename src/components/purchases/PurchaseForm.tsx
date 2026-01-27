@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, PackagePlus } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -31,6 +31,7 @@ import { Separator } from '@/components/ui/separator';
 import { useSuppliers } from '@/hooks/useSuppliers';
 import { useProducts } from '@/hooks/useProducts';
 import { PurchaseItem, PAYMENT_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from '@/types/purchase';
+import { QuickProductForm, QuickProductFormData } from './QuickProductForm';
 
 const purchaseSchema = z.object({
   supplier_id: z.string().optional(),
@@ -55,9 +56,10 @@ interface PurchaseFormProps {
 
 export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: PurchaseFormProps) {
   const { suppliers } = useSuppliers();
-  const { products } = useProducts();
+  const { products, createProduct } = useProducts();
   const [items, setItems] = useState<Omit<PurchaseItem, 'id' | 'purchase_id'>[]>([]);
   const [selectedProductId, setSelectedProductId] = useState('');
+  const [quickProductOpen, setQuickProductOpen] = useState(false);
 
   const form = useForm<PurchaseFormData>({
     resolver: zodResolver(purchaseSchema),
@@ -117,6 +119,34 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
       unit_price: 0,
       total: 0,
     }]);
+  };
+
+  const handleQuickProductSubmit = async (data: QuickProductFormData) => {
+    const newProduct = await createProduct.mutateAsync({
+      name: data.name,
+      description: null,
+      sku: data.sku || null,
+      category: data.category || null,
+      cost_price: data.cost_price,
+      sale_price: data.sale_price,
+      stock_quantity: data.stock_quantity,
+      min_stock: data.min_stock,
+      unit: data.unit,
+      active: true,
+    });
+
+    // Add the new product to the purchase items
+    if (newProduct) {
+      setItems([...items, {
+        product_id: newProduct.id,
+        product_name: newProduct.name,
+        quantity: 1,
+        unit_price: newProduct.cost_price,
+        total: newProduct.cost_price,
+      }]);
+    }
+
+    setQuickProductOpen(false);
   };
 
   const updateItem = (index: number, field: keyof PurchaseItem, value: string | number) => {
@@ -255,10 +285,16 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-medium">Produtos</h3>
-                <Button type="button" variant="outline" size="sm" onClick={addManualItem}>
-                  <Plus className="h-4 w-4 mr-1" />
-                  Item Manual
-                </Button>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => setQuickProductOpen(true)}>
+                    <PackagePlus className="h-4 w-4 mr-1" />
+                    Novo Produto
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={addManualItem}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Item Manual
+                  </Button>
+                </div>
               </div>
 
               {/* Add from catalog */}
@@ -464,6 +500,14 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
           </form>
         </Form>
       </SheetContent>
+
+      {/* Quick Product Form Modal */}
+      <QuickProductForm
+        open={quickProductOpen}
+        onOpenChange={setQuickProductOpen}
+        onSubmit={handleQuickProductSubmit}
+        isSubmitting={createProduct.isPending}
+      />
     </Sheet>
   );
 }
