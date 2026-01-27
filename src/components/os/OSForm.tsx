@@ -174,7 +174,7 @@ export function OSForm({
     if (!productSearch) return activeProducts;
     return activeProducts.filter(p => 
       p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
-      p.sku?.toLowerCase().includes(productSearch.toLowerCase())
+      p.category?.toLowerCase().includes(productSearch.toLowerCase())
     );
   }, [activeProducts, productSearch]);
 
@@ -798,8 +798,8 @@ export function OSForm({
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex flex-col">
                                         <span>{product.name}</span>
-                                        {product.sku && (
-                                          <span className="text-xs text-muted-foreground">{product.sku}</span>
+                                        {product.category && (
+                                          <span className="text-xs text-muted-foreground">{product.category}</span>
                                         )}
                                       </div>
                                       <div className="text-right">

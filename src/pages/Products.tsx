@@ -23,8 +23,8 @@ export default function Products() {
     return products.filter(
       (product) =>
         product.name.toLowerCase().includes(searchLower) ||
-        product.sku?.toLowerCase().includes(searchLower) ||
-        product.category?.toLowerCase().includes(searchLower)
+        product.category?.toLowerCase().includes(searchLower) ||
+        (product.code && `PROD-${product.code}`.toLowerCase().includes(searchLower))
     );
   }, [products, search]);
 

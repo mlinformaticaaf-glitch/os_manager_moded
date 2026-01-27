@@ -192,7 +192,6 @@ export type Database = {
           name: string
           profit_margin: number | null
           sale_price: number
-          sku: string | null
           stock_quantity: number
           unit: string | null
           updated_at: string
@@ -210,7 +209,6 @@ export type Database = {
           name: string
           profit_margin?: number | null
           sale_price?: number
-          sku?: string | null
           stock_quantity?: number
           unit?: string | null
           updated_at?: string
@@ -228,7 +226,6 @@ export type Database = {
           name?: string
           profit_margin?: number | null
           sale_price?: number
-          sku?: string | null
           stock_quantity?: number
           unit?: string | null
           updated_at?: string

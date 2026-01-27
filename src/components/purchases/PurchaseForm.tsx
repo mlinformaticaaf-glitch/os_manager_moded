@@ -125,7 +125,6 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
     const newProduct = await createProduct.mutateAsync({
       name: data.name,
       description: null,
-      sku: data.sku || null,
       category: data.category || null,
       cost_price: data.cost_price,
       sale_price: data.sale_price,
