@@ -86,7 +86,11 @@ export function SummaryStep({
                 variant="outline"
                 size="lg"
                 className="h-20 flex-col gap-2"
-                onClick={onPrint}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onPrint?.();
+                }}
               >
                 <Printer className="h-6 w-6" />
                 <span>Imprimir OS</span>
@@ -95,7 +99,11 @@ export function SummaryStep({
                 variant="outline"
                 size="lg"
                 className="h-20 flex-col gap-2 text-green-600 border-green-600 hover:bg-green-50"
-                onClick={onWhatsApp}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onWhatsApp?.();
+                }}
                 disabled={!selectedClient?.phone}
               >
                 <MessageCircle className="h-6 w-6" />
