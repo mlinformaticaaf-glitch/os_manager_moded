@@ -165,8 +165,12 @@ export function cleanPhoneNumber(phone: string): string {
 }
 
 export function openWhatsApp(phone: string, message: string) {
-  const cleanedPhone = cleanPhoneNumber(phone);
-  const encodedMessage = encodeURIComponent(message);
-  const url = `https://wa.me/${cleanedPhone}?text=${encodedMessage}`;
-  window.open(url, '_blank');
+  try {
+    const cleanedPhone = cleanPhoneNumber(phone);
+    const encodedMessage = encodeURIComponent(message);
+    const url = `https://wa.me/${cleanedPhone}?text=${encodedMessage}`;
+    window.open(url, '_blank');
+  } catch (error) {
+    console.error('Error opening WhatsApp:', error);
+  }
 }
