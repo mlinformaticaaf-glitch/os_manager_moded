@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Clients from "./pages/Clients";
 import ServiceOrders from "./pages/ServiceOrders";
+import Equipment from "./pages/Equipment";
 import Products from "./pages/Products";
 import Services from "./pages/Services";
 import Suppliers from "./pages/Suppliers";
@@ -59,6 +60,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ServiceOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/equipamentos"
+              element={
+                <ProtectedRoute>
+                  <Equipment />
                 </ProtectedRoute>
               }
             />

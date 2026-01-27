@@ -128,6 +128,36 @@ export type Database = {
         }
         Relationships: []
       }
+      equipment: {
+        Row: {
+          active: boolean
+          code: number | null
+          created_at: string
+          description: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          code?: number | null
+          created_at?: string
+          description: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          code?: number | null
+          created_at?: string
+          description?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       financial_transactions: {
         Row: {
           amount: number
@@ -599,6 +629,7 @@ export type Database = {
     }
     Functions: {
       get_next_client_code: { Args: { p_user_id: string }; Returns: number }
+      get_next_equipment_code: { Args: { p_user_id: string }; Returns: number }
       get_next_order_number: { Args: { p_user_id: string }; Returns: number }
       get_next_product_code: { Args: { p_user_id: string }; Returns: number }
       get_next_service_code: { Args: { p_user_id: string }; Returns: number }
