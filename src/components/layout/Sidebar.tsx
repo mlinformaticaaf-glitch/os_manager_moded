@@ -14,10 +14,11 @@ import {
   Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useServiceOrders } from "@/hooks/useServiceOrders";
 
 interface NavItem {
   icon: React.ElementType;
@@ -26,9 +27,9 @@ interface NavItem {
   badge?: number;
 }
 
-const navItems: NavItem[] = [
+const baseNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-  { icon: ClipboardList, label: "Ordens de Serviço", href: "/os", badge: 12 },
+  { icon: ClipboardList, label: "Ordens de Serviço", href: "/os" },
   { icon: Users, label: "Clientes", href: "/clientes" },
   { icon: Package, label: "Produtos", href: "/produtos" },
   { icon: Wrench, label: "Serviços", href: "/servicos" },
@@ -49,11 +50,13 @@ function SidebarContent({
   onLogout, 
   collapsed = false,
   onCollapse,
-  onItemClick
+  onItemClick,
+  navItems
 }: SidebarProps & { 
   collapsed?: boolean; 
   onCollapse?: () => void;
   onItemClick?: () => void;
+  navItems: NavItem[];
 }) {
   const handleNavigate = (path: string) => {
     onNavigate(path);
@@ -155,6 +158,18 @@ export function Sidebar({ currentPath, onNavigate, onLogout }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { orders: serviceOrders } = useServiceOrders();
+
+  const navItems = useMemo(() => {
+    const openOSCount = serviceOrders.filter(os => 
+      !['completed', 'delivered', 'cancelled'].includes(os.status)
+    ).length;
+
+    return baseNavItems.map(item => ({
+      ...item,
+      badge: item.href === '/os' && openOSCount > 0 ? openOSCount : undefined
+    }));
+  }, [serviceOrders]);
 
   if (isMobile) {
     return (
@@ -174,6 +189,7 @@ export function Sidebar({ currentPath, onNavigate, onLogout }: SidebarProps) {
             onNavigate={onNavigate} 
             onLogout={onLogout}
             onItemClick={() => setMobileOpen(false)}
+            navItems={navItems}
           />
         </SheetContent>
       </Sheet>
@@ -193,6 +209,7 @@ export function Sidebar({ currentPath, onNavigate, onLogout }: SidebarProps) {
         onLogout={onLogout}
         collapsed={collapsed}
         onCollapse={() => setCollapsed(!collapsed)}
+        navItems={navItems}
       />
     </aside>
   );
