@@ -187,35 +187,44 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
   }, [createdOrder, formData, clients, settings]);
 
   const handleWhatsApp = useCallback(() => {
-    if (!createdOrder) return;
+    try {
+      if (!createdOrder) return;
 
-    const selectedClient = clients.find((c) => c.id === formData.client_id);
-    if (!selectedClient?.phone) return;
+      const selectedClient = clients.find((c) => c.id === formData.client_id);
+      if (!selectedClient?.phone) return;
 
-    const items: ServiceOrderItem[] = formData.items.map((item, index) => ({
-      id: `temp-${index}`,
-      service_order_id: createdOrder.id,
-      type: item.type,
-      description: item.description,
-      quantity: item.quantity,
-      unit_price: item.unit_price,
-      total: item.quantity * item.unit_price,
-      created_at: new Date().toISOString(),
-    }));
+      const items: ServiceOrderItem[] = formData.items.map((item, index) => ({
+        id: `temp-${index}`,
+        service_order_id: createdOrder.id,
+        type: item.type,
+        description: item.description,
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        total: item.quantity * item.unit_price,
+        created_at: new Date().toISOString(),
+      }));
 
-    const orderWithClient = {
-      ...createdOrder,
-      client: { id: selectedClient.id, name: selectedClient.name, phone: selectedClient.phone, email: selectedClient.email },
-    };
+      const orderWithClient: ServiceOrder = {
+        ...createdOrder,
+        client: { 
+          id: selectedClient.id, 
+          name: selectedClient.name, 
+          phone: selectedClient.phone || null, 
+          email: selectedClient.email || null 
+        },
+      };
 
-    const message = formatWhatsAppMessage({
-      order: orderWithClient,
-      items,
-      companyName: settings?.name || 'Assistência Técnica',
-      footerMessage: settings?.footer_message || 'Obrigado pela preferência!',
-    });
+      const message = formatWhatsAppMessage({
+        order: orderWithClient,
+        items,
+        companyName: settings?.name || 'Assistência Técnica',
+        footerMessage: settings?.footer_message || 'Obrigado pela preferência!',
+      });
 
-    openWhatsApp(selectedClient.phone, message);
+      openWhatsApp(selectedClient.phone, message);
+    } catch (error) {
+      console.error('Error opening WhatsApp:', error);
+    }
   }, [createdOrder, formData, clients, settings]);
 
   const handleClose = useCallback(() => {
