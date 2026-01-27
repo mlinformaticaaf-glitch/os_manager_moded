@@ -27,12 +27,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Product, UNIT_OPTIONS } from '@/types/product';
+import { Product, UNIT_OPTIONS, formatProductCode } from '@/types/product';
 
 const productSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   description: z.string().optional(),
-  sku: z.string().optional(),
   category: z.string().optional(),
   cost_price: z.coerce.number().min(0, 'Preço de custo deve ser positivo'),
   sale_price: z.coerce.number().min(0, 'Preço de venda deve ser positivo'),
@@ -64,7 +63,6 @@ export function ProductForm({
     defaultValues: {
       name: '',
       description: '',
-      sku: '',
       category: '',
       cost_price: 0,
       sale_price: 0,
@@ -81,7 +79,6 @@ export function ProductForm({
         form.reset({
           name: product.name,
           description: product.description || '',
-          sku: product.sku || '',
           category: product.category || '',
           cost_price: product.cost_price,
           sale_price: product.sale_price,
@@ -94,7 +91,6 @@ export function ProductForm({
         form.reset({
           name: '',
           description: '',
-          sku: '',
           category: '',
           cost_price: 0,
           sale_price: 0,
@@ -130,7 +126,9 @@ export function ProductForm({
             {product ? 'Editar Produto' : 'Novo Produto'}
           </SheetTitle>
           <p className="text-sm text-muted-foreground">
-            {product ? 'Atualize as informações do produto' : 'Preencha os dados do novo produto'}
+            {product 
+              ? `Código: ${formatProductCode(product.code)} • Atualize as informações do produto`
+              : 'O código será gerado automaticamente'}
           </p>
         </SheetHeader>
 
@@ -164,35 +162,19 @@ export function ProductForm({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="sku"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>SKU / Código</FormLabel>
-                    <FormControl>
-                      <Input placeholder="SKU" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Categoria</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Categoria" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Categoria" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <FormField

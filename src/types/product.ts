@@ -4,7 +4,6 @@ export interface Product {
   code: number | null;
   name: string;
   description: string | null;
-  sku: string | null;
   category: string | null;
   cost_price: number;
   sale_price: number;
@@ -28,3 +27,8 @@ export const UNIT_OPTIONS = [
   { value: 'm', label: 'Metro' },
   { value: 'lt', label: 'Litro' },
 ];
+
+export const formatProductCode = (code: number | null): string => {
+  if (code === null) return '';
+  return `PROD-${code}`;
+};

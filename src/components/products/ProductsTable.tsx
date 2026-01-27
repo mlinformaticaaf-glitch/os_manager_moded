@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Product, UNIT_OPTIONS } from '@/types/product';
+import { Product, UNIT_OPTIONS, formatProductCode } from '@/types/product';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProductsTableProps {
@@ -56,16 +56,13 @@ function ProductCard({ product, onEdit, onDelete }: { product: Product; onEdit: 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               {product.code && (
-                <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">#{product.code}</span>
+                <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{formatProductCode(product.code)}</span>
               )}
               <p className="font-medium truncate">{product.name}</p>
               <Badge variant={product.active ? 'default' : 'secondary'} className="text-[10px] shrink-0">
                 {product.active ? 'Ativo' : 'Inativo'}
               </Badge>
             </div>
-            {product.sku && (
-              <p className="text-xs text-muted-foreground mt-0.5">SKU: {product.sku}</p>
-            )}
           </div>
         </div>
         <div onClick={(e) => e.stopPropagation()}>
@@ -150,9 +147,8 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[70px]">Código</TableHead>
+            <TableHead className="w-[90px]">Código</TableHead>
             <TableHead>Produto</TableHead>
-            <TableHead className="hidden lg:table-cell">SKU</TableHead>
             <TableHead className="hidden md:table-cell">Categoria</TableHead>
             <TableHead className="text-right hidden lg:table-cell">Custo</TableHead>
             <TableHead className="text-right">Venda</TableHead>
@@ -170,7 +166,7 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
               onClick={() => onEdit(product)}
             >
               <TableCell className="font-mono text-muted-foreground">
-                {product.code ? `#${product.code}` : '-'}
+                {product.code ? formatProductCode(product.code) : '-'}
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
@@ -186,9 +182,6 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                     )}
                   </div>
                 </div>
-              </TableCell>
-              <TableCell className="hidden lg:table-cell text-muted-foreground">
-                {product.sku || '-'}
               </TableCell>
               <TableCell className="hidden md:table-cell">
                 {product.category ? (

@@ -28,7 +28,6 @@ import { UNIT_OPTIONS } from '@/types/product';
 
 const quickProductSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
-  sku: z.string().optional(),
   category: z.string().optional(),
   cost_price: z.coerce.number().min(0, 'Preço de custo deve ser positivo'),
   sale_price: z.coerce.number().min(0, 'Preço de venda deve ser positivo'),
@@ -56,7 +55,6 @@ export function QuickProductForm({
     resolver: zodResolver(quickProductSchema),
     defaultValues: {
       name: '',
-      sku: '',
       category: '',
       cost_price: 0,
       sale_price: 0,
@@ -87,6 +85,9 @@ export function QuickProductForm({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Cadastrar Novo Produto</DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            O código será gerado automaticamente (PROD-X)
+          </p>
         </DialogHeader>
 
         <Form {...form}>
@@ -105,35 +106,19 @@ export function QuickProductForm({
               )}
             />
 
-            <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="sku"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>SKU / Código</FormLabel>
-                    <FormControl>
-                      <Input placeholder="SKU" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Categoria</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Categoria" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Categoria" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-2 gap-3">
               <FormField
