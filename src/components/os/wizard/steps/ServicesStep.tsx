@@ -121,73 +121,73 @@ export function ServicesStep({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">Serviços e Produtos</h2>
-        <p className="text-muted-foreground">Adicione os serviços e produtos da OS</p>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="text-center space-y-1 sm:space-y-2">
+        <h2 className="text-xl sm:text-2xl font-bold">Serviços e Produtos</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">Adicione serviços e produtos</p>
       </div>
 
       {/* Cart Summary */}
       {items.length > 0 && (
         <Card className="border-primary/50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <ShoppingCart className="h-5 w-5 text-primary" />
-              <span className="font-semibold">Itens Adicionados ({items.length})</span>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 mb-2 sm:mb-3">
+              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <span className="font-semibold text-sm sm:text-base">Itens ({items.length})</span>
             </div>
-            <ScrollArea className="max-h-[150px]">
-              <div className="space-y-2">
+            <ScrollArea className="max-h-[120px] sm:max-h-[150px]">
+              <div className="space-y-1.5 sm:space-y-2">
                 {items.map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 p-2 rounded-lg bg-muted/50"
+                    className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-lg bg-muted/50"
                   >
                     {item.type === 'service' ? (
-                      <Wrench className="h-4 w-4 text-blue-500" />
+                      <Wrench className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 shrink-0" />
                     ) : (
-                      <Package className="h-4 w-4 text-orange-500" />
+                      <Package className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500 shrink-0" />
                     )}
-                    <span className="flex-1 text-sm truncate">{item.description}</span>
-                    <div className="flex items-center gap-1">
+                    <span className="flex-1 text-xs sm:text-sm truncate">{item.description}</span>
+                    <div className="flex items-center">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6"
+                        className="h-5 w-5 sm:h-6 sm:w-6"
                         onClick={() =>
                           item.quantity > 1
                             ? onUpdateItemQuantity(index, item.quantity - 1)
                             : onRemoveItem(index)
                         }
                       >
-                        <Minus className="h-3 w-3" />
+                        <Minus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       </Button>
-                      <span className="text-sm w-6 text-center">{item.quantity}</span>
+                      <span className="text-xs sm:text-sm w-5 sm:w-6 text-center">{item.quantity}</span>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6"
+                        className="h-5 w-5 sm:h-6 sm:w-6"
                         onClick={() => onUpdateItemQuantity(index, item.quantity + 1)}
                       >
-                        <Plus className="h-3 w-3" />
+                        <Plus className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       </Button>
                     </div>
-                    <span className="text-sm font-medium w-20 text-right">
+                    <span className="text-xs sm:text-sm font-medium w-16 sm:w-20 text-right">
                       {formatCurrency(item.quantity * item.unit_price)}
                     </span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 text-destructive"
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-destructive"
                       onClick={() => onRemoveItem(index)}
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     </Button>
                   </div>
                 ))}
               </div>
             </ScrollArea>
-            <Separator className="my-3" />
-            <div className="space-y-1 text-sm">
+            <Separator className="my-2 sm:my-3" />
+            <div className="space-y-1 text-xs sm:text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Serviços:</span>
                 <span>{formatCurrency(totalServices)}</span>
@@ -204,11 +204,11 @@ export function ServicesStep({
                   step="0.01"
                   value={discount}
                   onChange={(e) => onChangeDiscount(Number(e.target.value))}
-                  className="w-24 h-7 text-right"
+                  className="w-20 sm:w-24 h-6 sm:h-7 text-right text-xs sm:text-sm"
                 />
               </div>
-              <Separator className="my-2" />
-              <div className="flex justify-between font-semibold text-base">
+              <Separator className="my-1.5 sm:my-2" />
+              <div className="flex justify-between font-semibold text-sm sm:text-base">
                 <span>Total:</span>
                 <span className="text-primary">{formatCurrency(total)}</span>
               </div>
@@ -221,33 +221,33 @@ export function ServicesStep({
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Buscar serviços ou produtos..."
+          placeholder="Buscar..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
+          className="pl-10 text-sm sm:text-base"
         />
       </div>
 
       {/* Tabs for Services/Products */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'services' | 'products')}>
-        <TabsList className="w-full">
-          <TabsTrigger value="services" className="flex-1 gap-2">
-            <Wrench className="h-4 w-4" />
+        <TabsList className="w-full h-9 sm:h-10">
+          <TabsTrigger value="services" className="flex-1 gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <Wrench className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Serviços
           </TabsTrigger>
-          <TabsTrigger value="products" className="flex-1 gap-2">
-            <Package className="h-4 w-4" />
+          <TabsTrigger value="products" className="flex-1 gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             Produtos
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="services" className="mt-4">
-          <ScrollArea className="h-[200px] rounded-lg border">
-            <div className="p-2 space-y-1">
+        <TabsContent value="services" className="mt-3 sm:mt-4">
+          <ScrollArea className="h-[150px] sm:h-[200px] rounded-lg border">
+            <div className="p-1.5 sm:p-2 space-y-1">
               {filteredServices.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                  <Wrench className="h-8 w-8 mb-2" />
-                  <p>Nenhum serviço encontrado</p>
+                <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-muted-foreground">
+                  <Wrench className="h-6 w-6 sm:h-8 sm:w-8 mb-2" />
+                  <p className="text-sm">Nenhum serviço</p>
                 </div>
               ) : (
                 filteredServices.map((service) => (
@@ -255,23 +255,23 @@ export function ServicesStep({
                     key={service.id}
                     type="button"
                     onClick={() => handleAddService(service)}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg text-left hover:bg-muted transition-colors"
+                    className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-muted transition-colors"
                   >
-                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Wrench className="h-5 w-5 text-blue-600" />
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                      <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{service.name}</p>
+                      <p className="font-medium truncate text-sm sm:text-base">{service.name}</p>
                       {service.code && (
                         <p className="text-xs text-muted-foreground">{service.code}</p>
                       )}
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-primary">
+                    <div className="text-right shrink-0">
+                      <p className="font-semibold text-primary text-sm sm:text-base">
                         {formatCurrency(service.sale_price)}
                       </p>
                     </div>
-                    <Plus className="h-5 w-5 text-muted-foreground" />
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0" />
                   </button>
                 ))
               )}
@@ -279,13 +279,13 @@ export function ServicesStep({
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="products" className="mt-4">
-          <ScrollArea className="h-[200px] rounded-lg border">
-            <div className="p-2 space-y-1">
+        <TabsContent value="products" className="mt-3 sm:mt-4">
+          <ScrollArea className="h-[150px] sm:h-[200px] rounded-lg border">
+            <div className="p-1.5 sm:p-2 space-y-1">
               {filteredProducts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-                  <Package className="h-8 w-8 mb-2" />
-                  <p>Nenhum produto encontrado</p>
+                <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-muted-foreground">
+                  <Package className="h-6 w-6 sm:h-8 sm:w-8 mb-2" />
+                  <p className="text-sm">Nenhum produto</p>
                 </div>
               ) : (
                 filteredProducts.map((product) => (
@@ -293,30 +293,30 @@ export function ServicesStep({
                     key={product.id}
                     type="button"
                     onClick={() => handleAddProduct(product)}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg text-left hover:bg-muted transition-colors"
+                    className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-muted transition-colors"
                   >
-                    <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
-                      <Package className="h-5 w-5 text-orange-600" />
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                      <Package className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{product.name}</p>
-                      <div className="flex items-center gap-2">
+                      <p className="font-medium truncate text-sm sm:text-base">{product.name}</p>
+                      <div className="flex items-center gap-1 sm:gap-2">
                         {product.category && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-[10px] sm:text-xs px-1 sm:px-1.5">
                             {product.category}
                           </Badge>
                         )}
-                        <span className="text-xs text-muted-foreground">
-                          Estoque: {product.stock_quantity}
+                        <span className="text-[10px] sm:text-xs text-muted-foreground">
+                          Est: {product.stock_quantity}
                         </span>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-primary">
+                    <div className="text-right shrink-0">
+                      <p className="font-semibold text-primary text-sm sm:text-base">
                         {formatCurrency(product.sale_price)}
                       </p>
                     </div>
-                    <Plus className="h-5 w-5 text-muted-foreground" />
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0" />
                   </button>
                 ))
               )}
@@ -326,12 +326,12 @@ export function ServicesStep({
       </Tabs>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between pt-4 border-t">
-        <Button variant="ghost" onClick={onBack}>
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-4 border-t">
+        <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
-        <Button onClick={onNext}>
+        <Button onClick={onNext} size="sm">
           Continuar
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
