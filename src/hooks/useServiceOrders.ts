@@ -41,10 +41,14 @@ export function useServiceOrders() {
       if (orderError) throw orderError;
 
       if (items && items.length > 0) {
-        const itemsWithOrderId = items.map(item => ({
-          ...item,
-          service_order_id: newOrder.id,
-        }));
+        const itemsWithOrderId = items.map(item => {
+          // Remove product_id as it doesn't exist in the database schema
+          const { product_id, ...itemData } = item as any;
+          return {
+            ...itemData,
+            service_order_id: newOrder.id,
+          };
+        });
 
         const { error: itemsError } = await supabase
           .from('service_order_items')
@@ -99,10 +103,14 @@ export function useServiceOrders() {
           .eq('service_order_id', id);
 
         if (items.length > 0) {
-          const itemsWithOrderId = items.map(item => ({
-            ...item,
-            service_order_id: id,
-          }));
+          const itemsWithOrderId = items.map(item => {
+            // Remove product_id as it doesn't exist in the database schema
+            const { product_id, ...itemData } = item as any;
+            return {
+              ...itemData,
+              service_order_id: id,
+            };
+          });
 
           const { error: itemsError } = await supabase
             .from('service_order_items')
