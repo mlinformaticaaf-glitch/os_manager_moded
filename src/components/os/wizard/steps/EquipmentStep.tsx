@@ -60,29 +60,29 @@ export function EquipmentStep({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">Qual é o equipamento?</h2>
-        <p className="text-muted-foreground">
-          Selecione ou cadastre o equipamento que será reparado
+    <div className="space-y-4 sm:space-y-6">
+      <div className="text-center space-y-1 sm:space-y-2">
+        <h2 className="text-xl sm:text-2xl font-bold">Qual é o equipamento?</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Selecione ou cadastre o equipamento
         </p>
       </div>
 
       {/* Selected Equipment Preview */}
       {selectedEquipment && (
         <Card className="border-primary bg-primary/5">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Monitor className="h-6 w-6 text-primary" />
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Monitor className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">{selectedEquipment.description}</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-semibold truncate text-sm sm:text-base">{selectedEquipment.description}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {formatEquipmentCode(selectedEquipment.code)}
                 </p>
               </div>
-              <Check className="h-6 w-6 text-primary" />
+              <Check className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0" />
             </div>
           </CardContent>
         </Card>
@@ -96,17 +96,17 @@ export function EquipmentStep({
             placeholder="Buscar equipamento..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="pl-10 text-sm sm:text-base"
           />
         </div>
-        <Button variant="outline" onClick={() => setEquipmentFormOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
+        <Button variant="outline" size="sm" onClick={() => setEquipmentFormOpen(true)} className="shrink-0">
+          <Plus className="h-4 w-4 sm:mr-2" />
           <span className="hidden sm:inline">Novo</span>
         </Button>
       </div>
 
       {/* Equipment List */}
-      <ScrollArea className="h-[200px] rounded-lg border">
+      <ScrollArea className="h-[150px] sm:h-[200px] rounded-lg border">
         <div className="p-2 space-y-1">
           {isLoading ? (
             <div className="flex items-center justify-center py-8 text-muted-foreground">
@@ -131,36 +131,40 @@ export function EquipmentStep({
       </ScrollArea>
 
       {/* Additional Fields */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="serial_number">Número de Série (opcional)</Label>
+      <div className="grid grid-cols-1 gap-3 sm:gap-4">
+        <div className="space-y-1.5 sm:space-y-2">
+          <Label htmlFor="serial_number" className="text-sm">Nº Série (opcional)</Label>
           <Input
             id="serial_number"
             placeholder="Ex: SN123456789"
             value={serialNumber}
             onChange={(e) => onChangeSerialNumber(e.target.value)}
+            className="text-sm sm:text-base"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="accessories">Acessórios (opcional)</Label>
+        <div className="space-y-1.5 sm:space-y-2">
+          <Label htmlFor="accessories" className="text-sm">Acessórios (opcional)</Label>
           <Input
             id="accessories"
-            placeholder="Ex: Carregador, mouse, case"
+            placeholder="Ex: Carregador, mouse"
             value={accessories}
             onChange={(e) => onChangeAccessories(e.target.value)}
+            className="text-sm sm:text-base"
           />
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between pt-4 border-t">
-        <Button variant="ghost" onClick={onBack}>
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-4 border-t">
+        <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
         <div className="flex gap-2">
           <Button
             variant="ghost"
+            size="sm"
+            className="flex-1 sm:flex-none"
             onClick={() => {
               onSelectEquipment(null);
               onNext();
@@ -168,7 +172,7 @@ export function EquipmentStep({
           >
             Pular
           </Button>
-          <Button onClick={onNext}>
+          <Button onClick={onNext} size="sm" className="flex-1 sm:flex-none">
             Continuar
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
@@ -200,7 +204,7 @@ function EquipmentCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors",
+        "w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left transition-colors",
         isSelected
           ? "bg-primary/10 border border-primary"
           : "hover:bg-muted border border-transparent"
@@ -208,17 +212,17 @@ function EquipmentCard({
     >
       <div
         className={cn(
-          "h-10 w-10 rounded-full flex items-center justify-center",
+          "h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center shrink-0",
           isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
         )}
       >
-        <Monitor className="h-5 w-5" />
+        <Monitor className="h-4 w-4 sm:h-5 sm:w-5" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium truncate">{equipment.description}</p>
-        <p className="text-sm text-muted-foreground">{formatEquipmentCode(equipment.code)}</p>
+        <p className="font-medium truncate text-sm sm:text-base">{equipment.description}</p>
+        <p className="text-xs sm:text-sm text-muted-foreground">{formatEquipmentCode(equipment.code)}</p>
       </div>
-      {isSelected && <Check className="h-5 w-5 text-primary shrink-0" />}
+      {isSelected && <Check className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0" />}
     </button>
   );
 }

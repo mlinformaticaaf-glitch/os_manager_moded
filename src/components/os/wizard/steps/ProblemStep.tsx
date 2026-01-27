@@ -49,34 +49,34 @@ export function ProblemStep({
   const isValid = reportedIssue.trim().length >= 5;
 
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">Qual é o problema?</h2>
-        <p className="text-muted-foreground">Descreva o problema relatado pelo cliente</p>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="text-center space-y-1 sm:space-y-2">
+        <h2 className="text-xl sm:text-2xl font-bold">Qual é o problema?</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">Descreva o problema relatado</p>
       </div>
 
       {/* Main Issue */}
-      <div className="space-y-2">
-        <Label htmlFor="reported_issue" className="flex items-center gap-1">
+      <div className="space-y-1.5 sm:space-y-2">
+        <Label htmlFor="reported_issue" className="flex items-center gap-1 text-sm">
           <AlertCircle className="h-4 w-4" />
           Problema Relatado *
         </Label>
         <Textarea
           id="reported_issue"
-          placeholder="Descreva detalhadamente o problema que o cliente relatou..."
+          placeholder="Descreva o problema..."
           value={reportedIssue}
           onChange={(e) => onChangeReportedIssue(e.target.value)}
-          className="min-h-[120px] resize-none"
+          className="min-h-[80px] sm:min-h-[120px] resize-none text-sm sm:text-base"
         />
         {reportedIssue.length > 0 && reportedIssue.length < 5 && (
-          <p className="text-sm text-destructive">Descreva o problema com mais detalhes</p>
+          <p className="text-xs sm:text-sm text-destructive">Descreva com mais detalhes</p>
         )}
       </div>
 
       {/* Priority Selection */}
-      <div className="space-y-3">
-        <Label>Prioridade</Label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="space-y-2 sm:space-y-3">
+        <Label className="text-sm">Prioridade</Label>
+        <div className="grid grid-cols-4 gap-1 sm:gap-2">
           {(Object.entries(PRIORITY_CONFIG) as [OSPriority, { label: string; color: string }][]).map(
             ([key, config]) => (
               <button
@@ -84,14 +84,14 @@ export function ProblemStep({
                 type="button"
                 onClick={() => onChangePriority(key)}
                 className={cn(
-                  "p-3 rounded-lg border-2 text-center transition-all",
+                  "p-2 sm:p-3 rounded-lg border-2 text-center transition-all",
                   priority === key
                     ? "border-primary ring-2 ring-primary/20"
                     : PRIORITY_COLORS[key],
                   "hover:scale-[1.02]"
                 )}
               >
-                <span className={cn("font-medium", config.color)}>{config.label}</span>
+                <span className={cn("font-medium text-xs sm:text-sm", config.color)}>{config.label}</span>
               </button>
             )
           )}
@@ -99,11 +99,11 @@ export function ProblemStep({
       </div>
 
       {/* Status and Date */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Status Inicial</Label>
+      <div className="grid grid-cols-1 gap-3 sm:gap-4">
+        <div className="space-y-1.5 sm:space-y-2">
+          <Label className="text-sm">Status Inicial</Label>
           <Select value={status} onValueChange={onChangeStatus}>
-            <SelectTrigger>
+            <SelectTrigger className="text-sm sm:text-base">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover border border-border">
@@ -115,24 +115,25 @@ export function ProblemStep({
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="estimated_completion">Previsão de Entrega</Label>
+        <div className="space-y-1.5 sm:space-y-2">
+          <Label htmlFor="estimated_completion" className="text-sm">Previsão de Entrega</Label>
           <Input
             id="estimated_completion"
             type="date"
             value={estimatedCompletion}
             onChange={(e) => onChangeEstimatedCompletion(e.target.value)}
+            className="text-sm sm:text-base"
           />
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between pt-4 border-t">
-        <Button variant="ghost" onClick={onBack}>
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-4 border-t">
+        <Button variant="ghost" size="sm" onClick={onBack}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
-        <Button onClick={onNext} disabled={!isValid}>
+        <Button onClick={onNext} disabled={!isValid} size="sm">
           Continuar
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>

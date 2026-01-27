@@ -305,12 +305,12 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] p-0 gap-0">
-          <div className="p-6 border-b">
+        <DialogContent className="sm:max-w-[700px] w-[calc(100vw-16px)] max-h-[95vh] sm:max-h-[90vh] p-0 gap-0 rounded-lg">
+          <div className="p-3 sm:p-6 border-b">
             <WizardProgress currentStep={currentStep} completedSteps={completedSteps} />
           </div>
-          <ScrollArea className="max-h-[calc(90vh-120px)]">
-            <div className="p-6">{renderStep()}</div>
+          <ScrollArea className="max-h-[calc(95vh-100px)] sm:max-h-[calc(90vh-120px)]">
+            <div className="p-3 sm:p-6">{renderStep()}</div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
