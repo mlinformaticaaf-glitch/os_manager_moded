@@ -19,13 +19,14 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { Plus, Search, Loader2, LayoutGrid, List, CalendarIcon, X } from 'lucide-react';
+import { Plus, Search, Loader2, LayoutGrid, List, CalendarIcon, X, Wand2 } from 'lucide-react';
 import { useServiceOrders, useServiceOrderItems } from '@/hooks/useServiceOrders';
 import { OSKanbanView } from '@/components/os/OSKanbanView';
 import { OSListView } from '@/components/os/OSListView';
 import { OSForm } from '@/components/os/OSForm';
 import { OSDetailView } from '@/components/os/OSDetailView';
 import { DeleteOSDialog } from '@/components/os/DeleteOSDialog';
+import { OSWizard } from '@/components/os/wizard';
 import { ServiceOrder, OSStatus, STATUS_CONFIG } from '@/types/serviceOrder';
 
 type ViewMode = 'kanban' | 'list';
@@ -48,6 +49,7 @@ export default function ServiceOrders() {
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [viewMode, setViewMode] = useState<ViewMode>(getStoredViewMode);
   const [formOpen, setFormOpen] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<ServiceOrder | null>(null);
   const [viewingOrder, setViewingOrder] = useState<ServiceOrder | null>(null);
   const [deletingOrder, setDeletingOrder] = useState<ServiceOrder | null>(null);
@@ -247,9 +249,14 @@ export default function ServiceOrders() {
                 </TabsList>
               </Tabs>
 
-              <Button onClick={handleCreate} size="sm" className="gap-1.5">
+              <Button onClick={() => setWizardOpen(true)} size="sm" className="gap-1.5">
+                <Wand2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Assistente</span>
+              </Button>
+
+              <Button onClick={handleCreate} size="sm" variant="outline" className="gap-1.5">
                 <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Nova OS</span>
+                <span className="hidden sm:inline">Form. Clássico</span>
               </Button>
             </div>
           </div>
@@ -306,6 +313,9 @@ export default function ServiceOrders() {
         onConfirm={handleDelete}
         isDeleting={deleteOrder.isPending}
       />
+
+      {/* Wizard */}
+      <OSWizard open={wizardOpen} onOpenChange={setWizardOpen} />
     </MainLayout>
   );
 }
