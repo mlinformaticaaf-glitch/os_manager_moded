@@ -41,7 +41,7 @@ describe('serviceOrder types', () => {
       expect(STATUS_CONFIG.waiting_parts.label).toBe('Aguard. Peças');
       expect(STATUS_CONFIG.waiting_approval.label).toBe('Aguard. Aprovação');
       expect(STATUS_CONFIG.completed.label).toBe('Concluída');
-      expect(STATUS_CONFIG.delivered.label).toBe('Entregue');
+      expect(STATUS_CONFIG.delivered.label).toBe('Faturado e Entregue');
       expect(STATUS_CONFIG.cancelled.label).toBe('Cancelada');
     });
   });

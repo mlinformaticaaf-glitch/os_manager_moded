@@ -61,7 +61,7 @@ export const STATUS_CONFIG: Record<OSStatus, { label: string; color: string; bgC
   waiting_parts: { label: 'Aguard. Peças', color: 'text-orange-700', bgColor: 'bg-orange-100' },
   waiting_approval: { label: 'Aguard. Aprovação', color: 'text-purple-700', bgColor: 'bg-purple-100' },
   completed: { label: 'Concluída', color: 'text-green-700', bgColor: 'bg-green-100' },
-  delivered: { label: 'Entregue', color: 'text-emerald-700', bgColor: 'bg-emerald-100' },
+  delivered: { label: 'Faturado e Entregue', color: 'text-emerald-700', bgColor: 'bg-emerald-100' },
   cancelled: { label: 'Cancelada', color: 'text-red-700', bgColor: 'bg-red-100' },
 };
 
