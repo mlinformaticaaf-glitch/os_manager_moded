@@ -4,11 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Trash2, PackagePlus } from 'lucide-react';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -194,17 +195,17 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
   const activeSuppliers = suppliers.filter(s => s.active);
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-2xl overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Nova Compra</SheetTitle>
-          <p className="text-sm text-muted-foreground">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Nova Compra</DialogTitle>
+          <DialogDescription>
             Registre uma nova compra de produtos
-          </p>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             {/* Supplier and Invoice */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -498,15 +499,15 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
             </div>
           </form>
         </Form>
-      </SheetContent>
 
-      {/* Quick Product Form Modal */}
-      <QuickProductForm
-        open={quickProductOpen}
-        onOpenChange={setQuickProductOpen}
-        onSubmit={handleQuickProductSubmit}
-        isSubmitting={createProduct.isPending}
-      />
-    </Sheet>
+        {/* Quick Product Form Modal */}
+        <QuickProductForm
+          open={quickProductOpen}
+          onOpenChange={setQuickProductOpen}
+          onSubmit={handleQuickProductSubmit}
+          isSubmitting={createProduct.isPending}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }
