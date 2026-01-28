@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { usePurchases } from '@/hooks/usePurchases';
 import { PurchasesTable } from '@/components/purchases/PurchasesTable';
 import { PurchaseForm } from '@/components/purchases/PurchaseForm';
+import { PurchaseViewDialog } from '@/components/purchases/PurchaseViewDialog';
 import { DeletePurchaseDialog } from '@/components/purchases/DeletePurchaseDialog';
 import { Purchase, PurchaseItem } from '@/types/purchase';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,6 +16,7 @@ export default function Purchases() {
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [deletingPurchase, setDeletingPurchase] = useState<Purchase | null>(null);
+  const [viewingPurchase, setViewingPurchase] = useState<Purchase | null>(null);
 
   const { purchases, isLoading, createPurchase, updatePurchasePayment, deletePurchase } = usePurchases();
 
@@ -62,8 +64,7 @@ export default function Purchases() {
   };
 
   const handleView = (purchase: Purchase) => {
-    // TODO: Implement view details modal
-    console.log('View purchase:', purchase);
+    setViewingPurchase(purchase);
   };
 
   return (
@@ -154,6 +155,13 @@ export default function Purchases() {
           Mostrando {filteredPurchases.length} de {purchases.length} compras
         </p>
       </div>
+
+      {/* View Dialog */}
+      <PurchaseViewDialog
+        open={!!viewingPurchase}
+        onOpenChange={(open) => !open && setViewingPurchase(null)}
+        purchase={viewingPurchase}
+      />
 
       {/* Form Sheet */}
       <PurchaseForm
