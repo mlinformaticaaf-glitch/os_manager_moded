@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EquipmentTable } from '@/components/equipment/EquipmentTable';
 import { EquipmentForm } from '@/components/equipment/EquipmentForm';
+import { EquipmentViewDialog } from '@/components/equipment/EquipmentViewDialog';
 import { DeleteEquipmentDialog } from '@/components/equipment/DeleteEquipmentDialog';
 import { useEquipment } from '@/hooks/useEquipment';
 import { Equipment } from '@/types/equipment';
@@ -14,6 +15,7 @@ export default function EquipmentPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(null);
   const [deletingEquipment, setDeletingEquipment] = useState<Equipment | null>(null);
+  const [viewingEquipment, setViewingEquipment] = useState<Equipment | null>(null);
 
   const { equipment, isLoading, createEquipment, updateEquipment, deleteEquipment } = useEquipment();
 
@@ -84,6 +86,7 @@ export default function EquipmentPage() {
             equipment={filteredEquipment}
             onEdit={handleEdit}
             onDelete={setDeletingEquipment}
+            onView={setViewingEquipment}
           />
         )}
 
@@ -95,6 +98,14 @@ export default function EquipmentPage() {
           </span>
         </div>
       </div>
+
+      {/* Equipment View Dialog */}
+      <EquipmentViewDialog
+        open={!!viewingEquipment}
+        onOpenChange={(open) => !open && setViewingEquipment(null)}
+        equipment={viewingEquipment}
+        onEdit={handleEdit}
+      />
 
       {/* Equipment Form */}
       <EquipmentForm

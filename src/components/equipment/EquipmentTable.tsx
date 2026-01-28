@@ -15,9 +15,10 @@ interface EquipmentTableProps {
   equipment: Equipment[];
   onEdit: (equipment: Equipment) => void;
   onDelete: (equipment: Equipment) => void;
+  onView: (equipment: Equipment) => void;
 }
 
-export function EquipmentTable({ equipment, onEdit, onDelete }: EquipmentTableProps) {
+export function EquipmentTable({ equipment, onEdit, onDelete, onView }: EquipmentTableProps) {
   if (equipment.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -40,7 +41,11 @@ export function EquipmentTable({ equipment, onEdit, onDelete }: EquipmentTablePr
         </TableHeader>
         <TableBody>
           {equipment.map((item) => (
-            <TableRow key={item.id}>
+            <TableRow
+              key={item.id}
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => onView(item)}
+            >
               <TableCell className="font-mono text-sm">
                 {formatEquipmentCode(item.code)}
               </TableCell>
@@ -54,7 +59,7 @@ export function EquipmentTable({ equipment, onEdit, onDelete }: EquipmentTablePr
                   {item.active ? 'Ativo' : 'Inativo'}
                 </Badge>
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                 <div className="flex justify-end gap-1">
                   <Button
                     variant="ghost"
