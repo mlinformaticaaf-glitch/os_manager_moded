@@ -17,7 +17,7 @@ export function RecentOS() {
   };
 
   const handleViewOS = (orderId: string) => {
-    navigate('/os');
+    navigate('/os', { state: { viewOrderId: orderId } });
   };
 
   if (isLoading) {
