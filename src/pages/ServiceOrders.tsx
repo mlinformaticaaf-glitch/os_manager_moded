@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -43,6 +44,7 @@ function getStoredViewMode(): ViewMode {
 
 export default function ServiceOrders() {
   const { orders, isLoading, createOrder, updateOrder, updateStatus, deleteOrder } = useServiceOrders();
+  const location = useLocation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OSStatus | 'all'>('all');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -56,6 +58,19 @@ export default function ServiceOrders() {
 
   const { data: viewingOrderItems = [] } = useServiceOrderItems(viewingOrder?.id ?? null);
   const { data: editingOrderItems = [] } = useServiceOrderItems(editingOrder?.id ?? null);
+
+  // Handle navigation state to open a specific order
+  useEffect(() => {
+    const state = location.state as { viewOrderId?: string } | null;
+    if (state?.viewOrderId && orders.length > 0) {
+      const orderToView = orders.find(o => o.id === state.viewOrderId);
+      if (orderToView) {
+        setViewingOrder(orderToView);
+        // Clear the state to prevent re-opening on subsequent renders
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state, orders]);
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {

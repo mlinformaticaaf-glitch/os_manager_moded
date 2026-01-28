@@ -5,6 +5,7 @@ import { STATUS_CONFIG, OSStatus } from "@/types/serviceOrder";
 import { formatOSNumber } from "@/lib/osUtils";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useNavigate } from "react-router-dom";
 
 const KANBAN_COLUMNS: OSStatus[] = [
   'pending',
@@ -29,9 +30,14 @@ const prioridadeLabels = {
 
 export function KanbanBoard() {
   const { orders, isLoading } = useServiceOrders();
+  const navigate = useNavigate();
 
   const getOrdersByStatus = (status: OSStatus) => {
     return orders.filter(order => order.status === status);
+  };
+
+  const handleViewOS = (orderId: string) => {
+    navigate('/os', { state: { viewOrderId: orderId } });
   };
 
   if (isLoading) {
@@ -68,7 +74,7 @@ export function KanbanBoard() {
                   </div>
                 ) : (
                   statusOrders.map((order) => (
-                    <div key={order.id} className="kanban-card group p-3 sm:p-4">
+                    <div key={order.id} className="kanban-card group p-3 sm:p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => handleViewOS(order.id)}>
                       <div className="flex items-start justify-between mb-2 sm:mb-3">
                         <div className="flex items-center flex-wrap gap-1.5">
                           <span className="text-primary font-mono font-semibold text-xs sm:text-sm">
