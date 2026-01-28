@@ -379,10 +379,10 @@ export function OSForm({
 
   const formContent = (
     <ScrollArea className={cn(
-      isMobile ? "h-[calc(100dvh-120px)]" : "h-[calc(90vh-100px)]"
+      isMobile ? "h-[calc(100dvh-80px)]" : "h-[calc(90vh-100px)]"
     )}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-4 sm:p-6 space-y-5 max-w-2xl mx-auto">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 max-w-2xl mx-auto">
                 
                 {/* === SEÇÃO: CLIENTE === */}
                 <div className="space-y-4">
@@ -1094,9 +1094,9 @@ export function OSForm({
     return (
       <>
         <Drawer open={open} onOpenChange={onOpenChange}>
-          <DrawerContent className="h-[95dvh]">
-            <DrawerHeader className="px-4 py-3 border-b text-center">
-              <DrawerTitle>
+          <DrawerContent className="max-h-[95dvh] h-[95dvh]">
+            <DrawerHeader className="border-b pb-3 pt-4 px-4">
+              <DrawerTitle className="text-center text-lg">
                 {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
               </DrawerTitle>
             </DrawerHeader>
@@ -1140,9 +1140,9 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl w-[95vw] max-h-[90vh] p-0 gap-0">
-          <DialogHeader className="px-6 py-4 border-b">
-            <DialogTitle className="text-center">
+        <DialogContent className="sm:max-w-3xl w-[calc(100vw-16px)] sm:w-[95vw] max-h-[95vh] sm:max-h-[90vh] p-0 gap-0 rounded-lg">
+          <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
+            <DialogTitle className="text-center text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
             </DialogTitle>
           </DialogHeader>
