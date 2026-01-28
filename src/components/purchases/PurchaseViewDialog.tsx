@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Pencil } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -7,6 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Purchase, PAYMENT_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from '@/types/purchase';
 
@@ -14,6 +16,7 @@ interface PurchaseViewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   purchase: Purchase | null;
+  onEdit?: (purchase: Purchase) => void;
 }
 
 const formatCurrency = (value: number) => {
@@ -36,19 +39,34 @@ const getStatusBadge = (status: string) => {
   );
 };
 
-export function PurchaseViewDialog({ open, onOpenChange, purchase }: PurchaseViewDialogProps) {
+export function PurchaseViewDialog({ open, onOpenChange, purchase, onEdit }: PurchaseViewDialogProps) {
   if (!purchase) return null;
 
   const paymentMethod = PAYMENT_METHOD_OPTIONS.find(o => o.value === purchase.payment_method);
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(purchase);
+      onOpenChange(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
-            <span>Compra #{purchase.purchase_number}</span>
-            {getStatusBadge(purchase.payment_status)}
-          </DialogTitle>
+          <div className="flex items-center justify-between pr-8">
+            <DialogTitle className="flex items-center gap-3">
+              <span>Compra #{purchase.purchase_number}</span>
+              {getStatusBadge(purchase.payment_status)}
+            </DialogTitle>
+            {onEdit && (
+              <Button variant="outline" size="sm" onClick={handleEdit}>
+                <Pencil className="h-4 w-4 mr-2" />
+                Editar
+              </Button>
+            )}
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">

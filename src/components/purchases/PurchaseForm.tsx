@@ -53,14 +53,29 @@ interface PurchaseFormProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: { purchase: PurchaseFormData & { subtotal: number; total: number }; items: Omit<PurchaseItem, 'id' | 'purchase_id'>[] }) => void;
   isSubmitting: boolean;
+  editingPurchase?: {
+    id: string;
+    supplier_id: string | null;
+    invoice_number: string | null;
+    purchase_date: string;
+    due_date: string | null;
+    discount: number;
+    shipping: number;
+    payment_status: string;
+    payment_method: string | null;
+    notes: string | null;
+  } | null;
+  editingItems?: Omit<PurchaseItem, 'id' | 'purchase_id'>[];
 }
 
-export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: PurchaseFormProps) {
+export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editingPurchase, editingItems }: PurchaseFormProps) {
   const { suppliers } = useSuppliers();
   const { products, createProduct } = useProducts();
   const [items, setItems] = useState<Omit<PurchaseItem, 'id' | 'purchase_id'>[]>([]);
   const [selectedProductId, setSelectedProductId] = useState('');
   const [quickProductOpen, setQuickProductOpen] = useState(false);
+
+  const isEditing = !!editingPurchase;
 
   const form = useForm<PurchaseFormData>({
     resolver: zodResolver(purchaseSchema),
@@ -82,21 +97,36 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
 
   useEffect(() => {
     if (open) {
-      form.reset({
-        supplier_id: '',
-        invoice_number: '',
-        purchase_date: new Date().toISOString().split('T')[0],
-        due_date: '',
-        discount: 0,
-        shipping: 0,
-        payment_status: 'pending',
-        payment_method: '',
-        notes: '',
-      });
-      setItems([]);
+      if (editingPurchase) {
+        form.reset({
+          supplier_id: editingPurchase.supplier_id || '',
+          invoice_number: editingPurchase.invoice_number || '',
+          purchase_date: editingPurchase.purchase_date,
+          due_date: editingPurchase.due_date || '',
+          discount: editingPurchase.discount,
+          shipping: editingPurchase.shipping,
+          payment_status: editingPurchase.payment_status,
+          payment_method: editingPurchase.payment_method || '',
+          notes: editingPurchase.notes || '',
+        });
+        setItems(editingItems || []);
+      } else {
+        form.reset({
+          supplier_id: '',
+          invoice_number: '',
+          purchase_date: new Date().toISOString().split('T')[0],
+          due_date: '',
+          discount: 0,
+          shipping: 0,
+          payment_status: 'pending',
+          payment_method: '',
+          notes: '',
+        });
+        setItems([]);
+      }
       setSelectedProductId('');
     }
-  }, [open, form]);
+  }, [open, form, editingPurchase, editingItems]);
 
   const addProductFromCatalog = (productId: string) => {
     const product = products.find(p => p.id === productId);
@@ -198,9 +228,9 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Nova Compra</DialogTitle>
+          <DialogTitle>{isEditing ? 'Editar Compra' : 'Nova Compra'}</DialogTitle>
           <DialogDescription>
-            Registre uma nova compra de produtos
+            {isEditing ? 'Atualize os dados da compra' : 'Registre uma nova compra de produtos'}
           </DialogDescription>
         </DialogHeader>
 
@@ -494,7 +524,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting }: Pur
                 Cancelar
               </Button>
               <Button type="submit" className="flex-1" disabled={isSubmitting || items.length === 0}>
-                {isSubmitting ? 'Salvando...' : 'Registrar Compra'}
+                {isSubmitting ? 'Salvando...' : isEditing ? 'Salvar Alterações' : 'Registrar Compra'}
               </Button>
             </div>
           </form>
