@@ -53,7 +53,7 @@ export default function ResetPassword() {
     const result = passwordSchema.safeParse({ password, confirmPassword });
     if (!result.success) {
       const fieldErrors: { password?: string; confirmPassword?: string } = {};
-      result.error.errors.forEach((err) => {
+      result.error.issues.forEach((err) => {
         if (err.path[0] === "password") fieldErrors.password = err.message;
         if (err.path[0] === "confirmPassword") fieldErrors.confirmPassword = err.message;
       });

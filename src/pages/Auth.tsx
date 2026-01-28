@@ -85,7 +85,7 @@ export default function Auth() {
       const result = loginSchema.safeParse({ email, password });
       if (!result.success) {
         const fieldErrors: { email?: string; password?: string } = {};
-        result.error.errors.forEach((err) => {
+        result.error.issues.forEach((err) => {
           if (err.path[0] === "email") fieldErrors.email = err.message;
           if (err.path[0] === "password") fieldErrors.password = err.message;
         });
@@ -96,7 +96,7 @@ export default function Auth() {
       const result = signupSchema.safeParse({ email, password, confirmPassword });
       if (!result.success) {
         const fieldErrors: { email?: string; password?: string; confirmPassword?: string } = {};
-        result.error.errors.forEach((err) => {
+        result.error.issues.forEach((err) => {
           if (err.path[0] === "email") fieldErrors.email = err.message;
           if (err.path[0] === "password") fieldErrors.password = err.message;
           if (err.path[0] === "confirmPassword") fieldErrors.confirmPassword = err.message;
@@ -227,7 +227,7 @@ export default function Auth() {
 
     const emailValidation = z.string().trim().email({ message: "Email inválido" }).safeParse(email);
     if (!emailValidation.success) {
-      setErrors({ email: emailValidation.error.errors[0].message });
+      setErrors({ email: emailValidation.error.issues[0].message });
       return;
     }
 
