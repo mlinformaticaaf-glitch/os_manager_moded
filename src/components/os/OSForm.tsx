@@ -1140,7 +1140,7 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-3xl w-[calc(100vw-32px)] max-h-[90vh] p-0 gap-0 rounded-lg">
+        <DialogContent className="sm:max-w-3xl w-full max-w-[calc(100vw-32px)] max-h-[90vh] p-0 gap-0 rounded-lg mx-auto">
           <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
             <DialogTitle className="text-center text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
