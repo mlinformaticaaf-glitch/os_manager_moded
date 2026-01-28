@@ -205,6 +205,8 @@ export function useServiceOrders() {
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status, previousStatus }: { id: string; status: OSStatus; previousStatus?: OSStatus }) => {
+      if (!user) throw new Error('User not authenticated');
+      
       const updates: Record<string, unknown> = { status };
       
       if (status === 'completed') {
@@ -213,10 +215,10 @@ export function useServiceOrders() {
         updates.delivered_at = new Date().toISOString();
       }
 
-      // Get the current order to check stock_deducted status
+      // Get the current order to check stock_deducted status and other details
       const { data: currentOrder, error: fetchError } = await supabase
         .from('service_orders')
-        .select('stock_deducted')
+        .select('stock_deducted, order_number, total, payment_method, payment_status')
         .eq('id', id)
         .maybeSingle();
 
@@ -274,14 +276,86 @@ export function useServiceOrders() {
 
       if (error) throw error;
 
-      return { shouldDeductStock, shouldReturnStock };
+      // Create financial transaction when status changes to "delivered"
+      let transactionCreated = false;
+      if (status === 'delivered' && previousStatus !== 'delivered') {
+        const orderTotal = currentOrder?.total ?? 0;
+        const orderNumber = currentOrder?.order_number;
+
+        // Check if transaction already exists for this order
+        const { data: existingTransaction } = await supabase
+          .from('financial_transactions')
+          .select('id')
+          .eq('reference_id', id)
+          .eq('category', 'service_order')
+          .maybeSingle();
+
+        if (!existingTransaction && orderTotal > 0) {
+          // Create income transaction
+          const { error: transactionError } = await supabase
+            .from('financial_transactions')
+            .insert({
+              user_id: user.id,
+              type: 'income',
+              category: 'service_order',
+              reference_id: id,
+              description: `OS #${orderNumber}`,
+              amount: orderTotal,
+              due_date: new Date().toISOString().split('T')[0],
+              paid_date: currentOrder?.payment_status === 'paid' ? new Date().toISOString().split('T')[0] : null,
+              status: currentOrder?.payment_status === 'paid' ? 'paid' : 'pending',
+              payment_method: currentOrder?.payment_method,
+            });
+
+          if (transactionError) {
+            console.error('Error creating financial transaction:', transactionError);
+          } else {
+            transactionCreated = true;
+          }
+        } else if (existingTransaction) {
+          // Update existing transaction status if payment was made
+          if (currentOrder?.payment_status === 'paid') {
+            await supabase
+              .from('financial_transactions')
+              .update({
+                status: 'paid',
+                paid_date: new Date().toISOString().split('T')[0],
+                amount: orderTotal,
+                payment_method: currentOrder?.payment_method,
+              })
+              .eq('id', existingTransaction.id);
+          }
+        }
+      }
+
+      // Handle cancellation - cancel the financial transaction too
+      if (status === 'cancelled') {
+        const { data: existingTransaction } = await supabase
+          .from('financial_transactions')
+          .select('id')
+          .eq('reference_id', id)
+          .eq('category', 'service_order')
+          .maybeSingle();
+
+        if (existingTransaction) {
+          await supabase
+            .from('financial_transactions')
+            .update({ status: 'cancelled' })
+            .eq('id', existingTransaction.id);
+        }
+      }
+
+      return { shouldDeductStock, shouldReturnStock, transactionCreated };
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['service-orders'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-transactions'] });
       
       let description = 'O status da OS foi atualizado.';
-      if (result?.shouldDeductStock) {
+      if (result?.transactionCreated) {
+        description = 'Status atualizado e lançamento financeiro criado.';
+      } else if (result?.shouldDeductStock) {
         description = 'Status atualizado e estoque baixado automaticamente.';
       } else if (result?.shouldReturnStock) {
         description = 'Status atualizado e estoque devolvido automaticamente.';
