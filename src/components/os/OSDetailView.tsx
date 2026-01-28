@@ -2,12 +2,12 @@ import { ServiceOrder, STATUS_CONFIG, PRIORITY_CONFIG } from '@/types/serviceOrd
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -61,16 +61,16 @@ export function OSDetailView({
   const products = items.filter(i => i.type === 'product');
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-[600px] p-0">
-        <SheetHeader className="px-6 py-4 border-b">
-          <div className="flex items-center justify-between">
-            <SheetTitle className="flex items-center gap-3">
-              <span className="text-2xl font-bold">OS #{formatOSNumber(order.order_number, order.created_at)}</span>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] p-0 gap-0">
+        <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <DialogTitle className="flex items-center gap-3">
+              <span className="text-xl sm:text-2xl font-bold">OS #{formatOSNumber(order.order_number, order.created_at)}</span>
               <Badge className={cn('text-xs', priorityConfig.color, 'bg-transparent border')}>
                 {priorityConfig.label}
               </Badge>
-            </SheetTitle>
+            </DialogTitle>
             <div className="flex items-center gap-2 flex-wrap">
               <OSPixButton order={order} />
               <OSWhatsAppButton order={order} items={items} />
@@ -81,12 +81,12 @@ export function OSDetailView({
               </Button>
             </div>
           </div>
-          <SheetDescription>
+          <DialogDescription>
             Detalhes completos da ordem de serviço
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
-        <ScrollArea className="h-[calc(100vh-100px)]">
+        <ScrollArea className="max-h-[calc(90vh-120px)]">
           <div className="p-6 space-y-6">
             {/* Status */}
             <div className="flex items-center gap-4">
@@ -275,7 +275,7 @@ export function OSDetailView({
             )}
           </div>
         </ScrollArea>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
