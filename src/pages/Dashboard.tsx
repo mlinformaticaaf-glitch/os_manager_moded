@@ -81,6 +81,7 @@ export function Dashboard() {
           change={`${serviceOrders.filter(os => os.status === 'pending').length} pendentes`}
           changeType="neutral"
           icon={ClipboardList}
+          href="/os"
         />
         <StatCard
           title="Faturamento Mensal"
@@ -89,6 +90,7 @@ export function Dashboard() {
           changeType={Number(stats.revenueChange) >= 0 ? "positive" : "negative"}
           icon={DollarSign}
           iconColor="text-success"
+          href="/financeiro"
         />
         <StatCard
           title="Clientes Ativos"
@@ -97,6 +99,7 @@ export function Dashboard() {
           changeType="neutral"
           icon={Users}
           iconColor="text-info"
+          href="/clientes"
         />
         <StatCard
           title="Produtos em Estoque"
@@ -105,6 +108,7 @@ export function Dashboard() {
           changeType={stats.lowStockProducts > 0 ? "negative" : "neutral"}
           icon={Package}
           iconColor="text-warning"
+          href="/produtos"
         />
       </div>
 
