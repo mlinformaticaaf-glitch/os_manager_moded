@@ -3,11 +3,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -109,17 +110,17 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-lg overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>{supplier ? 'Editar Fornecedor' : 'Novo Fornecedor'}</SheetTitle>
-          <p className="text-sm text-muted-foreground">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{supplier ? 'Editar Fornecedor' : 'Novo Fornecedor'}</DialogTitle>
+          <DialogDescription>
             {supplier ? 'Atualize as informações do fornecedor' : 'Preencha os dados do novo fornecedor'}
-          </p>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 mt-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -212,7 +213,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                 name="state"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Estado</FormLabel>
+                    <FormLabel>UF</FormLabel>
                     <FormControl>
                       <Input placeholder="UF" maxLength={2} {...field} />
                     </FormControl>
@@ -243,7 +244,12 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Informações adicionais..." {...field} />
+                    <Textarea 
+                      placeholder="Informações adicionais..." 
+                      className="resize-none"
+                      rows={3}
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -255,7 +261,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
               name="active"
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                  <div>
+                  <div className="space-y-0.5">
                     <FormLabel>Fornecedor Ativo</FormLabel>
                     <p className="text-sm text-muted-foreground">
                       Fornecedores inativos não aparecem nas seleções
@@ -278,7 +284,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
             </div>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

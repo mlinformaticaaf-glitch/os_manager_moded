@@ -110,7 +110,7 @@ export function ServiceForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {service ? 'Editar Serviço' : 'Novo Serviço'}
@@ -143,7 +143,12 @@ export function ServiceForm({
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Descrição detalhada do serviço" {...field} />
+                    <Textarea 
+                      placeholder="Descrição detalhada do serviço" 
+                      className="resize-none"
+                      rows={3}
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -213,13 +218,13 @@ export function ServiceForm({
             <div className="p-3 bg-muted rounded-lg">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Margem de Lucro:</span>
-                <span className={`font-medium ${profitMargin >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${profitMargin >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
                   {profitMargin.toFixed(2)}%
                 </span>
               </div>
               <div className="flex justify-between items-center mt-1">
                 <span className="text-sm text-muted-foreground">Lucro por serviço:</span>
-                <span className={`font-medium ${salePrice - costPrice >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${salePrice - costPrice >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
                   {formatCurrency(salePrice - costPrice)}
                 </span>
               </div>

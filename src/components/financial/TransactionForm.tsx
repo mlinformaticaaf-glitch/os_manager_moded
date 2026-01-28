@@ -141,7 +141,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Editar Transação' : 'Nova Transação'}</DialogTitle>
           <DialogDescription>
@@ -157,7 +157,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tipo</FormLabel>
+                    <FormLabel>Tipo *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -182,7 +182,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Categoria</FormLabel>
+                    <FormLabel>Categoria *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -208,7 +208,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descrição</FormLabel>
+                  <FormLabel>Descrição *</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Pagamento de fornecedor" {...field} />
                   </FormControl>
@@ -223,7 +223,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Valor (R$)</FormLabel>
+                    <FormLabel>Valor (R$) *</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" min="0" {...field} />
                     </FormControl>
@@ -237,7 +237,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>Status *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -347,7 +347,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 className="flex-1"
                 disabled={createTransaction.isPending || updateTransaction.isPending}
               >
-                {isEditing ? 'Atualizar' : 'Cadastrar'}
+                {createTransaction.isPending || updateTransaction.isPending ? 'Salvando...' : isEditing ? 'Atualizar' : 'Cadastrar'}
               </Button>
             </div>
           </form>
