@@ -16,8 +16,13 @@ import { MonthlyComparisonChart } from "./MonthlyComparisonChart";
 import { UpcomingTransactions } from "./UpcomingTransactions";
 import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, addDays, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { FinancialTransaction } from "@/types/financial";
 
-export function FinancialDashboard() {
+interface FinancialDashboardProps {
+  onTransactionClick?: (transaction: FinancialTransaction) => void;
+}
+
+export function FinancialDashboard({ onTransactionClick }: FinancialDashboardProps) {
   const { transactions, isLoading } = useFinancialTransactions();
 
   const stats = useMemo(() => {
@@ -173,7 +178,7 @@ export function FinancialDashboard() {
         <div className="lg:col-span-2">
           <CashFlowChart transactions={transactions} />
         </div>
-        <UpcomingTransactions transactions={transactions} />
+        <UpcomingTransactions transactions={transactions} onTransactionClick={onTransactionClick} />
       </div>
 
       {/* Monthly Comparison */}

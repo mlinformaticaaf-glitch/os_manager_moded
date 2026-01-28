@@ -38,7 +38,7 @@ export default function Financial() {
           </div>
 
           <TabsContent value="dashboard">
-            <FinancialDashboard />
+            <FinancialDashboard onTransactionClick={handleEdit} />
           </TabsContent>
 
           <TabsContent value="receivables">
