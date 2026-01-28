@@ -121,7 +121,7 @@ export function ProductForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {product ? 'Editar Produto' : 'Novo Produto'}
@@ -156,7 +156,12 @@ export function ProductForm({
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Descrição do produto" {...field} />
+                    <Textarea 
+                      placeholder="Descrição do produto" 
+                      className="resize-none"
+                      rows={3}
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -210,13 +215,13 @@ export function ProductForm({
             <div className="p-3 bg-muted rounded-lg">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Margem de Lucro:</span>
-                <span className={`font-medium ${profitMargin >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${profitMargin >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
                   {profitMargin.toFixed(2)}%
                 </span>
               </div>
               <div className="flex justify-between items-center mt-1">
                 <span className="text-sm text-muted-foreground">Lucro por unidade:</span>
-                <span className={`font-medium ${salePrice - costPrice >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${salePrice - costPrice >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
                   {formatCurrency(salePrice - costPrice)}
                 </span>
               </div>

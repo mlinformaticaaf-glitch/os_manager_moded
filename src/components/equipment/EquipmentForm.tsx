@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -18,6 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Equipment } from '@/types/equipment';
 
 const formSchema = z.object({
@@ -74,11 +76,14 @@ export function EquipmentForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {equipment ? 'Editar Equipamento' : 'Novo Equipamento'}
           </DialogTitle>
+          <DialogDescription>
+            {equipment ? 'Atualize as informações do equipamento' : 'Preencha os dados do novo equipamento'}
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -88,11 +93,11 @@ export function EquipmentForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descrição (Equipamento, Marca e Modelo)</FormLabel>
+                  <FormLabel>Descrição (Equipamento, Marca e Modelo) *</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Ex: Notebook Dell Inspiron 15 3000"
-                      className="min-h-[100px]"
+                      className="min-h-[100px] resize-none"
                       {...field}
                     />
                   </FormControl>
@@ -101,16 +106,38 @@ export function EquipmentForm({
               )}
             />
 
-            <div className="flex justify-end gap-3 pt-4">
+            <FormField
+              control={form.control}
+              name="active"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Equipamento Ativo</FormLabel>
+                    <p className="text-sm text-muted-foreground">
+                      Equipamentos inativos não aparecem na seleção de OS
+                    </p>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
+                className="flex-1"
                 onClick={() => onOpenChange(false)}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Salvando...' : equipment ? 'Salvar' : 'Cadastrar'}
+              <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                {isSubmitting ? 'Salvando...' : equipment ? 'Atualizar' : 'Cadastrar'}
               </Button>
             </div>
           </form>
