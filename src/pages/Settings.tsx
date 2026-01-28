@@ -16,6 +16,7 @@ import { Building2, Upload, Trash2, Save, Phone, Mail, MapPin, FileText, QrCode 
 import { PIX_KEY_TYPES } from "@/components/os/pix/pixUtils";
 import { ChangePasswordCard } from "@/components/settings/ChangePasswordCard";
 import { DataImportCard } from "@/components/settings/DataImportCard";
+import { ClearDataCard } from "@/components/settings/ClearDataCard";
 
 const settingsSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -455,6 +456,9 @@ export default function Settings() {
 
         {/* Change Password Section */}
         <ChangePasswordCard />
+
+        {/* Clear Data Section */}
+        <ClearDataCard />
       </div>
     </MainLayout>
   );
