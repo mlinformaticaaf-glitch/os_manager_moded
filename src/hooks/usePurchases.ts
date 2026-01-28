@@ -123,6 +123,131 @@ export function usePurchases() {
     },
   });
 
+  const updatePurchase = useMutation({
+    mutationFn: async ({ 
+      id,
+      purchase, 
+      items 
+    }: { 
+      id: string;
+      purchase: Omit<Purchase, 'id' | 'purchase_number' | 'created_at' | 'updated_at' | 'supplier' | 'items' | 'user_id'>; 
+      items: Omit<PurchaseItem, 'id' | 'purchase_id'>[];
+    }) => {
+      if (!user?.id) throw new Error('Usuário não autenticado');
+
+      // Get current purchase items to revert stock
+      const { data: currentItems } = await supabase
+        .from('purchase_items')
+        .select('*')
+        .eq('purchase_id', id);
+
+      // Revert stock for current items
+      if (currentItems) {
+        for (const item of currentItems) {
+          if (item.product_id) {
+            const { data: product } = await supabase
+              .from('products')
+              .select('stock_quantity')
+              .eq('id', item.product_id)
+              .single();
+
+            if (product) {
+              const newStock = Math.max(0, Number(product.stock_quantity) - Number(item.quantity));
+              
+              await supabase
+                .from('products')
+                .update({ stock_quantity: newStock })
+                .eq('id', item.product_id);
+            }
+          }
+        }
+      }
+
+      // Delete current purchase items
+      await supabase
+        .from('purchase_items')
+        .delete()
+        .eq('purchase_id', id);
+
+      // Update purchase
+      const { data: updatedPurchase, error: purchaseError } = await supabase
+        .from('purchases')
+        .update({
+          ...purchase,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (purchaseError) throw purchaseError;
+
+      // Create new purchase items
+      if (items.length > 0) {
+        const purchaseItems = items.map(item => ({
+          ...item,
+          purchase_id: id,
+        }));
+
+        const { error: itemsError } = await supabase
+          .from('purchase_items')
+          .insert(purchaseItems);
+
+        if (itemsError) throw itemsError;
+
+        // Update product stock for each new item
+        for (const item of items) {
+          if (item.product_id) {
+            const { data: product, error: productError } = await supabase
+              .from('products')
+              .select('stock_quantity')
+              .eq('id', item.product_id)
+              .single();
+
+            if (productError) continue;
+
+            const newStock = Number(product.stock_quantity) + Number(item.quantity);
+            
+            await supabase
+              .from('products')
+              .update({ stock_quantity: newStock })
+              .eq('id', item.product_id);
+          }
+        }
+      }
+
+      // Update financial transaction
+      await supabase
+        .from('financial_transactions')
+        .update({
+          amount: purchase.total,
+          due_date: purchase.due_date,
+          paid_date: purchase.payment_status === 'paid' ? new Date().toISOString().split('T')[0] : null,
+          status: purchase.payment_status === 'paid' ? 'paid' : 'pending',
+          payment_method: purchase.payment_method,
+        })
+        .eq('reference_id', id)
+        .eq('category', 'purchase');
+
+      return updatedPurchase;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['purchases'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['financial-transactions'] });
+      toast({
+        title: 'Compra atualizada',
+        description: 'A compra foi atualizada com sucesso.',
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Erro ao atualizar compra',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
   const updatePurchasePayment = useMutation({
     mutationFn: async ({ id, payment_status, payment_method }: { id: string; payment_status: string; payment_method?: string }) => {
       const updates: Record<string, unknown> = { payment_status };
@@ -236,12 +361,24 @@ export function usePurchases() {
     },
   });
 
+  const fetchPurchaseItems = async (purchaseId: string): Promise<PurchaseItem[]> => {
+    const { data, error } = await supabase
+      .from('purchase_items')
+      .select('*')
+      .eq('purchase_id', purchaseId);
+
+    if (error) throw error;
+    return data as PurchaseItem[];
+  };
+
   return {
     purchases: purchasesQuery.data ?? [],
     isLoading: purchasesQuery.isLoading,
     error: purchasesQuery.error,
     createPurchase,
+    updatePurchase,
     updatePurchasePayment,
     deletePurchase,
+    fetchPurchaseItems,
   };
 }

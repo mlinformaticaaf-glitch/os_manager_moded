@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
@@ -17,8 +17,10 @@ export default function Purchases() {
   const [formOpen, setFormOpen] = useState(false);
   const [deletingPurchase, setDeletingPurchase] = useState<Purchase | null>(null);
   const [viewingPurchase, setViewingPurchase] = useState<Purchase | null>(null);
+  const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null);
+  const [editingItems, setEditingItems] = useState<Omit<PurchaseItem, 'id' | 'purchase_id'>[]>([]);
 
-  const { purchases, isLoading, createPurchase, updatePurchasePayment, deletePurchase } = usePurchases();
+  const { purchases, isLoading, createPurchase, updatePurchase, updatePurchasePayment, deletePurchase, fetchPurchaseItems } = usePurchases();
 
   const filteredPurchases = useMemo(() => {
     if (!search.trim()) return purchases;
@@ -45,8 +47,35 @@ export default function Purchases() {
   };
 
   const handleFormSubmit = async (data: { purchase: Record<string, unknown>; items: Omit<PurchaseItem, 'id' | 'purchase_id'>[] }) => {
-    await createPurchase.mutateAsync(data as Parameters<typeof createPurchase.mutateAsync>[0]);
+    if (editingPurchase) {
+      await updatePurchase.mutateAsync({
+        id: editingPurchase.id,
+        purchase: data.purchase as Parameters<typeof updatePurchase.mutateAsync>[0]['purchase'],
+        items: data.items,
+      });
+      setEditingPurchase(null);
+      setEditingItems([]);
+    } else {
+      await createPurchase.mutateAsync(data as Parameters<typeof createPurchase.mutateAsync>[0]);
+    }
     setFormOpen(false);
+  };
+
+  const handleEdit = async (purchase: Purchase) => {
+    try {
+      const items = await fetchPurchaseItems(purchase.id);
+      setEditingPurchase(purchase);
+      setEditingItems(items.map(item => ({
+        product_id: item.product_id,
+        product_name: item.product_name,
+        quantity: item.quantity,
+        unit_price: item.unit_price,
+        total: item.total,
+      })));
+      setFormOpen(true);
+    } catch (error) {
+      console.error('Error fetching purchase items:', error);
+    }
   };
 
   const handleMarkAsPaid = async (purchase: Purchase) => {
@@ -65,6 +94,14 @@ export default function Purchases() {
 
   const handleView = (purchase: Purchase) => {
     setViewingPurchase(purchase);
+  };
+
+  const handleFormClose = (open: boolean) => {
+    setFormOpen(open);
+    if (!open) {
+      setEditingPurchase(null);
+      setEditingItems([]);
+    }
   };
 
   return (
@@ -161,14 +198,17 @@ export default function Purchases() {
         open={!!viewingPurchase}
         onOpenChange={(open) => !open && setViewingPurchase(null)}
         purchase={viewingPurchase}
+        onEdit={handleEdit}
       />
 
       {/* Form Sheet */}
       <PurchaseForm
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={handleFormClose}
         onSubmit={handleFormSubmit}
-        isSubmitting={createPurchase.isPending}
+        isSubmitting={createPurchase.isPending || updatePurchase.isPending}
+        editingPurchase={editingPurchase}
+        editingItems={editingItems}
       />
 
       {/* Delete Dialog */}
