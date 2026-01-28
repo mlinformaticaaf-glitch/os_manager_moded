@@ -22,11 +22,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Command,
   CommandEmpty,
@@ -54,6 +60,7 @@ import { ClientForm } from '@/components/clients/ClientForm';
 import { ServiceForm } from '@/components/services/ServiceForm';
 import { ProductForm } from '@/components/products/ProductForm';
 import { EquipmentForm } from '@/components/equipment/EquipmentForm';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const osSchema = z.object({
   client_id: z.string().optional().nullable(),
@@ -98,6 +105,7 @@ export function OSForm({
   isSubmitting,
   existingItems = [],
 }: OSFormProps) {
+  const isMobile = useIsMobile();
   const { clients, createClient } = useClients();
   const { products, createProduct } = useProducts();
   const { services, createService } = useServices();
@@ -369,19 +377,12 @@ export function OSForm({
     });
   };
 
-  return (
-    <>
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="sm:max-w-[800px] p-0">
-          <SheetHeader className="px-6 py-4 border-b">
-            <SheetTitle>
-              {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
-            </SheetTitle>
-          </SheetHeader>
-
-          <ScrollArea className="h-[calc(100vh-140px)]">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="p-6 space-y-6">
+  const formContent = (
+    <ScrollArea className={cn(
+      isMobile ? "h-[calc(100dvh-120px)]" : "h-[calc(90vh-100px)]"
+    )}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-4 sm:p-6 space-y-5 max-w-2xl mx-auto">
                 
                 {/* === SEÇÃO: CLIENTE === */}
                 <div className="space-y-4">
@@ -480,7 +481,7 @@ export function OSForm({
                 <Separator />
 
                 {/* === SEÇÃO: STATUS E PRIORIDADE === */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="status"
@@ -629,7 +630,7 @@ export function OSForm({
                     }}
                   />
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="serial_number"
@@ -912,9 +913,9 @@ export function OSForm({
                 <Separator />
 
                 {/* === ITEM MANUAL === */}
-                <div className="border rounded-lg p-4 space-y-4">
-                  <h4 className="font-medium">Adicionar Item Manual</h4>
-                  <div className="grid grid-cols-4 gap-3">
+                <div className="border rounded-lg p-3 sm:p-4 space-y-4">
+                  <h4 className="font-medium text-sm sm:text-base">Adicionar Item Manual</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <Select
                       value={newItem.type}
                       onValueChange={(value: 'product' | 'service') =>
@@ -936,11 +937,11 @@ export function OSForm({
                       onChange={(e) =>
                         setNewItem({ ...newItem, description: e.target.value })
                       }
-                      className="col-span-3"
+                      className="sm:col-span-3"
                     />
                   </div>
 
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <Input
                       type="number"
                       placeholder="Qtd"
@@ -964,7 +965,7 @@ export function OSForm({
                     <div className="flex items-center text-sm text-muted-foreground">
                       = {formatCurrency(newItem.quantity * newItem.unit_price)}
                     </div>
-                    <Button type="button" onClick={addItem} size="sm">
+                    <Button type="button" onClick={addItem} size="sm" className="w-full">
                       <Plus className="h-4 w-4 mr-1" />
                       Adicionar
                     </Button>
@@ -1084,11 +1085,70 @@ export function OSForm({
                     {order ? 'Salvar' : 'Criar OS'}
                   </Button>
                 </div>
-              </form>
-            </Form>
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
+        </form>
+      </Form>
+    </ScrollArea>
+  );
+
+  if (isMobile) {
+    return (
+      <>
+        <Drawer open={open} onOpenChange={onOpenChange}>
+          <DrawerContent className="h-[95dvh]">
+            <DrawerHeader className="px-4 py-3 border-b text-center">
+              <DrawerTitle>
+                {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
+              </DrawerTitle>
+            </DrawerHeader>
+            {formContent}
+          </DrawerContent>
+        </Drawer>
+
+        {/* Dialogs para cadastro inline */}
+        <ClientForm
+          open={clientFormOpen}
+          onOpenChange={setClientFormOpen}
+          onSubmit={handleCreateClient}
+          isSubmitting={createClient.isPending}
+        />
+
+        <ServiceForm
+          open={serviceFormOpen}
+          onOpenChange={setServiceFormOpen}
+          onSubmit={handleCreateService}
+          isSubmitting={createService.isPending}
+        />
+
+        <ProductForm
+          open={productFormOpen}
+          onOpenChange={setProductFormOpen}
+          onSubmit={handleCreateProduct}
+          isSubmitting={createProduct.isPending}
+        />
+
+        <EquipmentForm
+          open={equipmentFormOpen}
+          onOpenChange={setEquipmentFormOpen}
+          equipment={null}
+          onSubmit={handleCreateEquipment}
+          isSubmitting={createEquipment.isPending}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-3xl w-[95vw] max-h-[90vh] p-0 gap-0">
+          <DialogHeader className="px-6 py-4 border-b">
+            <DialogTitle className="text-center">
+              {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
+            </DialogTitle>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
 
       {/* Dialogs para cadastro inline */}
       <ClientForm
