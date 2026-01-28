@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface StatCardProps {
   title: string;
@@ -8,6 +9,7 @@ interface StatCardProps {
   changeType?: "positive" | "negative" | "neutral";
   icon: LucideIcon;
   iconColor?: string;
+  href?: string;
 }
 
 export function StatCard({ 
@@ -16,10 +18,25 @@ export function StatCard({
   change, 
   changeType = "neutral", 
   icon: Icon,
-  iconColor = "text-primary"
+  iconColor = "text-primary",
+  href
 }: StatCardProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (href) {
+      navigate(href);
+    }
+  };
+
   return (
-    <div className="stat-card animate-fade-in">
+    <div 
+      className={cn(
+        "stat-card animate-fade-in",
+        href && "cursor-pointer hover:shadow-md hover:border-primary/20 transition-all"
+      )}
+      onClick={handleClick}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <p className="text-xs sm:text-sm text-muted-foreground font-medium truncate">{title}</p>
