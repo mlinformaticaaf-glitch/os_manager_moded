@@ -86,7 +86,7 @@ function TransactionCard({
   };
 
   return (
-    <Card className="p-4">
+    <Card className="p-4 cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => onEdit(transaction)}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           {transaction.type === 'income' ? (
@@ -303,7 +303,11 @@ export function TransactionsTable({ filterType, onEdit, onNew }: TransactionsTab
               </TableHeader>
               <TableBody>
                 {filteredTransactions.map((transaction) => (
-                  <TableRow key={transaction.id}>
+                  <TableRow 
+                    key={transaction.id} 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => onEdit(transaction)}
+                  >
                     <TableCell>
                       {transaction.type === 'income' ? (
                         <ArrowUpCircle className="h-5 w-5 text-success" />
@@ -328,7 +332,7 @@ export function TransactionsTable({ filterType, onEdit, onNew }: TransactionsTab
                       {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">{getStatusBadge(transaction.status)}</TableCell>
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">

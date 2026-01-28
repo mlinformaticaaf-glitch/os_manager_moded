@@ -8,9 +8,10 @@ import { ptBR } from "date-fns/locale";
 
 interface UpcomingTransactionsProps {
   transactions: FinancialTransaction[];
+  onTransactionClick?: (transaction: FinancialTransaction) => void;
 }
 
-export function UpcomingTransactions({ transactions }: UpcomingTransactionsProps) {
+export function UpcomingTransactions({ transactions, onTransactionClick }: UpcomingTransactionsProps) {
   const upcomingTransactions = useMemo(() => {
     const now = new Date();
     const next30Days = addDays(now, 30);
@@ -74,7 +75,11 @@ export function UpcomingTransactions({ transactions }: UpcomingTransactionsProps
               const dueStatus = getDueDateStatus(transaction.due_date!);
               
               return (
-                <div key={transaction.id} className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-muted/50 transition-colors">
+                <div 
+                  key={transaction.id} 
+                  className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => onTransactionClick?.(transaction)}
+                >
                   {transaction.type === 'income' ? (
                     <ArrowUpCircle className="h-4 w-4 text-success shrink-0" />
                   ) : (
