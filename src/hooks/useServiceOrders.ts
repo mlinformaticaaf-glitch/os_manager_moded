@@ -224,8 +224,8 @@ export function useServiceOrders() {
 
       if (fetchError) throw fetchError;
 
-      // Handle stock deduction when completing or delivering
-      const shouldDeductStock = (status === 'completed' || status === 'delivered') && !currentOrder?.stock_deducted;
+      // Handle stock deduction only when delivering (Faturado e Entregue)
+      const shouldDeductStock = status === 'delivered' && !currentOrder?.stock_deducted;
       
       // Handle stock return when cancelling
       const shouldReturnStock = status === 'cancelled' && currentOrder?.stock_deducted;
