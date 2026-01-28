@@ -1,6 +1,7 @@
 import { ServiceOrder, ServiceOrderItem, STATUS_CONFIG } from '@/types/serviceOrder';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatOSNumber } from '@/lib/osUtils';
 
 interface WhatsAppMessageData {
   order: ServiceOrder;
@@ -41,7 +42,7 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
   let message = `*${companyName}*\n`;
   message += `━━━━━━━━━━━━━━━━\n\n`;
   
-  message += `📋 *OS #${order.order_number}*\n`;
+  message += `📋 *OS #${formatOSNumber(order.order_number, order.created_at)}*\n`;
   message += `📅 Data: ${format(new Date(order.created_at), "dd/MM/yyyy", { locale: ptBR })}\n`;
   message += `📊 Status: ${statusLabel}\n\n`;
 
@@ -114,7 +115,7 @@ export function formatWhatsAppStatusUpdate({ order, companyName = 'Assistência 
   const statusLabel = STATUS_CONFIG[order.status]?.label || order.status;
 
   let message = `*${companyName}*\n\n`;
-  message += `Olá! Informamos que sua OS #${order.order_number} teve uma atualização de status:\n\n`;
+  message += `Olá! Informamos que sua OS #${formatOSNumber(order.order_number, order.created_at)} teve uma atualização de status:\n\n`;
   message += `📊 *Novo Status:* ${statusLabel}\n`;
 
   if (order.status === 'completed') {
@@ -140,7 +141,7 @@ export function formatWhatsAppStatusUpdate({ order, companyName = 'Assistência 
 
 export function formatWhatsAppPaymentReminder({ order, companyName = 'Assistência Técnica' }: { order: ServiceOrder; companyName?: string }): string {
   let message = `*${companyName}*\n\n`;
-  message += `Olá! Este é um lembrete sobre o pagamento pendente da sua OS #${order.order_number}.\n\n`;
+  message += `Olá! Este é um lembrete sobre o pagamento pendente da sua OS #${formatOSNumber(order.order_number, order.created_at)}.\n\n`;
   message += `💵 *Valor:* ${formatCurrency(order.total)}\n`;
   
   if (order.payment_method) {

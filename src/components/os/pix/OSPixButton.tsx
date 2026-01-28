@@ -17,6 +17,7 @@ import { useCompanySettings } from "@/hooks/useCompanySettings";
 import { QrCode, Copy, Check, AlertCircle, Settings } from "lucide-react";
 import { generatePixPayload, formatPixKey } from "./pixUtils";
 import { useNavigate } from "react-router-dom";
+import { formatOSNumber } from "@/lib/osUtils";
 
 interface OSPixButtonProps {
   order: ServiceOrder;
@@ -43,8 +44,8 @@ export function OSPixButton({ order, variant = "outline", size = "sm" }: OSPixBu
       beneficiaryName: settings.pix_beneficiary || settings.name || 'Assistencia Tecnica',
       beneficiaryCity: settings.city || 'SAO PAULO',
       amount: customAmount,
-      transactionId: `OS${order.order_number}`,
-      description: `OS ${order.order_number}`,
+      transactionId: `OS${formatOSNumber(order.order_number, order.created_at)}`,
+      description: `OS ${formatOSNumber(order.order_number, order.created_at)}`,
     });
   };
 
@@ -118,7 +119,7 @@ export function OSPixButton({ order, variant = "outline", size = "sm" }: OSPixBu
               Pagamento via Pix
             </DialogTitle>
             <DialogDescription>
-              OS #{order.order_number} - {order.client?.name || 'Cliente'}
+              OS #{formatOSNumber(order.order_number, order.created_at)} - {order.client?.name || 'Cliente'}
             </DialogDescription>
           </DialogHeader>
 
