@@ -50,19 +50,16 @@ function ServiceCard({ service, onEdit, onDelete }: { service: Service; onEdit: 
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
             <Wrench className="w-5 h-5 text-primary" />
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              {service.sequential_code && (
-                <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">#{service.sequential_code}</span>
-              )}
-              <p className="font-medium truncate">{service.name}</p>
-              <Badge variant={service.active ? 'default' : 'secondary'} className="text-[10px] shrink-0">
-                {service.active ? 'Ativo' : 'Inativo'}
-              </Badge>
-            </div>
-            {service.code && (
-              <p className="text-xs text-muted-foreground mt-0.5">Código: {service.code}</p>
-            )}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                {service.sequential_code && (
+                  <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">SERV-{service.sequential_code}</span>
+                )}
+                <p className="font-medium truncate">{service.name}</p>
+                <Badge variant={service.active ? 'default' : 'secondary'} className="text-[10px] shrink-0">
+                  {service.active ? 'Ativo' : 'Inativo'}
+                </Badge>
+              </div>
           </div>
         </div>
         <div onClick={(e) => e.stopPropagation()}>
@@ -149,9 +146,8 @@ export function ServicesTable({ services, onEdit, onDelete }: ServicesTableProps
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[70px]">Código</TableHead>
+            <TableHead className="w-[100px]">Código</TableHead>
             <TableHead>Serviço</TableHead>
-            <TableHead className="hidden lg:table-cell">Ref.</TableHead>
             <TableHead className="hidden md:table-cell">Categoria</TableHead>
             <TableHead className="text-right hidden lg:table-cell">Custo</TableHead>
             <TableHead className="text-right">Preço</TableHead>
@@ -171,7 +167,7 @@ export function ServicesTable({ services, onEdit, onDelete }: ServicesTableProps
                 onClick={() => onEdit(service)}
               >
                 <TableCell className="font-mono text-muted-foreground">
-                  {service.sequential_code ? `#${service.sequential_code}` : '-'}
+                  {service.sequential_code ? `SERV-${service.sequential_code}` : '-'}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
@@ -187,9 +183,6 @@ export function ServicesTable({ services, onEdit, onDelete }: ServicesTableProps
                       )}
                     </div>
                   </div>
-                </TableCell>
-                <TableCell className="hidden lg:table-cell text-muted-foreground">
-                  {service.code || '-'}
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
                   {service.category ? (
