@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
+import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Equipment } from '@/types/equipment';
@@ -95,7 +95,7 @@ export function EquipmentForm({
                 <FormItem>
                   <FormLabel>Descrição (Equipamento, Marca e Modelo) *</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <CapitalizedTextarea
                       placeholder="Ex: Notebook Dell Inspiron 15 3000"
                       className="min-h-[100px] resize-none"
                       {...field}

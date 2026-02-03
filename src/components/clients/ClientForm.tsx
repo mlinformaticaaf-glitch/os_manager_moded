@@ -4,7 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { CapitalizedInput } from '@/components/ui/capitalized-input';
+import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import {
   Form,
   FormControl,
@@ -114,7 +115,7 @@ export function ClientForm({
                 <FormItem>
                   <FormLabel>Nome *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome completo" {...field} />
+                    <CapitalizedInput placeholder="Nome completo" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -158,7 +159,7 @@ export function ClientForm({
                 <FormItem>
                   <FormLabel>Endereço</FormLabel>
                   <FormControl>
-                    <Input placeholder="Rua, número, complemento" {...field} />
+                    <CapitalizedInput placeholder="Rua, número, complemento" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,7 +174,7 @@ export function ClientForm({
                   <FormItem>
                     <FormLabel>Cidade</FormLabel>
                     <FormControl>
-                      <Input placeholder="Cidade" {...field} />
+                      <CapitalizedInput placeholder="Cidade" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,7 +188,7 @@ export function ClientForm({
                   <FormItem>
                     <FormLabel>UF</FormLabel>
                     <FormControl>
-                      <Input placeholder="SP" maxLength={2} {...field} />
+                      <Input placeholder="SP" maxLength={2} {...field} className="uppercase" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -216,7 +217,7 @@ export function ClientForm({
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <CapitalizedTextarea
                       placeholder="Observações sobre o cliente..."
                       className="resize-none"
                       rows={3}

@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/select';
 import { STATUS_CONFIG, PRIORITY_CONFIG, OSStatus, OSPriority } from '@/types/serviceOrder';
 import { ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface ProblemStepProps {
@@ -61,7 +60,7 @@ export function ProblemStep({
           <AlertCircle className="h-4 w-4" />
           Problema Relatado *
         </Label>
-        <Textarea
+        <CapitalizedTextarea
           id="reported_issue"
           placeholder="Descreva o problema..."
           value={reportedIssue}

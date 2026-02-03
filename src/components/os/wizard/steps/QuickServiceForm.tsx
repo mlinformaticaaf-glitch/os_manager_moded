@@ -17,7 +17,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { CapitalizedInput } from '@/components/ui/capitalized-input';
+import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
 
 const quickServiceSchema = z.object({
@@ -90,7 +91,7 @@ export function QuickServiceForm({
                 <FormItem>
                   <FormLabel>Nome *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome do serviço" {...field} />
+                    <CapitalizedInput placeholder="Nome do serviço" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -104,7 +105,7 @@ export function QuickServiceForm({
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <CapitalizedTextarea 
                       placeholder="Descrição do serviço" 
                       className="resize-none"
                       rows={2}
@@ -123,7 +124,7 @@ export function QuickServiceForm({
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Manutenção" {...field} />
+                    <CapitalizedInput placeholder="Ex: Manutenção" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

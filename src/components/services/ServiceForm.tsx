@@ -18,7 +18,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { CapitalizedInput } from '@/components/ui/capitalized-input';
+import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Service } from '@/types/service';
@@ -129,7 +130,7 @@ export function ServiceForm({
                 <FormItem>
                   <FormLabel>Nome *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome do serviço" {...field} />
+                    <CapitalizedInput placeholder="Nome do serviço" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -143,7 +144,7 @@ export function ServiceForm({
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <CapitalizedTextarea 
                       placeholder="Descrição detalhada do serviço" 
                       className="resize-none"
                       rows={3}
@@ -163,7 +164,7 @@ export function ServiceForm({
                   <FormItem>
                     <FormLabel>Categoria</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ex: Manutenção" {...field} />
+                      <CapitalizedInput placeholder="Ex: Manutenção" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
