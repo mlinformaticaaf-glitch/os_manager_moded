@@ -25,7 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { CapitalizedInput } from "@/components/ui/capitalized-input";
+import { CapitalizedTextarea } from "@/components/ui/capitalized-textarea";
 import { Button } from "@/components/ui/button";
 import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
 import { 
@@ -210,7 +211,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 <FormItem>
                   <FormLabel>Descrição *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Pagamento de fornecedor" {...field} />
+                    <CapitalizedInput placeholder="Ex: Pagamento de fornecedor" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -321,7 +322,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <CapitalizedTextarea 
                       placeholder="Observações adicionais..."
                       className="resize-none"
                       rows={3}

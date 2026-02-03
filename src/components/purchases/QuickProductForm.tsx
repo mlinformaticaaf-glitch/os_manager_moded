@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -99,7 +100,7 @@ export function QuickProductForm({
                 <FormItem>
                   <FormLabel>Nome *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome do produto" {...field} />
+                    <CapitalizedInput placeholder="Nome do produto" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -113,7 +114,7 @@ export function QuickProductForm({
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
                   <FormControl>
-                    <Input placeholder="Categoria" {...field} />
+                    <CapitalizedInput placeholder="Categoria" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

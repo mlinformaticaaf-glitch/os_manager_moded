@@ -26,7 +26,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { CapitalizedInput } from '@/components/ui/capitalized-input';
+import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSuppliers } from '@/hooks/useSuppliers';
@@ -354,7 +355,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                     <div key={index} className="flex gap-2 items-start p-3 rounded-lg border bg-muted/30">
                       <div className="flex-1 grid grid-cols-4 gap-2">
                         <div className="col-span-2">
-                          <Input
+                          <CapitalizedInput
                             placeholder="Produto"
                             value={item.product_name}
                             onChange={(e) => updateItem(index, 'product_name', e.target.value)}
@@ -512,7 +513,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Informações adicionais..." {...field} />
+                    <CapitalizedTextarea placeholder="Informações adicionais..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

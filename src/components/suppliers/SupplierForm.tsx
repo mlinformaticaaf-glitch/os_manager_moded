@@ -18,7 +18,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { CapitalizedInput } from '@/components/ui/capitalized-input';
+import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Supplier } from '@/types/supplier';
@@ -128,7 +129,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                 <FormItem>
                   <FormLabel>Nome *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome do fornecedor" {...field} />
+                    <CapitalizedInput placeholder="Nome do fornecedor" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,7 +187,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                 <FormItem>
                   <FormLabel>Endereço</FormLabel>
                   <FormControl>
-                    <Input placeholder="Rua, número, bairro" {...field} />
+                    <CapitalizedInput placeholder="Rua, número, bairro" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -201,7 +202,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                   <FormItem>
                     <FormLabel>Cidade</FormLabel>
                     <FormControl>
-                      <Input placeholder="Cidade" {...field} />
+                      <CapitalizedInput placeholder="Cidade" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -215,7 +216,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                   <FormItem>
                     <FormLabel>UF</FormLabel>
                     <FormControl>
-                      <Input placeholder="UF" maxLength={2} {...field} />
+                      <Input placeholder="UF" maxLength={2} {...field} className="uppercase" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -244,7 +245,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <CapitalizedTextarea 
                       placeholder="Informações adicionais..." 
                       className="resize-none"
                       rows={3}

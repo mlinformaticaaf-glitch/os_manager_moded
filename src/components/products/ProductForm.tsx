@@ -18,7 +18,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { CapitalizedInput } from '@/components/ui/capitalized-input';
+import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -142,7 +143,7 @@ export function ProductForm({
                 <FormItem>
                   <FormLabel>Nome *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome do produto" {...field} />
+                    <CapitalizedInput placeholder="Nome do produto" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -156,7 +157,7 @@ export function ProductForm({
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <CapitalizedTextarea 
                       placeholder="Descrição do produto" 
                       className="resize-none"
                       rows={3}
@@ -175,7 +176,7 @@ export function ProductForm({
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
                   <FormControl>
-                    <Input placeholder="Categoria" {...field} />
+                    <CapitalizedInput placeholder="Categoria" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
