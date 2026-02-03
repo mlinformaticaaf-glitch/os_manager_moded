@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProducts } from '@/hooks/useProducts';
 import { useServices } from '@/hooks/useServices';
 import { WizardItemData } from '../types';
+import { QuickServiceForm } from './QuickServiceForm';
+import { QuickProductForm } from './QuickProductForm';
 import {
   Search,
   Plus,
@@ -19,6 +21,7 @@ import {
   ArrowRight,
   ArrowLeft,
   ShoppingCart,
+  PlusCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -43,10 +46,12 @@ export function ServicesStep({
   onNext,
   onBack,
 }: ServicesStepProps) {
-  const { products } = useProducts();
-  const { services } = useServices();
+  const { products, createProduct } = useProducts();
+  const { services, createService } = useServices();
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<'services' | 'products'>('services');
+  const [showServiceForm, setShowServiceForm] = useState(false);
+  const [showProductForm, setShowProductForm] = useState(false);
 
   const activeProducts = products.filter((p) => p.active);
   const activeServices = services.filter((s) => s.active);
@@ -118,6 +123,48 @@ export function ServicesStep({
         product_id: product.id,
       });
     }
+  };
+
+  const handleCreateService = async (data: {
+    name: string;
+    description?: string;
+    category?: string;
+    cost_price: number;
+    sale_price: number;
+  }) => {
+    await createService.mutateAsync({
+      name: data.name,
+      description: data.description || null,
+      category: data.category || null,
+      cost_price: data.cost_price,
+      sale_price: data.sale_price,
+      code: null,
+      estimated_time: null,
+      active: true,
+    });
+  };
+
+  const handleCreateProduct = async (data: {
+    name: string;
+    description?: string;
+    category?: string;
+    cost_price: number;
+    sale_price: number;
+    stock_quantity: number;
+    min_stock: number;
+    unit: string;
+  }) => {
+    await createProduct.mutateAsync({
+      name: data.name,
+      description: data.description || null,
+      category: data.category || null,
+      cost_price: data.cost_price,
+      sale_price: data.sale_price,
+      stock_quantity: data.stock_quantity,
+      min_stock: data.min_stock,
+      unit: data.unit,
+      active: true,
+    });
   };
 
   return (
@@ -242,12 +289,33 @@ export function ServicesStep({
         </TabsList>
 
         <TabsContent value="services" className="mt-3 sm:mt-4">
+          {/* Add New Service Button */}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full mb-2 gap-2 border-dashed"
+            onClick={() => setShowServiceForm(true)}
+          >
+            <PlusCircle className="h-4 w-4" />
+            Cadastrar Novo Serviço
+          </Button>
+
           <ScrollArea className="h-[150px] sm:h-[200px] rounded-lg border">
             <div className="p-1.5 sm:p-2 space-y-1">
               {filteredServices.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-muted-foreground">
                   <Wrench className="h-6 w-6 sm:h-8 sm:w-8 mb-2" />
                   <p className="text-sm">Nenhum serviço</p>
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => setShowServiceForm(true)}
+                  >
+                    Cadastrar primeiro serviço
+                  </Button>
                 </div>
               ) : (
                 filteredServices.map((service) => (
@@ -280,12 +348,33 @@ export function ServicesStep({
         </TabsContent>
 
         <TabsContent value="products" className="mt-3 sm:mt-4">
+          {/* Add New Product Button */}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full mb-2 gap-2 border-dashed"
+            onClick={() => setShowProductForm(true)}
+          >
+            <PlusCircle className="h-4 w-4" />
+            Cadastrar Novo Produto
+          </Button>
+
           <ScrollArea className="h-[150px] sm:h-[200px] rounded-lg border">
             <div className="p-1.5 sm:p-2 space-y-1">
               {filteredProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-6 sm:py-8 text-muted-foreground">
                   <Package className="h-6 w-6 sm:h-8 sm:w-8 mb-2" />
                   <p className="text-sm">Nenhum produto</p>
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => setShowProductForm(true)}
+                  >
+                    Cadastrar primeiro produto
+                  </Button>
                 </div>
               ) : (
                 filteredProducts.map((product) => (
@@ -336,6 +425,22 @@ export function ServicesStep({
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       </div>
+
+      {/* Quick Service Form */}
+      <QuickServiceForm
+        open={showServiceForm}
+        onOpenChange={setShowServiceForm}
+        onSubmit={handleCreateService}
+        isSubmitting={createService.isPending}
+      />
+
+      {/* Quick Product Form */}
+      <QuickProductForm
+        open={showProductForm}
+        onOpenChange={setShowProductForm}
+        onSubmit={handleCreateProduct}
+        isSubmitting={createProduct.isPending}
+      />
     </div>
   );
 }
