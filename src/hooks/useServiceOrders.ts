@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ServiceOrder, ServiceOrderItem, OSStatus } from '@/types/serviceOrder';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-
+import { formatOSNumber } from '@/lib/osUtils';
 export function useServiceOrders() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -83,7 +83,7 @@ export function useServiceOrders() {
       // Get current order to check payment status changes
       const { data: currentOrder, error: fetchError } = await supabase
         .from('service_orders')
-        .select('order_number, payment_status, total')
+        .select('order_number, payment_status, total, created_at')
         .eq('id', id)
         .single();
 
@@ -150,6 +150,7 @@ export function useServiceOrders() {
               .eq('id', existingTransaction.id);
           } else {
             // Create new income transaction
+            const osNumber = formatOSNumber(currentOrder.order_number, currentOrder.created_at);
             await supabase
               .from('financial_transactions')
               .insert({
@@ -157,7 +158,7 @@ export function useServiceOrders() {
                 type: 'income',
                 category: 'service_order',
                 reference_id: id,
-                description: `OS #${orderNumber}`,
+                description: `OS ${osNumber}`,
                 amount: orderTotal,
                 due_date: new Date().toISOString().split('T')[0],
                 paid_date: new Date().toISOString().split('T')[0],
@@ -218,7 +219,7 @@ export function useServiceOrders() {
       // Get the current order to check stock_deducted status and other details
       const { data: currentOrder, error: fetchError } = await supabase
         .from('service_orders')
-        .select('stock_deducted, order_number, total, payment_method, payment_status')
+        .select('stock_deducted, order_number, total, payment_method, payment_status, created_at')
         .eq('id', id)
         .maybeSingle();
 
@@ -281,6 +282,7 @@ export function useServiceOrders() {
       if (status === 'delivered' && previousStatus !== 'delivered') {
         const orderTotal = currentOrder?.total ?? 0;
         const orderNumber = currentOrder?.order_number;
+        const createdAt = currentOrder?.created_at;
 
         // Check if transaction already exists for this order
         const { data: existingTransaction } = await supabase
@@ -290,8 +292,9 @@ export function useServiceOrders() {
           .eq('category', 'service_order')
           .maybeSingle();
 
-        if (!existingTransaction && orderTotal > 0) {
+        if (!existingTransaction && orderTotal > 0 && orderNumber && createdAt) {
           // Create income transaction
+          const osNumber = formatOSNumber(orderNumber, createdAt);
           const { error: transactionError } = await supabase
             .from('financial_transactions')
             .insert({
@@ -299,7 +302,7 @@ export function useServiceOrders() {
               type: 'income',
               category: 'service_order',
               reference_id: id,
-              description: `OS #${orderNumber}`,
+              description: `OS ${osNumber}`,
               amount: orderTotal,
               due_date: new Date().toISOString().split('T')[0],
               paid_date: currentOrder?.payment_status === 'paid' ? new Date().toISOString().split('T')[0] : null,
