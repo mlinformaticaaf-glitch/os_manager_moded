@@ -141,16 +141,18 @@ export function EquipmentStep({
             value={serialNumber}
             onChange={(e) => onChangeSerialNumber(e.target.value)}
             className="text-sm sm:text-base"
+            uppercase
           />
         </div>
         <div className="space-y-1.5 sm:space-y-2">
           <Label htmlFor="accessories" className="text-sm">Acessórios (opcional)</Label>
           <CapitalizedInput
             id="accessories"
-            placeholder="Ex: Carregador, mouse"
+            placeholder="Ex: CARREGADOR, MOUSE"
             value={accessories}
             onChange={(e) => onChangeAccessories(e.target.value)}
             className="text-sm sm:text-base"
+            uppercase
           />
         </div>
       </div>

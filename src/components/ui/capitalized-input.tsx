@@ -5,24 +5,25 @@ import { capitalizeWords } from "@/lib/textUtils";
 export interface CapitalizedInputProps
   extends React.ComponentProps<"input"> {
   disableCapitalization?: boolean;
+  uppercase?: boolean;
 }
 
 const CapitalizedInput = React.forwardRef<HTMLInputElement, CapitalizedInputProps>(
-  ({ className, type, onChange, disableCapitalization = false, ...props }, ref) => {
+  ({ className, type, onChange, disableCapitalization = false, uppercase = false, ...props }, ref) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!disableCapitalization && type !== "email" && type !== "password" && type !== "number" && type !== "date" && type !== "time" && type !== "datetime-local") {
         const cursorPosition = e.target.selectionStart || 0;
         const originalValue = e.target.value;
-        const capitalizedValue = capitalizeWords(originalValue);
+        const transformedValue = uppercase ? originalValue.toUpperCase() : capitalizeWords(originalValue);
         
-        // Criar um novo evento com o valor capitalizado
+        // Criar um novo evento com o valor transformado
         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
           window.HTMLInputElement.prototype,
           'value'
         )?.set;
         
         if (nativeInputValueSetter) {
-          nativeInputValueSetter.call(e.target, capitalizedValue);
+          nativeInputValueSetter.call(e.target, transformedValue);
         }
         
         // Restaurar posição do cursor
