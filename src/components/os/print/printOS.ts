@@ -393,6 +393,7 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
                     <tr>
                       <th>Descrição</th>
                       <th class="right">Qtd</th>
+                      <th class="right">Unit.</th>
                       <th class="right">Total</th>
                     </tr>
                   </thead>
@@ -401,6 +402,7 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
                       <tr>
                         <td>${s.description}</td>
                         <td class="right">${s.quantity}</td>
+                        <td class="right">${formatCurrency(s.unit_price)}</td>
                         <td class="right">${formatCurrency(s.total)}</td>
                       </tr>
                     `).join('')}
@@ -416,6 +418,7 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
                     <tr>
                       <th>Descrição</th>
                       <th class="right">Qtd</th>
+                      <th class="right">Unit.</th>
                       <th class="right">Total</th>
                     </tr>
                   </thead>
@@ -424,6 +427,7 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
                       <tr>
                         <td>${p.description}</td>
                         <td class="right">${p.quantity}</td>
+                        <td class="right">${formatCurrency(p.unit_price)}</td>
                         <td class="right">${formatCurrency(p.total)}</td>
                       </tr>
                     `).join('')}
@@ -679,9 +683,9 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
         <div class="section-title">Serviços</div>
         ${services.map(s => `
           <div class="item-row">
-            <div class="item-name">${s.quantity}x ${s.description.substring(0, 25)}${s.description.length > 25 ? '...' : ''}</div>
+            <div class="item-name">${s.quantity}x ${s.description.substring(0, 22)}${s.description.length > 22 ? '...' : ''}</div>
             <div class="item-details">
-              <span></span>
+              <span>@ ${formatCurrency(s.unit_price)}</span>
               <span>${formatCurrency(s.total)}</span>
             </div>
           </div>
@@ -693,9 +697,9 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
         <div class="section-title">Produtos</div>
         ${products.map(p => `
           <div class="item-row">
-            <div class="item-name">${p.quantity}x ${p.description.substring(0, 25)}${p.description.length > 25 ? '...' : ''}</div>
+            <div class="item-name">${p.quantity}x ${p.description.substring(0, 22)}${p.description.length > 22 ? '...' : ''}</div>
             <div class="item-details">
-              <span></span>
+              <span>@ ${formatCurrency(p.unit_price)}</span>
               <span>${formatCurrency(p.total)}</span>
             </div>
           </div>
