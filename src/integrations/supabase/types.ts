@@ -14,6 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      boleto_payments: {
+        Row: {
+          amount_paid: number
+          boleto_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          paid_date: string
+          payment_method: string | null
+          receipt_url: string | null
+        }
+        Insert: {
+          amount_paid: number
+          boleto_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_date?: string
+          payment_method?: string | null
+          receipt_url?: string | null
+        }
+        Update: {
+          amount_paid?: number
+          boleto_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_date?: string
+          payment_method?: string | null
+          receipt_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boleto_payments_boleto_id_fkey"
+            columns: ["boleto_id"]
+            isOneToOne: false
+            referencedRelation: "boletos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      boletos: {
+        Row: {
+          amount: number
+          barcode: string | null
+          created_at: string
+          due_date: string
+          id: string
+          issuer_name: string
+          notes: string | null
+          pdf_url: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          barcode?: string | null
+          created_at?: string
+          due_date: string
+          id?: string
+          issuer_name: string
+          notes?: string | null
+          pdf_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          barcode?: string | null
+          created_at?: string
+          due_date?: string
+          id?: string
+          issuer_name?: string
+          notes?: string | null
+          pdf_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           address: string | null

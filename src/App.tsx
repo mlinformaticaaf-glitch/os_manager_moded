@@ -16,6 +16,7 @@ import Services from "./pages/Services";
 import Suppliers from "./pages/Suppliers";
 import Purchases from "./pages/Purchases";
 import Financial from "./pages/Financial";
+import Boletos from "./pages/Boletos";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -108,6 +109,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Financial />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/boletos"
+              element={
+                <ProtectedRoute>
+                  <Boletos />
                 </ProtectedRoute>
               }
             />
