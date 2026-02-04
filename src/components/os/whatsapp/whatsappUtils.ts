@@ -72,7 +72,7 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
   if (services.length > 0) {
     message += `*Serviços:*\n`;
     services.forEach(s => {
-      message += `- ${s.quantity}x ${s.description} - ${formatCurrency(s.total)}\n`;
+      message += `- ${s.quantity}x ${s.description} @ ${formatCurrency(s.unit_price)} = ${formatCurrency(s.total)}\n`;
     });
     message += '\n';
   }
@@ -80,7 +80,7 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
   if (products.length > 0) {
     message += `*Produtos/Peças:*\n`;
     products.forEach(p => {
-      message += `- ${p.quantity}x ${p.description} - ${formatCurrency(p.total)}\n`;
+      message += `- ${p.quantity}x ${p.description} @ ${formatCurrency(p.unit_price)} = ${formatCurrency(p.total)}\n`;
     });
     message += '\n';
   }
