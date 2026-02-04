@@ -96,8 +96,9 @@ export function EquipmentForm({
                   <FormLabel>Descrição (Equipamento, Marca e Modelo) *</FormLabel>
                   <FormControl>
                     <CapitalizedTextarea
-                      placeholder="Ex: Notebook Dell Inspiron 15 3000"
+                      placeholder="Ex: NOTEBOOK DELL INSPIRON 15 3000"
                       className="min-h-[100px] resize-none"
+                      uppercase
                       {...field}
                     />
                   </FormControl>

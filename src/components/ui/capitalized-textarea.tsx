@@ -5,23 +5,24 @@ import { capitalizeWords } from "@/lib/textUtils";
 export interface CapitalizedTextareaProps
   extends React.ComponentProps<"textarea"> {
   disableCapitalization?: boolean;
+  uppercase?: boolean;
 }
 
 const CapitalizedTextarea = React.forwardRef<HTMLTextAreaElement, CapitalizedTextareaProps>(
-  ({ className, onChange, disableCapitalization = false, ...props }, ref) => {
+  ({ className, onChange, disableCapitalization = false, uppercase = false, ...props }, ref) => {
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (!disableCapitalization) {
         const cursorPosition = e.target.selectionStart || 0;
-        const capitalizedValue = capitalizeWords(e.target.value);
+        const transformedValue = uppercase ? e.target.value.toUpperCase() : capitalizeWords(e.target.value);
         
-        // Criar um novo evento com o valor capitalizado
+        // Criar um novo evento com o valor transformado
         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
           window.HTMLTextAreaElement.prototype,
           'value'
         )?.set;
         
         if (nativeInputValueSetter) {
-          nativeInputValueSetter.call(e.target, capitalizedValue);
+          nativeInputValueSetter.call(e.target, transformedValue);
         }
         
         // Restaurar posição do cursor
