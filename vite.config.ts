@@ -18,13 +18,13 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "pwa-icon-192.png", "pwa-icon-512.png"],
+      includeAssets: ["favicon.ico", "favicon.png", "apple-touch-icon.png", "pwa-icon-192.png", "pwa-icon-512.png"],
       manifest: {
         name: "OS Manager - Sistema de Gestão de Ordens de Serviço",
         short_name: "OS Manager",
         description: "Sistema completo para gestão de ordens de serviço, controle de estoque e financeiro.",
         theme_color: "#3b82f6",
-        background_color: "#ffffff",
+        background_color: "#3b82f6",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
@@ -34,11 +34,19 @@ export default defineConfig(({ mode }) => ({
             src: "/pwa-icon-192.png",
             sizes: "192x192",
             type: "image/png",
+            purpose: "any",
           },
           {
             src: "/pwa-icon-512.png",
             sizes: "512x512",
             type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/pwa-icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable",
           },
           {
             src: "/pwa-icon-512.png",
