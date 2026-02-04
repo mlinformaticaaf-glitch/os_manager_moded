@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
@@ -134,7 +135,7 @@ export function EquipmentStep({
       <div className="grid grid-cols-1 gap-3 sm:gap-4">
         <div className="space-y-1.5 sm:space-y-2">
           <Label htmlFor="serial_number" className="text-sm">Nº Série (opcional)</Label>
-          <Input
+          <CapitalizedInput
             id="serial_number"
             placeholder="Ex: SN123456789"
             value={serialNumber}
@@ -144,7 +145,7 @@ export function EquipmentStep({
         </div>
         <div className="space-y-1.5 sm:space-y-2">
           <Label htmlFor="accessories" className="text-sm">Acessórios (opcional)</Label>
-          <Input
+          <CapitalizedInput
             id="accessories"
             placeholder="Ex: Carregador, mouse"
             value={accessories}
