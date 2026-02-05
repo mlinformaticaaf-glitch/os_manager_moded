@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Plus, Search, Package, AlertTriangle } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
@@ -10,12 +11,28 @@ import { useProducts } from '@/hooks/useProducts';
 import { Product } from '@/types/product';
 
 export default function Products() {
+  const location = useLocation();
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
 
   const { products, isLoading, createProduct, updateProduct, deleteProduct } = useProducts();
+
+  // Handle navigation state to open a specific product for editing
+  useEffect(() => {
+    const state = location.state as { viewProductId?: string } | null;
+    if (state?.viewProductId && products.length > 0) {
+      const productToEdit = products.find(p => p.id === state.viewProductId);
+      if (productToEdit) {
+        setEditingProduct(productToEdit);
+        setFormOpen(true);
+        // Clear the state to prevent re-opening on subsequent renders
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state, products]);
+
 
   const filteredProducts = useMemo(() => {
     if (!search.trim()) return products;

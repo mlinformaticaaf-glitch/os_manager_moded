@@ -1,4 +1,4 @@
-import { Bell, Plus, User, LogOut } from "lucide-react";
+import { Plus, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { NotificationsDropdown } from "./NotificationsDropdown";
 
 interface HeaderProps {
   title: string;
@@ -38,10 +39,7 @@ export function Header({ title, subtitle, onNewOS, userEmail }: HeaderProps) {
         )}
 
         {/* Notifications */}
-        <button className="relative p-2 rounded-lg hover:bg-accent transition-colors">
-          <Bell className="w-5 h-5 text-muted-foreground" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
-        </button>
+        <NotificationsDropdown />
 
         {/* User Menu */}
         <DropdownMenu>

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Plus, Search } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Purchases() {
+  const location = useLocation();
   const [search, setSearch] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const [deletingPurchase, setDeletingPurchase] = useState<Purchase | null>(null);
@@ -21,6 +23,19 @@ export default function Purchases() {
   const [editingItems, setEditingItems] = useState<Omit<PurchaseItem, 'id' | 'purchase_id'>[]>([]);
 
   const { purchases, isLoading, createPurchase, updatePurchase, updatePurchasePayment, deletePurchase, fetchPurchaseItems } = usePurchases();
+
+  // Handle navigation state to open a specific purchase
+  useEffect(() => {
+    const state = location.state as { viewPurchaseId?: string } | null;
+    if (state?.viewPurchaseId && purchases.length > 0) {
+      const purchaseToView = purchases.find(p => p.id === state.viewPurchaseId);
+      if (purchaseToView) {
+        setViewingPurchase(purchaseToView);
+        // Clear the state to prevent re-opening on subsequent renders
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state, purchases]);
 
   const filteredPurchases = useMemo(() => {
     if (!search.trim()) return purchases;

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FinancialDashboard } from "@/components/financial/FinancialDashboard";
@@ -6,11 +7,30 @@ import { TransactionsTable } from "@/components/financial/TransactionsTable";
 import { TransactionForm } from "@/components/financial/TransactionForm";
 import { FinancialReports } from "@/components/financial/reports/FinancialReports";
 import { FinancialTransaction } from "@/types/financial";
+import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
 
 export default function Financial() {
+  const location = useLocation();
   const [selectedTransaction, setSelectedTransaction] = useState<FinancialTransaction | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
+  
+  const { transactions } = useFinancialTransactions();
+
+  // Handle navigation state to open a specific transaction
+  useEffect(() => {
+    const state = location.state as { viewTransactionId?: string } | null;
+    if (state?.viewTransactionId && transactions.length > 0) {
+      const transactionToEdit = transactions.find(t => t.id === state.viewTransactionId);
+      if (transactionToEdit) {
+        setSelectedTransaction(transactionToEdit);
+        setIsFormOpen(true);
+        setActiveTab("payables"); // Switch to payables tab for expense transactions
+        // Clear the state to prevent re-opening on subsequent renders
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state, transactions]);
 
   const handleEdit = (transaction: FinancialTransaction) => {
     setSelectedTransaction(transaction);

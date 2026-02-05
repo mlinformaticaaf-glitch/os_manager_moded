@@ -1,20 +1,41 @@
-import { ClipboardList, DollarSign, Users, Package, TrendingUp, Clock } from "lucide-react";
+import { ClipboardList, DollarSign, Users, Package, LayoutGrid, List } from "lucide-react";
+import { useState } from "react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { RecentOS } from "@/components/dashboard/RecentOS";
 import { KanbanBoard } from "@/components/os/KanbanBoard";
+import { DashboardOSList } from "@/components/dashboard/DashboardOSList";
 import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
 import { useServiceOrders } from "@/hooks/useServiceOrders";
 import { useClients } from "@/hooks/useClients";
 import { useProducts } from "@/hooks/useProducts";
 import { useMemo } from "react";
 import { startOfMonth, endOfMonth, subMonths, parseISO, isWithinInterval } from "date-fns";
+import { cn } from "@/lib/utils";
+
+type OSViewMode = 'kanban' | 'list';
+
+const OS_VIEW_MODE_KEY = 'dashboard-os-view-mode';
+
+function getStoredOSViewMode(): OSViewMode {
+  const stored = localStorage.getItem(OS_VIEW_MODE_KEY);
+  if (stored === 'kanban' || stored === 'list') {
+    return stored;
+  }
+  return 'kanban';
+}
 
 export function Dashboard() {
+  const [osViewMode, setOSViewMode] = useState<OSViewMode>(getStoredOSViewMode);
   const { transactions } = useFinancialTransactions();
   const { orders: serviceOrders } = useServiceOrders();
   const { clients } = useClients();
   const { products } = useProducts();
+
+  const handleOSViewModeChange = (mode: OSViewMode) => {
+    setOSViewMode(mode);
+    localStorage.setItem(OS_VIEW_MODE_KEY, mode);
+  };
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -120,7 +141,7 @@ export function Dashboard() {
         <RecentOS />
       </div>
 
-      {/* Kanban Section */}
+      {/* Kanban/List Section */}
       <div>
         <div className="flex items-center justify-between mb-3 sm:mb-4">
           <div>
@@ -128,15 +149,40 @@ export function Dashboard() {
             <p className="text-xs sm:text-sm text-muted-foreground">Acompanhe o fluxo de trabalho</p>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
-            <button className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors">
-              Quadro
+            <button 
+              onClick={() => handleOSViewModeChange('kanban')}
+              className={cn(
+                "flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-colors",
+                osViewMode === 'kanban' 
+                  ? "text-primary bg-primary/10 hover:bg-primary/20" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Quadro</span>
             </button>
-            <button className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">
-              Lista
+            <button 
+              onClick={() => handleOSViewModeChange('list')}
+              className={cn(
+                "flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-colors",
+                osViewMode === 'list' 
+                  ? "text-primary bg-primary/10 hover:bg-primary/20" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              <List className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Lista</span>
             </button>
           </div>
         </div>
-        <KanbanBoard />
+        
+        {osViewMode === 'kanban' ? (
+          <KanbanBoard />
+        ) : (
+          <div className="bg-card rounded-lg border border-border p-4">
+            <DashboardOSList />
+          </div>
+        )}
       </div>
     </div>
   );

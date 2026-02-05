@@ -12,8 +12,7 @@ import {
   ChevronRight,
   LogOut,
   Menu,
-  Monitor,
-  Receipt
+  Monitor
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
@@ -37,7 +36,6 @@ const baseNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Package, label: "Produtos", href: "/produtos" },
   { icon: Wrench, label: "Serviços", href: "/servicos" },
   { icon: DollarSign, label: "Financeiro", href: "/financeiro" },
-  { icon: Receipt, label: "Boletos", href: "/boletos" },
   { icon: ShoppingCart, label: "Compras", href: "/compras" },
   { icon: Building2, label: "Fornecedores", href: "/fornecedores" },
 ];
