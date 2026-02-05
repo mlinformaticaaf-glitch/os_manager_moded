@@ -398,14 +398,16 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
                     </tr>
                   </thead>
                   <tbody>
-                    ${services.map(s => `
+                    ${services.map(s => {
+                      const itemTotal = s.quantity * s.unit_price;
+                      return `
                       <tr>
                         <td>${s.description}</td>
                         <td class="right">${s.quantity}</td>
                         <td class="right">${formatCurrency(s.unit_price)}</td>
-                        <td class="right">${formatCurrency(s.total)}</td>
+                        <td class="right">${formatCurrency(itemTotal)}</td>
                       </tr>
-                    `).join('')}
+                    `}).join('')}
                   </tbody>
                 </table>
               </div>
@@ -423,14 +425,16 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
                     </tr>
                   </thead>
                   <tbody>
-                    ${products.map(p => `
+                    ${products.map(p => {
+                      const itemTotal = p.quantity * p.unit_price;
+                      return `
                       <tr>
                         <td>${p.description}</td>
                         <td class="right">${p.quantity}</td>
                         <td class="right">${formatCurrency(p.unit_price)}</td>
-                        <td class="right">${formatCurrency(p.total)}</td>
+                        <td class="right">${formatCurrency(itemTotal)}</td>
                       </tr>
-                    `).join('')}
+                    `}).join('')}
                   </tbody>
                 </table>
               </div>
@@ -681,29 +685,33 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
       ${services.length > 0 ? `
         <div class="divider"></div>
         <div class="section-title">Serviços</div>
-        ${services.map(s => `
+        ${services.map(s => {
+          const itemTotal = s.quantity * s.unit_price;
+          return `
           <div class="item-row">
             <div class="item-name">${s.quantity}x ${s.description.substring(0, 22)}${s.description.length > 22 ? '...' : ''}</div>
             <div class="item-details">
               <span>@ ${formatCurrency(s.unit_price)}</span>
-              <span>${formatCurrency(s.total)}</span>
+              <span>${formatCurrency(itemTotal)}</span>
             </div>
           </div>
-        `).join('')}
+        `}).join('')}
       ` : ''}
 
       ${products.length > 0 ? `
         <div class="divider"></div>
         <div class="section-title">Produtos</div>
-        ${products.map(p => `
+        ${products.map(p => {
+          const itemTotal = p.quantity * p.unit_price;
+          return `
           <div class="item-row">
             <div class="item-name">${p.quantity}x ${p.description.substring(0, 22)}${p.description.length > 22 ? '...' : ''}</div>
             <div class="item-details">
               <span>@ ${formatCurrency(p.unit_price)}</span>
-              <span>${formatCurrency(p.total)}</span>
+              <span>${formatCurrency(itemTotal)}</span>
             </div>
           </div>
-        `).join('')}
+        `}).join('')}
       ` : ''}
 
       <div class="double-divider"></div>
