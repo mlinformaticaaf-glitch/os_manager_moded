@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,7 @@ import { CapitalizedInput } from "@/components/ui/capitalized-input";
 import { CapitalizedTextarea } from "@/components/ui/capitalized-textarea";
 import { Button } from "@/components/ui/button";
 import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
+import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
 import { 
   FinancialTransaction, 
   TRANSACTION_TYPE_OPTIONS, 
@@ -57,8 +59,9 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ open, onOpenChange, transaction }: TransactionFormProps) {
-  const { createTransaction, updateTransaction } = useFinancialTransactions();
+  const { createTransaction, updateTransaction, deleteTransaction } = useFinancialTransactions();
   const isEditing = !!transaction;
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const form = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
@@ -335,6 +338,17 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
             />
 
             <div className="flex gap-3 pt-4">
+              {isEditing && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="outline"
@@ -354,6 +368,19 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
           </form>
         </Form>
       </DialogContent>
+
+      <DeleteTransactionDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={async () => {
+          if (transaction) {
+            await deleteTransaction.mutateAsync(transaction.id);
+            setShowDeleteDialog(false);
+            onOpenChange(false);
+          }
+        }}
+        transaction={transaction}
+      />
     </Dialog>
   );
 }
