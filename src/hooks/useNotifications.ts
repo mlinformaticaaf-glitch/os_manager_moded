@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { useProducts } from '@/hooks/useProducts';
 import { useServiceOrders } from '@/hooks/useServiceOrders';
 import { usePurchases } from '@/hooks/usePurchases';
@@ -15,13 +15,29 @@ export interface Notification {
   severity: 'warning' | 'error';
 }
 
+const DISMISSED_KEY = 'dismissed_notifications';
+
+function getDismissedIds(): Set<string> {
+  try {
+    const stored = localStorage.getItem(DISMISSED_KEY);
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function saveDismissedIds(ids: Set<string>) {
+  localStorage.setItem(DISMISSED_KEY, JSON.stringify([...ids]));
+}
+
 export function useNotifications() {
   const { products, isLoading: productsLoading } = useProducts();
   const { orders, isLoading: ordersLoading } = useServiceOrders();
   const { purchases, isLoading: purchasesLoading } = usePurchases();
   const { transactions, isLoading: financialLoading } = useFinancialTransactions();
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(getDismissedIds);
 
-  const notifications = useMemo(() => {
+  const allNotifications = useMemo(() => {
     const notifs: Notification[] = [];
     const today = new Date().toISOString().split('T')[0];
 
@@ -40,7 +56,7 @@ export function useNotifications() {
         });
       });
 
-    // Service orders with overdue delivery that are not completed/delivered
+    // Service orders with overdue delivery
     orders
       .filter(os => {
         const notDelivered = !['completed', 'delivered', 'cancelled'].includes(os.status);
@@ -80,7 +96,7 @@ export function useNotifications() {
         });
       });
 
-    // Financial transactions (bills to pay) pending and overdue
+    // Financial transactions overdue
     transactions
       .filter(transaction => {
         const isPending = transaction.status === 'pending';
@@ -104,11 +120,50 @@ export function useNotifications() {
     return notifs;
   }, [products, orders, purchases, transactions]);
 
+  // Clean up dismissed IDs that no longer exist
+  useEffect(() => {
+    const activeIds = new Set(allNotifications.map(n => n.id));
+    const currentDismissed = getDismissedIds();
+    let changed = false;
+    for (const id of currentDismissed) {
+      if (!activeIds.has(id)) {
+        currentDismissed.delete(id);
+        changed = true;
+      }
+    }
+    if (changed) {
+      saveDismissedIds(currentDismissed);
+      setDismissedIds(new Set(currentDismissed));
+    }
+  }, [allNotifications]);
+
+  const notifications = useMemo(
+    () => allNotifications.filter(n => !dismissedIds.has(n.id)),
+    [allNotifications, dismissedIds]
+  );
+
+  const dismiss = useCallback((id: string) => {
+    setDismissedIds(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      saveDismissedIds(next);
+      return next;
+    });
+  }, []);
+
+  const dismissAll = useCallback(() => {
+    const allIds = new Set(allNotifications.map(n => n.id));
+    saveDismissedIds(allIds);
+    setDismissedIds(allIds);
+  }, [allNotifications]);
+
   const isLoading = productsLoading || ordersLoading || purchasesLoading || financialLoading;
 
   return {
     notifications,
     isLoading,
     count: notifications.length,
+    dismiss,
+    dismissAll,
   };
 }
