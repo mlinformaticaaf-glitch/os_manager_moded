@@ -35,7 +35,7 @@ const getPaymentMethodLabel = (method: string | null) => {
   return methods[method] || method;
 };
 
-export function printOSA4({ order, items, companyName = 'Assistência Técnica', companyPhone, companyAddress }: PrintData) {
+export function printOSA4({ order, items, companyName = 'Assistência Técnica', companyPhone, companyAddress, warrantyTerms, footerMessage = 'Obrigado pela preferência!' }: PrintData) {
   const services = items.filter(i => i.type === 'service');
   const products = items.filter(i => i.type === 'product');
 
@@ -448,7 +448,7 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
           ${order.warranty_until ? `
             <div class="warranty-notice">
               <strong>⚠️ Garantia até ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}</strong>
-              - Cobre defeitos de serviço. Não se aplica a mau uso, quedas ou danos por terceiros.
+              ${warrantyTerms ? `<p style="margin-top: 4px;">${warrantyTerms}</p>` : '- Cobre defeitos de serviço. Não se aplica a mau uso, quedas ou danos por terceiros.'}
             </div>
           ` : ''}
           <div class="signatures">
@@ -486,6 +486,12 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
           </div>
         </div>
       </div>
+
+      ${footerMessage ? `
+        <div style="text-align: center; margin-top: 12px; font-size: 9px; color: #666;">
+          ${footerMessage}
+        </div>
+      ` : ''}
     </body>
     </html>
   `;
@@ -500,7 +506,7 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
   }
 }
 
-export function printOSThermal({ order, items, companyName = 'Assistência Técnica', companyPhone }: PrintData) {
+export function printOSThermal({ order, items, companyName = 'Assistência Técnica', companyPhone, warrantyTerms, footerMessage = 'Obrigado pela preferência!' }: PrintData) {
   const services = items.filter(i => i.type === 'service');
   const products = items.filter(i => i.type === 'product');
 
@@ -745,6 +751,7 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
         <div class="divider"></div>
         <div style="font-size: 8px; text-align: center;">
           Garantia até: ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}
+          ${warrantyTerms ? `<br>${warrantyTerms}` : ''}
         </div>
       ` : ''}
 
@@ -757,7 +764,7 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
 
       <div class="footer">
         <div class="divider"></div>
-        Obrigado pela preferência!
+        ${footerMessage}
         <br>
         ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}
       </div>

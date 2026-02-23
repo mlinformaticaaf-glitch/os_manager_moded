@@ -46,13 +46,14 @@ export function OSWhatsAppButton({ order, items, variant = "outline", size = "sm
   const hasClientPhone = order.client?.phone;
   const companyName = settings?.name || 'Assistência Técnica';
   const footerMessage = settings?.footer_message || 'Obrigado pela preferência!';
+  const warrantyTerms = settings?.warranty_terms || undefined;
 
   const handleSelectMessageType = (type: MessageType) => {
     let formattedMessage = '';
     
     switch (type) {
       case 'full':
-        formattedMessage = formatWhatsAppMessage({ order, items, companyName, footerMessage });
+        formattedMessage = formatWhatsAppMessage({ order, items, companyName, footerMessage, warrantyTerms });
         break;
       case 'status':
         formattedMessage = formatWhatsAppStatusUpdate({ order, companyName });

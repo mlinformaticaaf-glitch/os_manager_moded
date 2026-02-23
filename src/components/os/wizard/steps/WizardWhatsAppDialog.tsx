@@ -25,6 +25,7 @@ interface WizardWhatsAppDialogProps {
   items: ServiceOrderItem[];
   companyName: string;
   footerMessage: string;
+  warrantyTerms?: string;
 }
 
 type MessageType = 'full' | 'status' | 'payment';
@@ -36,6 +37,7 @@ export function WizardWhatsAppDialog({
   items,
   companyName,
   footerMessage,
+  warrantyTerms,
 }: WizardWhatsAppDialogProps) {
   const [step, setStep] = useState<'select' | 'preview'>('select');
   const [message, setMessage] = useState('');
@@ -45,7 +47,7 @@ export function WizardWhatsAppDialog({
 
     switch (type) {
       case 'full':
-        formattedMessage = formatWhatsAppMessage({ order, items, companyName, footerMessage });
+        formattedMessage = formatWhatsAppMessage({ order, items, companyName, footerMessage, warrantyTerms });
         break;
       case 'status':
         formattedMessage = formatWhatsAppStatusUpdate({ order, companyName });
