@@ -45,6 +45,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TransactionsTableProps {
   filterType?: 'income' | 'expense';
+  filterStatus?: 'pending' | 'paid';
   onEdit: (transaction: FinancialTransaction) => void;
   onNew: () => void;
 }
@@ -154,7 +155,7 @@ function TransactionCard({
   );
 }
 
-export function TransactionsTable({ filterType, onEdit, onNew }: TransactionsTableProps) {
+export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: TransactionsTableProps) {
   const { transactions, isLoading, updateTransaction, deleteTransaction } = useFinancialTransactions();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -166,8 +167,11 @@ export function TransactionsTable({ filterType, onEdit, onNew }: TransactionsTab
       // Type filter
       if (filterType && t.type !== filterType) return false;
       
-      // Status filter
-      if (statusFilter !== 'all' && t.status !== statusFilter) return false;
+      // Fixed status filter from prop
+      if (filterStatus && t.status !== filterStatus) return false;
+
+      // Status filter from dropdown
+      if (!filterStatus && statusFilter !== 'all' && t.status !== statusFilter) return false;
       
       // Search
       if (search) {
