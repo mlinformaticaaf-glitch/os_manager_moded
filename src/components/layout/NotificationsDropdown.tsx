@@ -1,4 +1,4 @@
-import { Bell, Package, ClipboardList, ShoppingCart, DollarSign } from "lucide-react";
+import { Bell, Package, ClipboardList, ShoppingCart, DollarSign, CheckCheck, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -10,6 +10,7 @@ import {
 import { useNotifications, Notification } from "@/hooks/useNotifications";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 
 function getNotificationIcon(type: Notification['type']) {
   switch (type) {
@@ -28,11 +29,17 @@ function getNotificationIcon(type: Notification['type']) {
 
 export function NotificationsDropdown() {
   const navigate = useNavigate();
-  const { notifications, count, isLoading } = useNotifications();
+  const { notifications, count, isLoading, dismiss, dismissAll } = useNotifications();
 
   const handleNotificationClick = (notification: Notification) => {
-    // Navigate to the route with state to open the specific record
+    dismiss(notification.id);
     navigate(notification.route, { state: notification.state });
+  };
+
+  const handleDismiss = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dismiss(id);
   };
 
   return (
@@ -48,17 +55,34 @@ export function NotificationsDropdown() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <div className="px-3 py-2 border-b border-border">
-          <h3 className="font-semibold text-sm">Notificações</h3>
-          <p className="text-xs text-muted-foreground">
-            {count === 0 ? 'Nenhuma notificação' : `${count} pendência${count > 1 ? 's' : ''}`}
-          </p>
+        <div className="px-3 py-2 border-b border-border flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-sm">Notificações</h3>
+            <p className="text-xs text-muted-foreground">
+              {count === 0 ? 'Nenhuma notificação' : `${count} pendência${count > 1 ? 's' : ''}`}
+            </p>
+          </div>
+          {count > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dismissAll();
+              }}
+            >
+              <CheckCheck className="w-3.5 h-3.5" />
+              Limpar
+            </Button>
+          )}
         </div>
         
         {count === 0 ? (
           <div className="py-8 text-center text-muted-foreground text-sm">
             <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            Tudo em dia! 🎉
+            Tudo em dia!
           </div>
         ) : (
           <ScrollArea className="max-h-[400px]">
@@ -92,6 +116,13 @@ export function NotificationsDropdown() {
                             {notification.description}
                           </p>
                         </div>
+                        <button
+                          className="shrink-0 p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                          onClick={(e) => handleDismiss(e, notification.id)}
+                          title="Dispensar"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </DropdownMenuItem>
                   </div>
