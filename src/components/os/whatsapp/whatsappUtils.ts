@@ -8,6 +8,7 @@ interface WhatsAppMessageData {
   items: ServiceOrderItem[];
   companyName?: string;
   footerMessage?: string;
+  warrantyTerms?: string;
 }
 
 interface WhatsAppStatusData {
@@ -34,7 +35,7 @@ const getPaymentMethodLabel = (method: string | null) => {
   return methods[method] || method;
 };
 
-export function formatWhatsAppMessage({ order, items, companyName = 'Assistência Técnica', footerMessage = 'Obrigado pela preferência!' }: WhatsAppMessageData): string {
+export function formatWhatsAppMessage({ order, items, companyName = 'Assistência Técnica', footerMessage = 'Obrigado pela preferência!', warrantyTerms }: WhatsAppMessageData): string {
   const services = items.filter(i => i.type === 'service');
   const products = items.filter(i => i.type === 'product');
   const statusLabel = STATUS_CONFIG[order.status]?.label || order.status;
@@ -101,6 +102,9 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
 
   if (order.warranty_until) {
     message += `\n*Garantia até:* ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}\n`;
+    if (warrantyTerms) {
+      message += `${warrantyTerms}\n`;
+    }
   }
 
   if (order.estimated_completion) {
