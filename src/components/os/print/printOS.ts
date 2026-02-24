@@ -35,53 +35,245 @@ const getPaymentMethodLabel = (method: string | null) => {
   return methods[method] || method;
 };
 
-export function printOSA4({ order, items, companyName = 'Assistência Técnica', companyPhone, companyAddress, companyEmail, companyDocument, logoUrl, warrantyTerms, footerMessage = 'Obrigado pela preferência!' }: PrintData) {
+function generateA4Body({ order, items, companyName = 'Assistência Técnica', companyPhone, companyAddress, companyEmail, companyDocument, logoUrl, warrantyTerms, footerMessage = 'Obrigado pela preferência!' }: PrintData, copyLabel?: string) {
   const services = items.filter(i => i.type === 'service');
   const products = items.filter(i => i.type === 'product');
 
-  const content = `
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-      <meta charset="UTF-8">
-      <title>OS ${formatOSNumber(order.order_number, order.created_at)}</title>
-      <style>
+  return `
+      <div class="os-copy">
+        ${copyLabel ? `<div style="text-align: right; font-size: 8px; font-weight: bold; color: #888; margin-bottom: 4px;">${copyLabel}</div>` : ''}
+        <div class="header">
+          <div class="company-info" style="display: flex; align-items: center; gap: 12px;">
+            ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-height: 60px; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />` : ''}
+            <div>
+              <h1>${companyName}</h1>
+              ${companyDocument ? `<p>${companyDocument}</p>` : ''}
+              ${companyPhone ? `<p>📞 ${companyPhone}</p>` : ''}
+              ${companyEmail ? `<p>✉️ ${companyEmail}</p>` : ''}
+              ${companyAddress ? `<p>📍 ${companyAddress}</p>` : ''}
+            </div>
+          </div>
+          <div class="os-info">
+            <div class="os-number">OS ${formatOSNumber(order.order_number, order.created_at)}</div>
+            <div class="os-date">${format(new Date(order.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</div>
+            <div class="status-badge" style="background: ${STATUS_CONFIG[order.status].bgColor}; color: ${STATUS_CONFIG[order.status].color.replace('text-', '')}">
+              ${STATUS_CONFIG[order.status].label}
+            </div>
+          </div>
+        </div>
+
+        ${order.client ? `
+          <div class="section">
+            <div class="section-title">Cliente</div>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Nome</label>
+                <span>${order.client.name}</span>
+              </div>
+              <div class="info-item">
+                <label>Telefone</label>
+                <span>${order.client.phone || '-'}</span>
+              </div>
+              <div class="info-item">
+                <label>E-mail</label>
+                <span>${order.client.email || '-'}</span>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        ${order.equipment ? `
+          <div class="section">
+            <div class="section-title">Equipamento</div>
+            <div class="equipment-box">
+              <div class="equipment-title">${order.equipment}${order.brand ? ` - ${order.brand}` : ''}${order.model ? ` ${order.model}` : ''}</div>
+              <div class="equipment-details">
+                ${order.serial_number ? `<span>S/N: ${order.serial_number}</span>` : ''}
+                ${order.accessories ? `<span>Acessórios: ${order.accessories}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="section">
+          <div class="section-title">Descrição do Serviço</div>
+          <div class="description-grid">
+            <div class="problem-box">
+              <strong>Problema Relatado:</strong>
+              <p>${order.reported_issue}</p>
+            </div>
+            ${order.diagnosis || order.solution ? `
+              <div>
+                ${order.diagnosis ? `
+                  <div class="diagnosis-box" style="margin-bottom: ${order.solution ? '4px' : '0'}">
+                    <strong>Diagnóstico:</strong>
+                    <p>${order.diagnosis}</p>
+                  </div>
+                ` : ''}
+                ${order.solution ? `
+                  <div class="solution-box">
+                    <strong>Solução:</strong>
+                    <p>${order.solution}</p>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        ${(services.length > 0 || products.length > 0) ? `
+          <div class="section">
+            <div class="section-title">Itens</div>
+            <div class="items-grid">
+              ${services.length > 0 ? `
+                <div>
+                  <strong style="font-size: 8px; color: #666;">SERVIÇOS</strong>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Descrição</th>
+                        <th class="right">Qtd</th>
+                        <th class="right">Unit.</th>
+                        <th class="right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${services.map(s => {
+                        const itemTotal = s.quantity * s.unit_price;
+                        return `
+                        <tr>
+                          <td>${s.description}</td>
+                          <td class="right">${s.quantity}</td>
+                          <td class="right">${formatCurrency(s.unit_price)}</td>
+                          <td class="right">${formatCurrency(itemTotal)}</td>
+                        </tr>
+                      `}).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              ` : ''}
+              ${products.length > 0 ? `
+                <div>
+                  <strong style="font-size: 8px; color: #666;">PRODUTOS / PEÇAS</strong>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Descrição</th>
+                        <th class="right">Qtd</th>
+                        <th class="right">Unit.</th>
+                        <th class="right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${products.map(p => {
+                        const itemTotal = p.quantity * p.unit_price;
+                        return `
+                        <tr>
+                          <td>${p.description}</td>
+                          <td class="right">${p.quantity}</td>
+                          <td class="right">${formatCurrency(p.unit_price)}</td>
+                          <td class="right">${formatCurrency(itemTotal)}</td>
+                        </tr>
+                      `}).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="bottom-section">
+          <div>
+            ${(order.warranty_until || warrantyTerms) ? `
+              <div class="warranty-notice">
+                ${order.warranty_until ? `<strong>⚠️ Garantia até ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}</strong>` : ''}
+                ${warrantyTerms ? `<p style="margin-top: ${order.warranty_until ? '4px' : '0'};">${warrantyTerms}</p>` : (order.warranty_until ? '<p style="margin-top: 4px;">- Cobre defeitos de serviço. Não se aplica a mau uso, quedas ou danos por terceiros.</p>' : '')}
+              </div>
+            ` : ''}
+            <div class="signatures">
+              <div class="signature-line">
+                <hr />
+                <span>Técnico</span>
+              </div>
+              <div class="signature-line">
+                <hr />
+                <span>Cliente</span>
+              </div>
+            </div>
+          </div>
+          <div class="totals-table">
+            <div class="totals-row">
+              <span>Serviços:</span>
+              <span>${formatCurrency(order.total_services)}</span>
+            </div>
+            <div class="totals-row">
+              <span>Produtos:</span>
+              <span>${formatCurrency(order.total_products)}</span>
+            </div>
+            ${order.discount > 0 ? `
+              <div class="totals-row discount">
+                <span>Desconto:</span>
+                <span>-${formatCurrency(order.discount)}</span>
+              </div>
+            ` : ''}
+            <div class="totals-row total">
+              <span>TOTAL:</span>
+              <span>${formatCurrency(order.total)}</span>
+            </div>
+            <div class="payment-info">
+              Pagamento: ${getPaymentMethodLabel(order.payment_method)}
+            </div>
+          </div>
+        </div>
+
+        ${footerMessage ? `
+          <div style="text-align: center; margin-top: 12px; font-size: 9px; color: #666;">
+            ${footerMessage}
+          </div>
+        ` : ''}
+      </div>
+  `;
+}
+
+function generateA4Styles() {
+  return `
         * {
           margin: 0;
           padding: 0;
           box-sizing: border-box;
         }
         
-        @page {
-          size: A4;
-          margin: 8mm;
-        }
-        
         body {
-          font-family: Arial, sans-serif;
-          font-size: 9px;
-          line-height: 1.2;
+          font-family: Arial, Helvetica, sans-serif;
+          font-size: 10px;
           color: #333;
+          padding: 15mm;
+          max-width: 210mm;
+          margin: 0 auto;
+        }
+
+        .os-copy {
+          page-break-after: auto;
         }
         
         .header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          border-bottom: 1px solid #333;
-          padding-bottom: 6px;
-          margin-bottom: 8px;
+          border-bottom: 2px solid #333;
+          padding-bottom: 8px;
+          margin-bottom: 10px;
         }
         
         .company-info h1 {
-          font-size: 14px;
-          color: #1a1a1a;
+          font-size: 16px;
           margin-bottom: 2px;
         }
         
         .company-info p {
-          color: #666;
-          font-size: 8px;
+          font-size: 9px;
+          color: #555;
         }
         
         .os-info {
@@ -89,75 +281,74 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
         }
         
         .os-number {
-          font-size: 16px;
+          font-size: 14px;
           font-weight: bold;
           color: #2563eb;
         }
         
         .os-date {
-          font-size: 8px;
+          font-size: 9px;
           color: #666;
+          margin-top: 2px;
         }
         
         .status-badge {
           display: inline-block;
-          padding: 2px 6px;
-          border-radius: 3px;
+          padding: 2px 8px;
+          border-radius: 4px;
           font-size: 8px;
           font-weight: bold;
-          margin-top: 3px;
+          margin-top: 4px;
         }
         
         .section {
-          margin-bottom: 6px;
+          margin-bottom: 10px;
         }
         
         .section-title {
-          font-size: 10px;
+          font-size: 9px;
           font-weight: bold;
-          color: #1a1a1a;
+          text-transform: uppercase;
+          color: #666;
           border-bottom: 1px solid #ddd;
-          padding-bottom: 2px;
-          margin-bottom: 4px;
+          padding-bottom: 3px;
+          margin-bottom: 6px;
         }
         
         .info-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-columns: repeat(3, 1fr);
           gap: 6px;
         }
         
         .info-item label {
-          display: block;
           font-size: 7px;
-          color: #666;
+          color: #888;
           text-transform: uppercase;
-          margin-bottom: 1px;
+          display: block;
         }
         
         .info-item span {
-          font-weight: 500;
-          font-size: 9px;
+          font-size: 10px;
         }
         
         .equipment-box {
-          background: #f5f5f5;
+          background: #f8f9fa;
           padding: 6px;
-          border-radius: 3px;
-          margin-bottom: 6px;
+          border-radius: 4px;
         }
         
         .equipment-title {
-          font-size: 10px;
           font-weight: bold;
-          margin-bottom: 2px;
+          font-size: 11px;
         }
         
         .equipment-details {
           display: flex;
           gap: 12px;
-          font-size: 8px;
+          font-size: 9px;
           color: #666;
+          margin-top: 3px;
         }
         
         .description-grid {
@@ -168,33 +359,20 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
         
         .problem-box, .diagnosis-box, .solution-box {
           padding: 6px;
-          font-size: 8px;
+          border-radius: 4px;
+          font-size: 9px;
         }
         
         .problem-box {
-          background: #fef3c7;
-          border-left: 2px solid #f59e0b;
+          background: #fef2f2;
         }
         
         .diagnosis-box {
-          background: #f3e8ff;
-          border-left: 2px solid #9333ea;
+          background: #eff6ff;
         }
         
         .solution-box {
-          background: #d1fae5;
-          border-left: 2px solid #10b981;
-        }
-        
-        .problem-box strong, .diagnosis-box strong, .solution-box strong {
-          font-size: 8px;
-          display: block;
-          margin-bottom: 2px;
-        }
-        
-        .problem-box p, .diagnosis-box p, .solution-box p {
-          margin: 0;
-          line-height: 1.2;
+          background: #f0fdf4;
         }
         
         .items-grid {
@@ -206,37 +384,41 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
         table {
           width: 100%;
           border-collapse: collapse;
-        }
-        
-        th, td {
-          padding: 3px 4px;
-          text-align: left;
-          border-bottom: 1px solid #ddd;
-          font-size: 8px;
+          font-size: 9px;
+          margin-top: 4px;
         }
         
         th {
-          background: #f5f5f5;
+          background: #f1f5f9;
+          padding: 4px 6px;
+          text-align: left;
           font-size: 7px;
           text-transform: uppercase;
           color: #666;
+          border-bottom: 1px solid #ddd;
         }
         
-        td.right, th.right {
+        td {
+          padding: 3px 6px;
+          border-bottom: 1px solid #eee;
+        }
+        
+        .right {
           text-align: right;
         }
         
         .bottom-section {
-          display: grid;
-          grid-template-columns: 1fr 200px;
-          gap: 15px;
-          margin-top: 8px;
-          padding-top: 6px;
-          border-top: 1px solid #333;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 20px;
+          margin-top: 10px;
+          padding-top: 8px;
+          border-top: 1px solid #ddd;
         }
         
         .totals-table {
-          width: 100%;
+          min-width: 200px;
         }
         
         .totals-row {
@@ -246,45 +428,44 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
           font-size: 9px;
         }
         
-        .totals-row.discount {
-          color: #dc2626;
-        }
-        
         .totals-row.total {
           font-size: 12px;
           font-weight: bold;
           border-top: 1px solid #333;
-          margin-top: 4px;
           padding-top: 4px;
+          margin-top: 2px;
+          color: #2563eb;
+        }
+        
+        .totals-row.discount {
+          color: #dc2626;
         }
         
         .payment-info {
           font-size: 8px;
           color: #666;
+          margin-top: 4px;
+          text-align: right;
         }
         
         .warranty-notice {
-          background: #eff6ff;
-          border: 1px solid #bfdbfe;
-          border-radius: 3px;
+          background: #fffbeb;
+          border: 1px solid #f59e0b;
+          border-radius: 4px;
           padding: 6px;
           font-size: 8px;
-          margin-bottom: 6px;
-        }
-        
-        .warranty-notice strong {
-          color: #1d4ed8;
+          margin-bottom: 8px;
         }
         
         .signatures {
           display: flex;
-          justify-content: space-around;
+          gap: 40px;
           margin-top: 20px;
         }
         
         .signature-line {
+          flex: 1;
           text-align: center;
-          width: 150px;
         }
         
         .signature-line hr {
@@ -304,199 +485,60 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
             -webkit-print-color-adjust: exact;
           }
         }
+  `;
+}
+
+export function printOSA4(data: PrintData) {
+  const body = generateA4Body(data);
+
+  const content = `
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <title>OS ${formatOSNumber(data.order.order_number, data.order.created_at)}</title>
+      <style>${generateA4Styles()}</style>
+    </head>
+    <body>
+      ${body}
+    </body>
+    </html>
+  `;
+
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.print();
+    };
+  }
+}
+
+export function printOSA4Dual(data: PrintData) {
+  const copy1 = generateA4Body(data, '1ª Via - Estabelecimento');
+  const copy2 = generateA4Body(data, '2ª Via - Cliente');
+
+  const content = `
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <title>OS ${formatOSNumber(data.order.order_number, data.order.created_at)} - 2 Vias</title>
+      <style>
+        ${generateA4Styles()}
+
+        .os-copy {
+          page-break-after: always;
+        }
+        .os-copy:last-child {
+          page-break-after: auto;
+        }
       </style>
     </head>
     <body>
-      <div class="header">
-        <div class="company-info" style="display: flex; align-items: center; gap: 12px;">
-          ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-height: 60px; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />` : ''}
-          <div>
-            <h1>${companyName}</h1>
-            ${companyDocument ? `<p>${companyDocument}</p>` : ''}
-            ${companyPhone ? `<p>📞 ${companyPhone}</p>` : ''}
-            ${companyEmail ? `<p>✉️ ${companyEmail}</p>` : ''}
-            ${companyAddress ? `<p>📍 ${companyAddress}</p>` : ''}
-          </div>
-        </div>
-        <div class="os-info">
-          <div class="os-number">OS ${formatOSNumber(order.order_number, order.created_at)}</div>
-          <div class="os-date">${format(new Date(order.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</div>
-          <div class="status-badge" style="background: ${STATUS_CONFIG[order.status].bgColor}; color: ${STATUS_CONFIG[order.status].color.replace('text-', '')}">
-            ${STATUS_CONFIG[order.status].label}
-          </div>
-        </div>
-      </div>
-
-      ${order.client ? `
-        <div class="section">
-          <div class="section-title">Cliente</div>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Nome</label>
-              <span>${order.client.name}</span>
-            </div>
-            <div class="info-item">
-              <label>Telefone</label>
-              <span>${order.client.phone || '-'}</span>
-            </div>
-            <div class="info-item">
-              <label>E-mail</label>
-              <span>${order.client.email || '-'}</span>
-            </div>
-          </div>
-        </div>
-      ` : ''}
-
-      ${order.equipment ? `
-        <div class="section">
-          <div class="section-title">Equipamento</div>
-          <div class="equipment-box">
-            <div class="equipment-title">${order.equipment}${order.brand ? ` - ${order.brand}` : ''}${order.model ? ` ${order.model}` : ''}</div>
-            <div class="equipment-details">
-              ${order.serial_number ? `<span>S/N: ${order.serial_number}</span>` : ''}
-              ${order.accessories ? `<span>Acessórios: ${order.accessories}</span>` : ''}
-            </div>
-          </div>
-        </div>
-      ` : ''}
-
-      <div class="section">
-        <div class="section-title">Descrição do Serviço</div>
-        <div class="description-grid">
-          <div class="problem-box">
-            <strong>Problema Relatado:</strong>
-            <p>${order.reported_issue}</p>
-          </div>
-          ${order.diagnosis || order.solution ? `
-            <div>
-              ${order.diagnosis ? `
-                <div class="diagnosis-box" style="margin-bottom: ${order.solution ? '4px' : '0'}">
-                  <strong>Diagnóstico:</strong>
-                  <p>${order.diagnosis}</p>
-                </div>
-              ` : ''}
-              ${order.solution ? `
-                <div class="solution-box">
-                  <strong>Solução:</strong>
-                  <p>${order.solution}</p>
-                </div>
-              ` : ''}
-            </div>
-          ` : ''}
-        </div>
-      </div>
-
-      ${(services.length > 0 || products.length > 0) ? `
-        <div class="section">
-          <div class="section-title">Itens</div>
-          <div class="items-grid">
-            ${services.length > 0 ? `
-              <div>
-                <strong style="font-size: 8px; color: #666;">SERVIÇOS</strong>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Descrição</th>
-                      <th class="right">Qtd</th>
-                      <th class="right">Unit.</th>
-                      <th class="right">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${services.map(s => {
-                      const itemTotal = s.quantity * s.unit_price;
-                      return `
-                      <tr>
-                        <td>${s.description}</td>
-                        <td class="right">${s.quantity}</td>
-                        <td class="right">${formatCurrency(s.unit_price)}</td>
-                        <td class="right">${formatCurrency(itemTotal)}</td>
-                      </tr>
-                    `}).join('')}
-                  </tbody>
-                </table>
-              </div>
-            ` : ''}
-            ${products.length > 0 ? `
-              <div>
-                <strong style="font-size: 8px; color: #666;">PRODUTOS / PEÇAS</strong>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Descrição</th>
-                      <th class="right">Qtd</th>
-                      <th class="right">Unit.</th>
-                      <th class="right">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${products.map(p => {
-                      const itemTotal = p.quantity * p.unit_price;
-                      return `
-                      <tr>
-                        <td>${p.description}</td>
-                        <td class="right">${p.quantity}</td>
-                        <td class="right">${formatCurrency(p.unit_price)}</td>
-                        <td class="right">${formatCurrency(itemTotal)}</td>
-                      </tr>
-                    `}).join('')}
-                  </tbody>
-                </table>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      ` : ''}
-
-      <div class="bottom-section">
-        <div>
-          ${(order.warranty_until || warrantyTerms) ? `
-            <div class="warranty-notice">
-              ${order.warranty_until ? `<strong>⚠️ Garantia até ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}</strong>` : ''}
-              ${warrantyTerms ? `<p style="margin-top: ${order.warranty_until ? '4px' : '0'};">${warrantyTerms}</p>` : (order.warranty_until ? '<p style="margin-top: 4px;">- Cobre defeitos de serviço. Não se aplica a mau uso, quedas ou danos por terceiros.</p>' : '')}
-            </div>
-          ` : ''}
-          <div class="signatures">
-            <div class="signature-line">
-              <hr />
-              <span>Técnico</span>
-            </div>
-            <div class="signature-line">
-              <hr />
-              <span>Cliente</span>
-            </div>
-          </div>
-        </div>
-        <div class="totals-table">
-          <div class="totals-row">
-            <span>Serviços:</span>
-            <span>${formatCurrency(order.total_services)}</span>
-          </div>
-          <div class="totals-row">
-            <span>Produtos:</span>
-            <span>${formatCurrency(order.total_products)}</span>
-          </div>
-          ${order.discount > 0 ? `
-            <div class="totals-row discount">
-              <span>Desconto:</span>
-              <span>-${formatCurrency(order.discount)}</span>
-            </div>
-          ` : ''}
-          <div class="totals-row total">
-            <span>TOTAL:</span>
-            <span>${formatCurrency(order.total)}</span>
-          </div>
-          <div class="payment-info">
-            Pagamento: ${getPaymentMethodLabel(order.payment_method)}
-          </div>
-        </div>
-      </div>
-
-      ${footerMessage ? `
-        <div style="text-align: center; margin-top: 12px; font-size: 9px; color: #666;">
-          ${footerMessage}
-        </div>
-      ` : ''}
+      ${copy1}
+      ${copy2}
     </body>
     </html>
   `;

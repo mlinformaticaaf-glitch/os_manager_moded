@@ -6,8 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Printer, FileText, Receipt } from "lucide-react";
-import { printOSA4, printOSThermal } from "./printOS";
+import { Printer, FileText, Receipt, Copy } from "lucide-react";
+import { printOSA4, printOSA4Dual, printOSThermal } from "./printOS";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 interface OSPrintButtonProps {
@@ -20,7 +20,7 @@ interface OSPrintButtonProps {
 export function OSPrintButton({ order, items, variant = "outline", size = "sm" }: OSPrintButtonProps) {
   const { settings } = useCompanySettings();
 
-  const handlePrint = (type: 'a4' | 'thermal') => {
+  const handlePrint = (type: 'a4' | 'a4-dual' | 'thermal') => {
     const printData = {
       order,
       items,
@@ -38,6 +38,8 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
 
     if (type === 'a4') {
       printOSA4(printData);
+    } else if (type === 'a4-dual') {
+      printOSA4Dual(printData);
     } else {
       printOSThermal(printData);
     }
@@ -54,7 +56,11 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => handlePrint('a4')}>
           <FileText className="h-4 w-4 mr-2" />
-          Formato A4
+          A4 - Via Única
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handlePrint('a4-dual')}>
+          <Copy className="h-4 w-4 mr-2" />
+          A4 - Duas Vias
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handlePrint('thermal')}>
           <Receipt className="h-4 w-4 mr-2" />
