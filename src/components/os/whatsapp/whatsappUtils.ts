@@ -100,16 +100,16 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
     message += `Pagamento: ${getPaymentMethodLabel(order.payment_method)}\n`;
   }
 
+  if (order.estimated_completion) {
+    message += `\n*Previsão de entrega:* ${format(new Date(order.estimated_completion), "dd/MM/yyyy", { locale: ptBR })}\n`;
+  }
+
   if (order.warranty_until) {
     message += `\n*Garantia até:* ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}\n`;
   }
   if (warrantyTerms) {
     if (!order.warranty_until) message += '\n';
     message += `${warrantyTerms}\n`;
-  }
-
-  if (order.estimated_completion) {
-    message += `\n*Previsão de entrega:* ${format(new Date(order.estimated_completion), "dd/MM/yyyy", { locale: ptBR })}\n`;
   }
 
   message += `\n------------------------\n`;
