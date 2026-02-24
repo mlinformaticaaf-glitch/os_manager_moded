@@ -528,16 +528,145 @@ export function printOSA4Dual(data: PrintData) {
       <style>
         ${generateA4Styles()}
 
-        .os-copy {
-          page-break-after: always;
+        body {
+          padding: 8mm 12mm;
         }
-        .os-copy:last-child {
+
+        .os-copy {
           page-break-after: auto;
+          font-size: 8px;
+        }
+
+        .os-copy .header {
+          margin-bottom: 6px;
+          padding-bottom: 4px;
+        }
+
+        .os-copy .company-info h1 {
+          font-size: 12px;
+        }
+
+        .os-copy .company-info p {
+          font-size: 7px;
+        }
+
+        .os-copy .os-number {
+          font-size: 11px;
+        }
+
+        .os-copy .os-date {
+          font-size: 7px;
+        }
+
+        .os-copy .status-badge {
+          font-size: 7px;
+          padding: 1px 6px;
+        }
+
+        .os-copy .section {
+          margin-bottom: 5px;
+        }
+
+        .os-copy .section-title {
+          font-size: 7px;
+          padding-bottom: 2px;
+          margin-bottom: 4px;
+        }
+
+        .os-copy .info-item label {
+          font-size: 6px;
+        }
+
+        .os-copy .info-item span {
+          font-size: 8px;
+        }
+
+        .os-copy .equipment-box {
+          padding: 4px;
+        }
+
+        .os-copy .equipment-title {
+          font-size: 9px;
+        }
+
+        .os-copy .equipment-details {
+          font-size: 7px;
+          margin-top: 2px;
+        }
+
+        .os-copy .problem-box,
+        .os-copy .diagnosis-box,
+        .os-copy .solution-box {
+          padding: 4px;
+          font-size: 7px;
+        }
+
+        .os-copy table {
+          font-size: 7px;
+        }
+
+        .os-copy th {
+          font-size: 6px;
+          padding: 2px 4px;
+        }
+
+        .os-copy td {
+          padding: 2px 4px;
+        }
+
+        .os-copy .bottom-section {
+          margin-top: 6px;
+          padding-top: 4px;
+        }
+
+        .os-copy .totals-row {
+          font-size: 7px;
+        }
+
+        .os-copy .totals-row.total {
+          font-size: 10px;
+        }
+
+        .os-copy .payment-info {
+          font-size: 7px;
+        }
+
+        .os-copy .warranty-notice {
+          padding: 4px;
+          font-size: 7px;
+        }
+
+        .os-copy .signatures {
+          margin-top: 10px;
+          gap: 20px;
+        }
+
+        .os-copy .signature-line span {
+          font-size: 6px;
+        }
+
+        .os-copy img {
+          max-height: 40px !important;
+          max-width: 80px !important;
+        }
+
+        .dual-divider {
+          border: none;
+          border-top: 1px dashed #999;
+          margin: 8px 0;
+        }
+
+        @media print {
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
         }
       </style>
     </head>
     <body>
       ${copy1}
+      <hr class="dual-divider" />
       ${copy2}
     </body>
     </html>
