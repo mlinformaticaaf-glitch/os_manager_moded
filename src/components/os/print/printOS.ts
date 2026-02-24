@@ -445,10 +445,10 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
 
       <div class="bottom-section">
         <div>
-          ${order.warranty_until ? `
+          ${(order.warranty_until || warrantyTerms) ? `
             <div class="warranty-notice">
-              <strong>⚠️ Garantia até ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}</strong>
-              ${warrantyTerms ? `<p style="margin-top: 4px;">${warrantyTerms}</p>` : '- Cobre defeitos de serviço. Não se aplica a mau uso, quedas ou danos por terceiros.'}
+              ${order.warranty_until ? `<strong>⚠️ Garantia até ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}</strong>` : ''}
+              ${warrantyTerms ? `<p style="margin-top: ${order.warranty_until ? '4px' : '0'};">${warrantyTerms}</p>` : (order.warranty_until ? '<p style="margin-top: 4px;">- Cobre defeitos de serviço. Não se aplica a mau uso, quedas ou danos por terceiros.</p>' : '')}
             </div>
           ` : ''}
           <div class="signatures">
@@ -747,11 +747,11 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
         </div>
       </div>
 
-      ${order.warranty_until ? `
+      ${(order.warranty_until || warrantyTerms) ? `
         <div class="divider"></div>
         <div style="font-size: 8px; text-align: center;">
-          Garantia até: ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}
-          ${warrantyTerms ? `<br>${warrantyTerms}` : ''}
+          ${order.warranty_until ? `Garantia até: ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}` : ''}
+          ${warrantyTerms ? `${order.warranty_until ? '<br>' : ''}${warrantyTerms}` : ''}
         </div>
       ` : ''}
 

@@ -102,9 +102,10 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
 
   if (order.warranty_until) {
     message += `\n*Garantia até:* ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}\n`;
-    if (warrantyTerms) {
-      message += `${warrantyTerms}\n`;
-    }
+  }
+  if (warrantyTerms) {
+    if (!order.warranty_until) message += '\n';
+    message += `${warrantyTerms}\n`;
   }
 
   if (order.estimated_completion) {
