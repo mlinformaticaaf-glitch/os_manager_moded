@@ -35,7 +35,7 @@ const getPaymentMethodLabel = (method: string | null) => {
   return methods[method] || method;
 };
 
-export function printOSA4({ order, items, companyName = 'Assistência Técnica', companyPhone, companyAddress, warrantyTerms, footerMessage = 'Obrigado pela preferência!' }: PrintData) {
+export function printOSA4({ order, items, companyName = 'Assistência Técnica', companyPhone, companyAddress, companyEmail, companyDocument, logoUrl, warrantyTerms, footerMessage = 'Obrigado pela preferência!' }: PrintData) {
   const services = items.filter(i => i.type === 'service');
   const products = items.filter(i => i.type === 'product');
 
@@ -308,10 +308,15 @@ export function printOSA4({ order, items, companyName = 'Assistência Técnica',
     </head>
     <body>
       <div class="header">
-        <div class="company-info">
-          <h1>${companyName}</h1>
-          ${companyPhone ? `<p>📞 ${companyPhone}</p>` : ''}
-          ${companyAddress ? `<p>📍 ${companyAddress}</p>` : ''}
+        <div class="company-info" style="display: flex; align-items: center; gap: 12px;">
+          ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-height: 60px; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />` : ''}
+          <div>
+            <h1>${companyName}</h1>
+            ${companyDocument ? `<p>${companyDocument}</p>` : ''}
+            ${companyPhone ? `<p>📞 ${companyPhone}</p>` : ''}
+            ${companyEmail ? `<p>✉️ ${companyEmail}</p>` : ''}
+            ${companyAddress ? `<p>📍 ${companyAddress}</p>` : ''}
+          </div>
         </div>
         <div class="os-info">
           <div class="os-number">OS ${formatOSNumber(order.order_number, order.created_at)}</div>
