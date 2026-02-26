@@ -76,7 +76,7 @@ export function EquipmentForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg w-[calc(100vw-16px)] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>
             {equipment ? 'Editar Equipamento' : 'Novo Equipamento'}

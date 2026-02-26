@@ -112,7 +112,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg w-[calc(100vw-16px)] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>{supplier ? 'Editar Fornecedor' : 'Novo Fornecedor'}</DialogTitle>
           <DialogDescription>
@@ -136,7 +136,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="document"
@@ -194,7 +194,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
               )}
             />
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="city"
