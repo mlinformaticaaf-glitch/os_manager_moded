@@ -8,7 +8,10 @@ import {
   CheckCircle,
   ArrowUpCircle,
   ArrowDownCircle,
-  Filter
+  Filter,
+  CalendarIcon,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,7 +42,7 @@ import {
 import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
 import { FinancialTransaction, TRANSACTION_CATEGORY_OPTIONS, TRANSACTION_STATUS_OPTIONS } from "@/types/financial";
 import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, startOfMonth, endOfMonth, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -160,7 +163,14 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deleteTransaction_, setDeleteTransaction] = useState<FinancialTransaction | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const isMobile = useIsMobile();
+
+  const dateStart = startOfMonth(currentMonth);
+  const dateEnd = endOfMonth(currentMonth);
+
+  const handlePrevMonth = () => setCurrentMonth(prev => subMonths(prev, 1));
+  const handleNextMonth = () => setCurrentMonth(prev => addMonths(prev, 1));
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
@@ -172,6 +182,16 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
 
       // Status filter from dropdown
       if (!filterStatus && statusFilter !== 'all' && t.status !== statusFilter) return false;
+
+      // Date filter - use due_date for pending, paid_date for paid, fallback to due_date
+      const dateField = filterStatus === 'paid' ? (t.paid_date || t.due_date) : t.due_date;
+      if (dateField) {
+        const txDate = parseISO(dateField);
+        if (txDate < dateStart || txDate > dateEnd) return false;
+      } else {
+        // If no date, exclude from filtered results
+        return false;
+      }
       
       // Search
       if (search) {
@@ -184,7 +204,7 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
       
       return true;
     });
-  }, [transactions, filterType, statusFilter, search]);
+  }, [transactions, filterType, filterStatus, statusFilter, search, dateStart, dateEnd]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -242,6 +262,20 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
           <Button onClick={onNew} size="sm" className="shrink-0 w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Nova Transação
+          </Button>
+        </div>
+        <div className="flex items-center justify-center gap-2 mt-2">
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={handlePrevMonth}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center gap-1.5 min-w-[140px] justify-center">
+            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium capitalize">
+              {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
+            </span>
+          </div>
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleNextMonth}>
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 mt-4">
