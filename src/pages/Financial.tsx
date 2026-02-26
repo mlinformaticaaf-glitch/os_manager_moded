@@ -53,7 +53,7 @@ export default function Financial() {
               <TabsTrigger value="receivables" className="text-xs sm:text-sm px-2 sm:px-3">A Receber</TabsTrigger>
               <TabsTrigger value="received" className="text-xs sm:text-sm px-2 sm:px-3">Recebidos</TabsTrigger>
               <TabsTrigger value="payables" className="text-xs sm:text-sm px-2 sm:px-3">A Pagar</TabsTrigger>
-              <TabsTrigger value="all" className="text-xs sm:text-sm px-2 sm:px-3">Todas</TabsTrigger>
+              <TabsTrigger value="paid" className="text-xs sm:text-sm px-2 sm:px-3">Pagos</TabsTrigger>
               <TabsTrigger value="reports" className="text-xs sm:text-sm px-2 sm:px-3">Relatórios</TabsTrigger>
             </TabsList>
           </div>
@@ -82,7 +82,17 @@ export default function Financial() {
 
           <TabsContent value="payables">
             <TransactionsTable 
-              filterType="expense" 
+              filterType="expense"
+              filterStatus="pending"
+              onEdit={handleEdit}
+              onNew={handleNewTransaction}
+            />
+          </TabsContent>
+
+          <TabsContent value="paid">
+            <TransactionsTable 
+              filterType="expense"
+              filterStatus="paid"
               onEdit={handleEdit}
               onNew={handleNewTransaction}
             />
