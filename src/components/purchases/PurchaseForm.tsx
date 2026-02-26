@@ -227,7 +227,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl w-[calc(100vw-16px)] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Editar Compra' : 'Nova Compra'}</DialogTitle>
           <DialogDescription>
@@ -238,7 +238,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             {/* Supplier and Invoice */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="supplier_id"
@@ -280,7 +280,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
             </div>
 
             {/* Dates */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="purchase_date"
@@ -353,8 +353,8 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                 <div className="space-y-3">
                   {items.map((item, index) => (
                     <div key={index} className="flex gap-2 items-start p-3 rounded-lg border bg-muted/30">
-                      <div className="flex-1 grid grid-cols-4 gap-2">
-                        <div className="col-span-2">
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-4 gap-2">
+                        <div className="sm:col-span-2">
                           <CapitalizedInput
                             placeholder="Produto"
                             value={item.product_name}
@@ -401,7 +401,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
             <Separator />
 
             {/* Totals */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="discount"
@@ -454,7 +454,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
             <Separator />
 
             {/* Payment */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="payment_status"
