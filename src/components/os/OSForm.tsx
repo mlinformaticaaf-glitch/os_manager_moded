@@ -69,6 +69,7 @@ const osSchema = z.object({
   priority: z.enum(['low', 'normal', 'high', 'urgent']),
   serial_number: z.string().max(50).optional().or(z.literal('')),
   accessories: z.string().max(200).optional().or(z.literal('')),
+  device_password: z.string().max(200).optional().or(z.literal('')),
   reported_issue: z.string().min(5, 'Descreva o problema relatado').max(1000),
   diagnosis: z.string().max(1000).optional().or(z.literal('')),
   solution: z.string().max(1000).optional().or(z.literal('')),
@@ -155,6 +156,7 @@ export function OSForm({
       priority: 'normal',
       serial_number: '',
       accessories: '',
+      device_password: '',
       reported_issue: '',
       diagnosis: '',
       solution: '',
@@ -209,6 +211,7 @@ export function OSForm({
         priority: order?.priority ?? 'normal',
         serial_number: order?.serial_number ?? '',
         accessories: order?.accessories ?? '',
+        device_password: (order as any)?.device_password ?? '',
         reported_issue: order?.reported_issue ?? '',
         diagnosis: order?.diagnosis ?? '',
         solution: order?.solution ?? '',
@@ -310,6 +313,7 @@ export function OSForm({
       equipment_id: data.equipment_id || null,
       serial_number: data.serial_number?.trim() || null,
       accessories: data.accessories?.trim() || null,
+      device_password: data.device_password?.trim() || null,
       diagnosis: data.diagnosis?.trim() || null,
       solution: data.solution?.trim() || null,
       internal_notes: data.internal_notes?.trim() || null,
@@ -678,6 +682,20 @@ export function OSForm({
                       )}
                     />
                   </div>
+
+                  <FormField
+                    control={form.control}
+                    name="device_password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Senha do Dispositivo</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: 1234 ou padrão de desbloqueio" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <Separator />

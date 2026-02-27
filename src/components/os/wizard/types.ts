@@ -15,6 +15,7 @@ export interface WizardFormData {
   priority: OSPriority;
   serial_number: string;
   accessories: string;
+  device_password: string;
   reported_issue: string;
   diagnosis: string;
   solution: string;

@@ -428,6 +428,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           delivered_at: string | null
+          device_password: string | null
           diagnosis: string | null
           discount: number
           equipment: string | null
@@ -459,6 +460,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           delivered_at?: string | null
+          device_password?: string | null
           diagnosis?: string | null
           discount?: number
           equipment?: string | null
@@ -490,6 +492,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           delivered_at?: string | null
+          device_password?: string | null
           diagnosis?: string | null
           discount?: number
           equipment?: string | null
