@@ -8,17 +8,21 @@ import { Label } from '@/components/ui/label';
 import { useEquipment } from '@/hooks/useEquipment';
 import { EquipmentForm } from '@/components/equipment/EquipmentForm';
 import { formatEquipmentCode } from '@/types/equipment';
-import { Search, Plus, Monitor, Check, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Search, Plus, Monitor, Check, ArrowRight, ArrowLeft, Lock, KeyRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Equipment } from '@/types/equipment';
+import { PatternLock } from '@/components/os/PatternLock';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface EquipmentStepProps {
   selectedEquipmentId: string | null;
   serialNumber: string;
   accessories: string;
+  devicePassword: string;
   onSelectEquipment: (equipmentId: string | null) => void;
   onChangeSerialNumber: (value: string) => void;
   onChangeAccessories: (value: string) => void;
+  onChangeDevicePassword: (value: string) => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -27,9 +31,11 @@ export function EquipmentStep({
   selectedEquipmentId,
   serialNumber,
   accessories,
+  devicePassword,
   onSelectEquipment,
   onChangeSerialNumber,
   onChangeAccessories,
+  onChangeDevicePassword,
   onNext,
   onBack,
 }: EquipmentStepProps) {
@@ -154,6 +160,40 @@ export function EquipmentStep({
             className="text-sm sm:text-base"
             uppercase
           />
+        </div>
+
+        {/* Device Password */}
+        <div className="space-y-1.5 sm:space-y-2">
+          <Label className="text-sm flex items-center gap-1.5">
+            <Lock className="h-3.5 w-3.5" />
+            Senha do Dispositivo (opcional)
+          </Label>
+          <Tabs defaultValue="text" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 h-8">
+              <TabsTrigger value="text" className="text-xs gap-1">
+                <KeyRound className="h-3 w-3" />
+                Texto/Números
+              </TabsTrigger>
+              <TabsTrigger value="pattern" className="text-xs gap-1">
+                <Lock className="h-3 w-3" />
+                Desenho
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="text" className="mt-2">
+              <Input
+                placeholder="Ex: 1234 ou abc123"
+                value={devicePassword.includes(',') ? '' : devicePassword}
+                onChange={(e) => onChangeDevicePassword(e.target.value)}
+                className="text-sm sm:text-base"
+              />
+            </TabsContent>
+            <TabsContent value="pattern" className="mt-2 flex justify-center">
+              <PatternLock
+                value={devicePassword}
+                onChange={onChangeDevicePassword}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 

@@ -30,6 +30,7 @@ const initialFormData: WizardFormData = {
   priority: 'normal',
   serial_number: '',
   accessories: '',
+  device_password: '',
   reported_issue: '',
   diagnosis: '',
   solution: '',
@@ -115,6 +116,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
         priority: formData.priority,
         serial_number: formData.serial_number || null,
         accessories: formData.accessories || null,
+        device_password: formData.device_password || null,
         reported_issue: formData.reported_issue,
         diagnosis: formData.diagnosis || null,
         solution: formData.solution || null,
@@ -252,9 +254,11 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
             selectedEquipmentId={formData.equipment_id}
             serialNumber={formData.serial_number}
             accessories={formData.accessories}
+            devicePassword={formData.device_password}
             onSelectEquipment={(equipmentId) => updateFormData({ equipment_id: equipmentId })}
             onChangeSerialNumber={(value) => updateFormData({ serial_number: value })}
             onChangeAccessories={(value) => updateFormData({ accessories: value })}
+            onChangeDevicePassword={(value) => updateFormData({ device_password: value })}
             onNext={goNext}
             onBack={goBack}
           />

@@ -17,6 +17,7 @@ export interface ServiceOrder {
   model: string | null;
   serial_number: string | null;
   accessories: string | null;
+  device_password: string | null;
   reported_issue: string;
   diagnosis: string | null;
   solution: string | null;
