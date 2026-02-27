@@ -12,14 +12,8 @@ interface OSKanbanViewProps {
   onStatusChange: (orderId: string, status: OSStatus) => void;
 }
 
-const KANBAN_COLUMNS: OSStatus[] = [
-  'pending',
-  'in_progress',
-  'waiting_parts',
-  'waiting_approval',
-  'completed',
-  'delivered',
-];
+// Show all statuses except cancelled in kanban
+const EXCLUDED_KANBAN_STATUSES = ['cancelled'];
 
 export function OSKanbanView({ orders, onView, onEdit, onDelete, onStatusChange }: OSKanbanViewProps) {
   const { statusConfig, orderedStatuses } = useStatusSettings();
@@ -30,7 +24,7 @@ export function OSKanbanView({ orders, onView, onEdit, onDelete, onStatusChange 
 
   return (
     <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-      {orderedStatuses.filter(s => KANBAN_COLUMNS.includes(s)).map((status) => {
+      {orderedStatuses.filter(s => !EXCLUDED_KANBAN_STATUSES.includes(s)).map((status) => {
         const statusOrders = getOrdersByStatus(status);
         const config = statusConfig[status];
 

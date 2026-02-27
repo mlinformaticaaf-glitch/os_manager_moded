@@ -8,13 +8,8 @@ import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
 
-// Dashboard kanban uses a subset of statuses
-const DASHBOARD_KANBAN_STATUSES: OSStatus[] = [
-  'pending',
-  'in_progress',
-  'waiting_parts',
-  'completed',
-];
+// Dashboard kanban excludes delivered and cancelled
+const EXCLUDED_DASHBOARD_STATUSES = ['delivered', 'cancelled'];
 
 const prioridadeColors = {
   low: "bg-muted text-muted-foreground",
@@ -53,7 +48,7 @@ export function KanbanBoard() {
 
   return (
     <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-      {orderedStatuses.filter(s => DASHBOARD_KANBAN_STATUSES.includes(s)).map((status) => {
+      {orderedStatuses.filter(s => !EXCLUDED_DASHBOARD_STATUSES.includes(s)).map((status) => {
         const statusOrders = getOrdersByStatus(status);
         const config = statusConfig[status];
 

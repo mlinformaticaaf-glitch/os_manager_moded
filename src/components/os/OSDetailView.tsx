@@ -46,11 +46,11 @@ export function OSDetailView({
   onEdit,
   onStatusChange,
 }: OSDetailViewProps) {
-  const { statusConfig, orderedStatuses } = useStatusSettings();
+  const { statusConfig, orderedStatuses, getStatusConfig } = useStatusSettings();
 
   if (!order) return null;
 
-  const statusCfg = statusConfig[order.status];
+  const statusCfg = getStatusConfig(order.status);
   const priorityConfig = PRIORITY_CONFIG[order.priority];
 
   const formatCurrency = (value: number) => {

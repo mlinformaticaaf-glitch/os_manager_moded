@@ -33,8 +33,8 @@ interface OSListViewProps {
 }
 
 function OSListCard({ order, onView, onEdit, onDelete }: { order: ServiceOrder; onView: (order: ServiceOrder) => void; onEdit: (order: ServiceOrder) => void; onDelete: (order: ServiceOrder) => void }) {
-  const { statusConfig } = useStatusSettings();
-  const statusCfg = statusConfig[order.status];
+  const { getStatusConfig } = useStatusSettings();
+  const statusCfg = getStatusConfig(order.status);
   const priorityConfig = PRIORITY_CONFIG[order.priority];
 
   const formatCurrency = (value: number) => {
@@ -127,7 +127,7 @@ function OSListCard({ order, onView, onEdit, onDelete }: { order: ServiceOrder; 
 
 export function OSListView({ orders, onView, onEdit, onDelete }: OSListViewProps) {
   const isMobile = useIsMobile();
-  const { statusConfig } = useStatusSettings();
+  const { getStatusConfig } = useStatusSettings();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -177,7 +177,7 @@ export function OSListView({ orders, onView, onEdit, onDelete }: OSListViewProps
         </TableHeader>
         <TableBody>
           {orders.map((order) => {
-            const statusCfg = statusConfig[order.status];
+            const statusCfg = getStatusConfig(order.status);
             const priorityConfig = PRIORITY_CONFIG[order.priority];
 
             return (

@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function DashboardOSList() {
   const { orders, isLoading } = useServiceOrders();
-  const { statusConfig } = useStatusSettings();
+  const { getStatusConfig } = useStatusSettings();
   const navigate = useNavigate();
 
   // Only show open orders (not completed, delivered, or cancelled)
@@ -42,7 +42,7 @@ export function DashboardOSList() {
     <ScrollArea className="h-[400px]">
       <div className="space-y-2">
         {activeOrders.map((order) => {
-          const statusConfig2 = statusConfig[order.status];
+          const statusConfig2 = getStatusConfig(order.status);
           return (
             <div
               key={order.id}
