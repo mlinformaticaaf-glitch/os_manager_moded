@@ -1,0 +1,1 @@
+ALTER TABLE public.service_orders DROP CONSTRAINT service_orders_status_check;
