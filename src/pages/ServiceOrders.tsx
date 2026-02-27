@@ -28,7 +28,8 @@ import { OSForm } from '@/components/os/OSForm';
 import { OSDetailView } from '@/components/os/OSDetailView';
 import { DeleteOSDialog } from '@/components/os/DeleteOSDialog';
 import { OSWizard } from '@/components/os/wizard';
-import { ServiceOrder, OSStatus, STATUS_CONFIG } from '@/types/serviceOrder';
+import { ServiceOrder, OSStatus } from '@/types/serviceOrder';
+import { useStatusSettings } from '@/hooks/useStatusSettings';
 
 type ViewMode = 'kanban' | 'list';
 
@@ -44,6 +45,7 @@ function getStoredViewMode(): ViewMode {
 
 export default function ServiceOrders() {
   const { orders, isLoading, createOrder, updateOrder, updateStatus, deleteOrder } = useServiceOrders();
+  const { statusConfig, orderedStatuses } = useStatusSettings();
   const location = useLocation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OSStatus | 'all'>('all');
@@ -162,9 +164,9 @@ export default function ServiceOrders() {
               </SelectTrigger>
               <SelectContent className="bg-popover border border-border">
                 <SelectItem value="all">Todos os status</SelectItem>
-                {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                {orderedStatuses.map((key) => (
                   <SelectItem key={key} value={key}>
-                    {config.label}
+                    {statusConfig[key].label}
                   </SelectItem>
                 ))}
               </SelectContent>

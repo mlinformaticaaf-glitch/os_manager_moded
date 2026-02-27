@@ -1,4 +1,5 @@
-import { ServiceOrder, STATUS_CONFIG, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { ServiceOrder, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { useStatusSettings } from '@/hooks/useStatusSettings';
 import {
   Table,
   TableBody,
@@ -32,7 +33,8 @@ interface OSListViewProps {
 }
 
 function OSListCard({ order, onView, onEdit, onDelete }: { order: ServiceOrder; onView: (order: ServiceOrder) => void; onEdit: (order: ServiceOrder) => void; onDelete: (order: ServiceOrder) => void }) {
-  const statusConfig = STATUS_CONFIG[order.status];
+  const { statusConfig } = useStatusSettings();
+  const statusCfg = statusConfig[order.status];
   const priorityConfig = PRIORITY_CONFIG[order.priority];
 
   const formatCurrency = (value: number) => {
@@ -55,8 +57,8 @@ function OSListCard({ order, onView, onEdit, onDelete }: { order: ServiceOrder; 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-bold text-base">#{formatOSNumber(order.order_number, order.created_at)}</span>
-              <Badge className={cn('text-[10px]', statusConfig.color, statusConfig.bgColor)}>
-                {statusConfig.label}
+              <Badge className={cn('text-[10px]', statusCfg.color, statusCfg.bgColor)}>
+                {statusCfg.shortLabel}
               </Badge>
               <span className={cn('text-[10px] font-medium', priorityConfig.color)}>
                 {priorityConfig.label}
@@ -125,6 +127,7 @@ function OSListCard({ order, onView, onEdit, onDelete }: { order: ServiceOrder; 
 
 export function OSListView({ orders, onView, onEdit, onDelete }: OSListViewProps) {
   const isMobile = useIsMobile();
+  const { statusConfig } = useStatusSettings();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -174,7 +177,7 @@ export function OSListView({ orders, onView, onEdit, onDelete }: OSListViewProps
         </TableHeader>
         <TableBody>
           {orders.map((order) => {
-            const statusConfig = STATUS_CONFIG[order.status];
+            const statusCfg = statusConfig[order.status];
             const priorityConfig = PRIORITY_CONFIG[order.priority];
 
             return (
@@ -194,8 +197,8 @@ export function OSListView({ orders, onView, onEdit, onDelete }: OSListViewProps
                     : '-'}
                 </TableCell>
                 <TableCell>
-                  <Badge className={cn('text-xs', statusConfig.color, statusConfig.bgColor)}>
-                    {statusConfig.label}
+                  <Badge className={cn('text-xs', statusCfg.color, statusCfg.bgColor)}>
+                    {statusCfg.label}
                   </Badge>
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">

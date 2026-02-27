@@ -1,12 +1,13 @@
 import { ArrowRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useServiceOrders } from "@/hooks/useServiceOrders";
-import { STATUS_CONFIG } from "@/types/serviceOrder";
+import { useStatusSettings } from "@/hooks/useStatusSettings";
 import { formatOSNumber } from "@/lib/osUtils";
 import { useNavigate } from "react-router-dom";
 
 export function RecentOS() {
   const { orders, isLoading } = useServiceOrders();
+  const { statusConfig } = useStatusSettings();
   const navigate = useNavigate();
 
   // Get the 5 most recent orders
@@ -47,7 +48,7 @@ export function RecentOS() {
       ) : (
         <div className="space-y-2 sm:space-y-3">
           {recentOrders.map((order) => {
-            const config = STATUS_CONFIG[order.status];
+            const config = statusConfig[order.status];
             return (
               <div 
                 key={order.id}

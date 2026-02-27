@@ -1,4 +1,5 @@
-import { ServiceOrder, STATUS_CONFIG, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { ServiceOrder, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { useStatusSettings } from '@/hooks/useStatusSettings';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -45,9 +46,11 @@ export function OSDetailView({
   onEdit,
   onStatusChange,
 }: OSDetailViewProps) {
+  const { statusConfig, orderedStatuses } = useStatusSettings();
+
   if (!order) return null;
 
-  const statusConfig = STATUS_CONFIG[order.status];
+  const statusCfg = statusConfig[order.status];
   const priorityConfig = PRIORITY_CONFIG[order.priority];
 
   const formatCurrency = (value: number) => {
@@ -96,9 +99,9 @@ export function OSDetailView({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border border-border">
-                  {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                  {orderedStatuses.map((key) => (
                     <SelectItem key={key} value={key}>
-                      {config.label}
+                      {statusConfig[key].label}
                     </SelectItem>
                   ))}
                 </SelectContent>

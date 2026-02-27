@@ -9,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { STATUS_CONFIG, PRIORITY_CONFIG, OSStatus, OSPriority } from '@/types/serviceOrder';
+import { PRIORITY_CONFIG, OSStatus, OSPriority } from '@/types/serviceOrder';
+import { useStatusSettings } from '@/hooks/useStatusSettings';
 import { ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -46,6 +47,7 @@ export function ProblemStep({
   onBack,
 }: ProblemStepProps) {
   const isValid = reportedIssue.trim().length >= 5;
+  const { statusConfig: customStatusConfig, orderedStatuses } = useStatusSettings();
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -106,9 +108,9 @@ export function ProblemStep({
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-popover border border-border">
-              {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+              {orderedStatuses.map((key) => (
                 <SelectItem key={key} value={key}>
-                  {config.label}
+                  {customStatusConfig[key].label}
                 </SelectItem>
               ))}
             </SelectContent>
