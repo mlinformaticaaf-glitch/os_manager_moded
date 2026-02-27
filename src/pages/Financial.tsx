@@ -6,12 +6,11 @@ import { FinancialDashboard } from "@/components/financial/FinancialDashboard";
 import { TransactionsTable } from "@/components/financial/TransactionsTable";
 import { TransactionForm } from "@/components/financial/TransactionForm";
 import { FinancialReports } from "@/components/financial/reports/FinancialReports";
-import { FinancialTransaction } from "@/types/financial";
-import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
+import { useFinancialTransactions, FinancialTransactionWithClient } from "@/hooks/useFinancialTransactions";
 
 export default function Financial() {
   const location = useLocation();
-  const [selectedTransaction, setSelectedTransaction] = useState<FinancialTransaction | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<FinancialTransactionWithClient | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   
@@ -32,7 +31,7 @@ export default function Financial() {
     }
   }, [location.state, transactions]);
 
-  const handleEdit = (transaction: FinancialTransaction) => {
+  const handleEdit = (transaction: FinancialTransactionWithClient) => {
     setSelectedTransaction(transaction);
     setIsFormOpen(true);
   };

@@ -39,8 +39,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
-import { FinancialTransaction, TRANSACTION_CATEGORY_OPTIONS, TRANSACTION_STATUS_OPTIONS } from "@/types/financial";
+import { useFinancialTransactions, FinancialTransactionWithClient } from "@/hooks/useFinancialTransactions";
+import { TRANSACTION_CATEGORY_OPTIONS, TRANSACTION_STATUS_OPTIONS } from "@/types/financial";
 import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
 import { format, parseISO, startOfMonth, endOfMonth, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -49,7 +49,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface TransactionsTableProps {
   filterType?: 'income' | 'expense';
   filterStatus?: 'pending' | 'paid';
-  onEdit: (transaction: FinancialTransaction) => void;
+  onEdit: (transaction: FinancialTransactionWithClient) => void;
   onNew: () => void;
 }
 
@@ -59,10 +59,10 @@ function TransactionCard({
   onDelete, 
   onMarkAsPaid 
 }: { 
-  transaction: FinancialTransaction; 
-  onEdit: (transaction: FinancialTransaction) => void; 
-  onDelete: (transaction: FinancialTransaction) => void;
-  onMarkAsPaid: (transaction: FinancialTransaction) => void;
+  transaction: FinancialTransactionWithClient; 
+  onEdit: (transaction: FinancialTransactionWithClient) => void; 
+  onDelete: (transaction: FinancialTransactionWithClient) => void;
+  onMarkAsPaid: (transaction: FinancialTransactionWithClient) => void;
 }) {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -109,6 +109,7 @@ function TransactionCard({
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               {getCategoryLabel(transaction.category)}
+              {transaction.client_name && ` • ${transaction.client_name}`}
             </p>
           </div>
         </div>
@@ -162,7 +163,7 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
   const { transactions, isLoading, updateTransaction, deleteTransaction } = useFinancialTransactions();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [deleteTransaction_, setDeleteTransaction] = useState<FinancialTransaction | null>(null);
+  const [deleteTransaction_, setDeleteTransaction] = useState<FinancialTransactionWithClient | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const isMobile = useIsMobile();
 
@@ -213,7 +214,7 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
     }).format(value);
   };
 
-  const handleMarkAsPaid = async (transaction: FinancialTransaction) => {
+  const handleMarkAsPaid = async (transaction: FinancialTransactionWithClient) => {
     await updateTransaction.mutateAsync({
       id: transaction.id,
       data: {
@@ -357,6 +358,9 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
                       <div className="min-w-0">
                         <p className="font-medium truncate max-w-[150px] sm:max-w-[200px]">{transaction.description}</p>
                         <p className="text-xs text-muted-foreground md:hidden">{getCategoryLabel(transaction.category)}</p>
+                        {transaction.client_name && (
+                          <p className="text-xs text-muted-foreground">{transaction.client_name}</p>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">{getCategoryLabel(transaction.category)}</TableCell>

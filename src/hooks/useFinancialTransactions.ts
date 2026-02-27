@@ -4,6 +4,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { FinancialTransaction, FinancialTransactionInsert, FinancialTransactionUpdate } from '@/types/financial';
 
+export type FinancialTransactionWithClient = FinancialTransaction & {
+  client_name?: string | null;
+};
+
 export function useFinancialTransactions() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -11,7 +15,7 @@ export function useFinancialTransactions() {
 
   const transactionsQuery = useQuery({
     queryKey: ['financial-transactions', user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<FinancialTransactionWithClient[]> => {
       if (!user?.id) return [];
       
       const { data, error } = await supabase
@@ -21,7 +25,33 @@ export function useFinancialTransactions() {
         .order('due_date', { ascending: true });
 
       if (error) throw error;
-      return data as FinancialTransaction[];
+      const transactions = data as FinancialTransaction[];
+
+      // Fetch client names for service_order transactions
+      const soRefIds = transactions
+        .filter(t => t.category === 'service_order' && t.reference_id)
+        .map(t => t.reference_id as string);
+
+      if (soRefIds.length === 0) return transactions;
+
+      const { data: orders } = await supabase
+        .from('service_orders')
+        .select('id, client_id, client:clients(name)')
+        .in('id', soRefIds);
+
+      const clientMap = new Map<string, string>();
+      if (orders) {
+        for (const o of orders as any[]) {
+          if (o.client?.name) {
+            clientMap.set(o.id, o.client.name);
+          }
+        }
+      }
+
+      return transactions.map(t => ({
+        ...t,
+        client_name: t.reference_id ? clientMap.get(t.reference_id) || null : null,
+      }));
     },
     enabled: !!user?.id,
   });
