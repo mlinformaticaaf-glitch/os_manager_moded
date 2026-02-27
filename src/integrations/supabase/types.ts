@@ -584,30 +584,39 @@ export type Database = {
       }
       status_settings: {
         Row: {
+          bg_color: string
+          color: string
           created_at: string
           custom_label: string
           custom_short_label: string
           id: string
+          is_custom: boolean
           position: number
           status_key: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          bg_color?: string
+          color?: string
           created_at?: string
           custom_label: string
           custom_short_label: string
           id?: string
+          is_custom?: boolean
           position?: number
           status_key: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          bg_color?: string
+          color?: string
           created_at?: string
           custom_label?: string
           custom_short_label?: string
           id?: string
+          is_custom?: boolean
           position?: number
           status_key?: string
           updated_at?: string

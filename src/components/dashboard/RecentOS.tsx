@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 export function RecentOS() {
   const { orders, isLoading } = useServiceOrders();
-  const { statusConfig } = useStatusSettings();
+  const { getStatusConfig } = useStatusSettings();
   const navigate = useNavigate();
 
   // Get the 5 most recent orders
@@ -48,7 +48,7 @@ export function RecentOS() {
       ) : (
         <div className="space-y-2 sm:space-y-3">
           {recentOrders.map((order) => {
-            const config = statusConfig[order.status];
+            const config = getStatusConfig(order.status);
             return (
               <div 
                 key={order.id}

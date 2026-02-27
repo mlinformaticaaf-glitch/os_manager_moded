@@ -45,7 +45,7 @@ function getStoredViewMode(): ViewMode {
 
 export default function ServiceOrders() {
   const { orders, isLoading, createOrder, updateOrder, updateStatus, deleteOrder } = useServiceOrders();
-  const { statusConfig, orderedStatuses } = useStatusSettings();
+  const { statusConfig, orderedStatuses, getStatusConfig } = useStatusSettings();
   const location = useLocation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OSStatus | 'all'>('all');

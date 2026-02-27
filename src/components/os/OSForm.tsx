@@ -66,7 +66,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const osSchema = z.object({
   client_id: z.string().optional().nullable(),
   equipment_id: z.string().optional().nullable(),
-  status: z.enum(['pending', 'in_progress', 'waiting_parts', 'waiting_approval', 'completed', 'delivered', 'cancelled']),
+  status: z.string().min(1, 'Selecione um status'),
   priority: z.enum(['low', 'normal', 'high', 'urgent']),
   serial_number: z.string().max(50).optional().or(z.literal('')),
   accessories: z.string().max(200).optional().or(z.literal('')),
