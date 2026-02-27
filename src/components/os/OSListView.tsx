@@ -107,9 +107,9 @@ function OSListCard({ order, onView, onEdit, onDelete }: { order: ServiceOrder; 
         </div>
       </div>
 
-      {order.equipment && (
+      {(order.equipment || order.equipment_ref) && (
         <p className="text-sm mt-2 truncate">
-          {order.equipment}
+          {order.equipment || order.equipment_ref?.description}
           {order.brand && ` - ${order.brand}`}
           {order.model && ` ${order.model}`}
         </p>
@@ -187,13 +187,13 @@ export function OSListView({ orders, onView, onEdit, onDelete }: OSListViewProps
                   <div className="min-w-0">
                     <p className="truncate max-w-[150px]">{order.client?.name || '-'}</p>
                     <p className="text-xs text-muted-foreground md:hidden truncate">
-                      {order.equipment || '-'}
+                      {order.equipment || order.equipment_ref?.description || '-'}
                     </p>
                   </div>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {order.equipment
-                    ? `${order.equipment}${order.brand ? ` - ${order.brand}` : ''}${order.model ? ` ${order.model}` : ''}`
+                  {(order.equipment || order.equipment_ref?.description)
+                    ? `${order.equipment || order.equipment_ref?.description}${order.brand ? ` - ${order.brand}` : ''}${order.model ? ` ${order.model}` : ''}`
                     : '-'}
                 </TableCell>
                 <TableCell>

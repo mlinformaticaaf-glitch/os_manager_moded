@@ -90,9 +90,9 @@ export function OSCard({ order, onView, onEdit, onDelete }: OSCardProps) {
         </div>
       )}
 
-      {order.equipment && (
+      {(order.equipment || order.equipment_ref) && (
         <p className="text-xs sm:text-sm font-medium mb-1 truncate">
-          {order.equipment}
+          {order.equipment || order.equipment_ref?.description}
           {order.brand && ` - ${order.brand}`}
           {order.model && ` ${order.model}`}
         </p>

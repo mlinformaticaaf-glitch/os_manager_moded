@@ -145,11 +145,11 @@ export function OSDetailView({
             )}
 
             {/* Equipment */}
-            {order.equipment && (
+            {(order.equipment || order.equipment_ref) && (
               <div>
                 <h3 className="font-semibold mb-2">Equipamento</h3>
                 <p className="font-medium">
-                  {order.equipment}
+                  {order.equipment || order.equipment_ref?.description}
                   {order.brand && ` - ${order.brand}`}
                   {order.model && ` ${order.model}`}
                 </p>
