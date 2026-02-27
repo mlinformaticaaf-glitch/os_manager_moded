@@ -331,6 +331,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
           items={whatsAppData.items}
           companyName={settings?.name || 'Assistência Técnica'}
           footerMessage={settings?.footer_message || 'Obrigado pela preferência!'}
+          warrantyTerms={settings?.warranty_terms || undefined}
         />
       )}
     </>
