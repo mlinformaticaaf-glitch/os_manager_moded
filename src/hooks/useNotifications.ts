@@ -120,8 +120,11 @@ export function useNotifications() {
     return notifs;
   }, [products, orders, purchases, transactions]);
 
-  // Clean up dismissed IDs that no longer exist
+  const isLoading = productsLoading || ordersLoading || purchasesLoading || financialLoading;
+
+  // Clean up dismissed IDs that no longer exist (only after all data has loaded)
   useEffect(() => {
+    if (isLoading) return;
     const activeIds = new Set(allNotifications.map(n => n.id));
     const currentDismissed = getDismissedIds();
     let changed = false;
@@ -135,7 +138,7 @@ export function useNotifications() {
       saveDismissedIds(currentDismissed);
       setDismissedIds(new Set(currentDismissed));
     }
-  }, [allNotifications]);
+  }, [allNotifications, isLoading]);
 
   const notifications = useMemo(
     () => allNotifications.filter(n => !dismissedIds.has(n.id)),
@@ -156,8 +159,6 @@ export function useNotifications() {
     saveDismissedIds(allIds);
     setDismissedIds(allIds);
   }, [allNotifications]);
-
-  const isLoading = productsLoading || ordersLoading || purchasesLoading || financialLoading;
 
   return {
     notifications,
