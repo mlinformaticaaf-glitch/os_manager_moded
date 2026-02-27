@@ -198,7 +198,7 @@ export function OSListView({ orders, onView, onEdit, onDelete }: OSListViewProps
                 </TableCell>
                 <TableCell>
                   <Badge className={cn('text-xs', statusCfg.color, statusCfg.bgColor)}>
-                    {statusCfg.label}
+                    {statusCfg.shortLabel}
                   </Badge>
                 </TableCell>
                 <TableCell className="hidden sm:table-cell">
