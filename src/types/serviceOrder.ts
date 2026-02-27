@@ -56,14 +56,14 @@ export interface ServiceOrderItem {
 export type ServiceOrderInsert = Omit<ServiceOrder, 'id' | 'order_number' | 'created_at' | 'updated_at' | 'client' | 'items'>;
 export type ServiceOrderUpdate = Partial<ServiceOrderInsert>;
 
-export const STATUS_CONFIG: Record<OSStatus, { label: string; color: string; bgColor: string }> = {
-  pending: { label: 'Pendente', color: 'text-yellow-700', bgColor: 'bg-yellow-100' },
-  in_progress: { label: 'Em Andamento', color: 'text-blue-700', bgColor: 'bg-blue-100' },
-  waiting_parts: { label: 'Aguard. Peças', color: 'text-orange-700', bgColor: 'bg-orange-100' },
-  waiting_approval: { label: 'Aguard. Aprovação', color: 'text-purple-700', bgColor: 'bg-purple-100' },
-  completed: { label: 'Concluída', color: 'text-green-700', bgColor: 'bg-green-100' },
-  delivered: { label: 'Faturado e Entregue', color: 'text-emerald-700', bgColor: 'bg-emerald-100' },
-  cancelled: { label: 'Cancelada', color: 'text-red-700', bgColor: 'bg-red-100' },
+export const STATUS_CONFIG: Record<OSStatus, { label: string; shortLabel: string; color: string; bgColor: string }> = {
+  pending: { label: 'Pendente', shortLabel: 'Pendente', color: 'text-yellow-700', bgColor: 'bg-yellow-100' },
+  in_progress: { label: 'Em Andamento', shortLabel: 'Andamento', color: 'text-blue-700', bgColor: 'bg-blue-100' },
+  waiting_parts: { label: 'Aguard. Peças', shortLabel: 'Ag. Peças', color: 'text-orange-700', bgColor: 'bg-orange-100' },
+  waiting_approval: { label: 'Aguard. Aprovação', shortLabel: 'Ag. Aprov.', color: 'text-purple-700', bgColor: 'bg-purple-100' },
+  completed: { label: 'Concluída', shortLabel: 'Concluída', color: 'text-green-700', bgColor: 'bg-green-100' },
+  delivered: { label: 'Faturado e Entregue', shortLabel: 'Entregue', color: 'text-emerald-700', bgColor: 'bg-emerald-100' },
+  cancelled: { label: 'Cancelada', shortLabel: 'Cancelada', color: 'text-red-700', bgColor: 'bg-red-100' },
 };
 
 export const PRIORITY_CONFIG: Record<OSPriority, { label: string; color: string }> = {
