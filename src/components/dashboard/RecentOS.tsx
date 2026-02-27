@@ -64,11 +64,12 @@ export function RecentOS() {
                 </div>
                 <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
                   <span className={cn(
-                    "text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium",
+                    "text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium whitespace-nowrap max-w-[80px] sm:max-w-none truncate text-center",
                     config.bgColor,
                     config.color
                   )}>
-                    {config.label}
+                    <span className="sm:hidden">{config.shortLabel}</span>
+                    <span className="hidden sm:inline">{config.label}</span>
                   </span>
                   <span className="text-foreground font-medium text-xs sm:text-sm whitespace-nowrap">
                     R$ {order.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
