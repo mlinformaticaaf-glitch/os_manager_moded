@@ -582,6 +582,39 @@ export type Database = {
         }
         Relationships: []
       }
+      status_settings: {
+        Row: {
+          created_at: string
+          custom_label: string
+          custom_short_label: string
+          id: string
+          position: number
+          status_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_label: string
+          custom_short_label: string
+          id?: string
+          position?: number
+          status_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_label?: string
+          custom_short_label?: string
+          id?: string
+          position?: number
+          status_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       suppliers: {
         Row: {
           active: boolean

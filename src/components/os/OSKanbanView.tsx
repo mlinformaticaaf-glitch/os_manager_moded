@@ -1,7 +1,8 @@
-import { ServiceOrder, OSStatus, STATUS_CONFIG } from '@/types/serviceOrder';
+import { ServiceOrder, OSStatus } from '@/types/serviceOrder';
 import { OSCard } from './OSCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { useStatusSettings } from '@/hooks/useStatusSettings';
 
 interface OSKanbanViewProps {
   orders: ServiceOrder[];
@@ -21,15 +22,17 @@ const KANBAN_COLUMNS: OSStatus[] = [
 ];
 
 export function OSKanbanView({ orders, onView, onEdit, onDelete, onStatusChange }: OSKanbanViewProps) {
+  const { statusConfig, orderedStatuses } = useStatusSettings();
+
   const getOrdersByStatus = (status: OSStatus) => {
     return orders.filter(order => order.status === status);
   };
 
   return (
     <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-      {KANBAN_COLUMNS.map((status) => {
+      {orderedStatuses.filter(s => KANBAN_COLUMNS.includes(s)).map((status) => {
         const statusOrders = getOrdersByStatus(status);
-        const config = STATUS_CONFIG[status];
+        const config = statusConfig[status];
 
         return (
           <div

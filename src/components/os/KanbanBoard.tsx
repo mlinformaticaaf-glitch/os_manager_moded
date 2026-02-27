@@ -1,13 +1,15 @@
 import { cn } from "@/lib/utils";
 import { Clock, User, Loader2 } from "lucide-react";
 import { useServiceOrders } from "@/hooks/useServiceOrders";
-import { STATUS_CONFIG, OSStatus } from "@/types/serviceOrder";
+import { useStatusSettings } from "@/hooks/useStatusSettings";
+import { OSStatus } from "@/types/serviceOrder";
 import { formatOSNumber } from "@/lib/osUtils";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNavigate } from "react-router-dom";
 
-const KANBAN_COLUMNS: OSStatus[] = [
+// Dashboard kanban uses a subset of statuses
+const DASHBOARD_KANBAN_STATUSES: OSStatus[] = [
   'pending',
   'in_progress',
   'waiting_parts',
@@ -30,6 +32,7 @@ const prioridadeLabels = {
 
 export function KanbanBoard() {
   const { orders, isLoading } = useServiceOrders();
+  const { statusConfig, orderedStatuses } = useStatusSettings();
   const navigate = useNavigate();
 
   const getOrdersByStatus = (status: OSStatus) => {
@@ -50,9 +53,9 @@ export function KanbanBoard() {
 
   return (
     <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x snap-mandatory sm:snap-none">
-      {KANBAN_COLUMNS.map((status) => {
+      {orderedStatuses.filter(s => DASHBOARD_KANBAN_STATUSES.includes(s)).map((status) => {
         const statusOrders = getOrdersByStatus(status);
-        const config = STATUS_CONFIG[status];
+        const config = statusConfig[status];
 
         return (
           <div key={status} className="kanban-column min-w-[260px] sm:min-w-[280px] flex-shrink-0 sm:flex-shrink snap-center sm:snap-align-none sm:flex-1">

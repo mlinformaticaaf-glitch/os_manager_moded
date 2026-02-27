@@ -1,5 +1,5 @@
 import { useServiceOrders } from "@/hooks/useServiceOrders";
-import { STATUS_CONFIG } from "@/types/serviceOrder";
+import { useStatusSettings } from "@/hooks/useStatusSettings";
 import { formatOSNumber } from "@/lib/osUtils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function DashboardOSList() {
   const { orders, isLoading } = useServiceOrders();
+  const { statusConfig } = useStatusSettings();
   const navigate = useNavigate();
 
   // Only show open orders (not completed, delivered, or cancelled)
@@ -41,7 +42,7 @@ export function DashboardOSList() {
     <ScrollArea className="h-[400px]">
       <div className="space-y-2">
         {activeOrders.map((order) => {
-          const statusConfig = STATUS_CONFIG[order.status];
+          const statusConfig2 = statusConfig[order.status];
           return (
             <div
               key={order.id}
@@ -64,10 +65,10 @@ export function DashboardOSList() {
               <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
                 <span className={cn(
                   "text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap",
-                  statusConfig.bgColor,
-                  statusConfig.color
+                  statusConfig2.bgColor,
+                  statusConfig2.color
                 )}>
-                  {statusConfig.label}
+                  {statusConfig2.shortLabel}
                 </span>
                 <span className="text-xs text-muted-foreground whitespace-nowrap">
                   {format(new Date(order.created_at), "dd/MM", { locale: ptBR })}

@@ -1,4 +1,5 @@
-import { ServiceOrder, STATUS_CONFIG, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { ServiceOrder, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { useStatusSettings } from '@/hooks/useStatusSettings';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -23,7 +24,8 @@ interface OSCardProps {
 }
 
 export function OSCard({ order, onView, onEdit, onDelete }: OSCardProps) {
-  const statusConfig = STATUS_CONFIG[order.status];
+  const { statusConfig } = useStatusSettings();
+  const statusCfg = statusConfig[order.status];
   const priorityConfig = PRIORITY_CONFIG[order.priority];
 
   const formatCurrency = (value: number) => {
@@ -101,8 +103,8 @@ export function OSCard({ order, onView, onEdit, onDelete }: OSCardProps) {
       </p>
 
       <div className="flex items-center justify-between">
-        <Badge className={cn('text-[10px] sm:text-xs', statusConfig.color, statusConfig.bgColor)}>
-          {statusConfig.label}
+        <Badge className={cn('text-[10px] sm:text-xs', statusCfg.color, statusCfg.bgColor)}>
+          {statusCfg.shortLabel}
         </Badge>
         <div className="text-right">
           <p className="font-semibold text-sm sm:text-base">{formatCurrency(order.total)}</p>

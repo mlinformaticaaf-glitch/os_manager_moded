@@ -17,6 +17,7 @@ import { PIX_KEY_TYPES } from "@/components/os/pix/pixUtils";
 import { ChangePasswordCard } from "@/components/settings/ChangePasswordCard";
 import { DataImportCard } from "@/components/settings/DataImportCard";
 import { ClearDataCard } from "@/components/settings/ClearDataCard";
+import { StatusSettingsCard } from "@/components/settings/StatusSettingsCard";
 
 const settingsSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -450,6 +451,9 @@ export default function Settings() {
             </div>
           </form>
         </Form>
+
+        {/* Status Settings */}
+        <StatusSettingsCard />
 
         {/* Data Import Section */}
         <DataImportCard />

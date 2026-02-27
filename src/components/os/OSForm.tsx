@@ -46,7 +46,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { ServiceOrder, ServiceOrderItem, STATUS_CONFIG, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { ServiceOrder, ServiceOrderItem, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { useStatusSettings } from '@/hooks/useStatusSettings';
 import { useClients } from '@/hooks/useClients';
 import { useProducts } from '@/hooks/useProducts';
 import { useServices } from '@/hooks/useServices';
@@ -108,6 +109,7 @@ export function OSForm({
   existingItems = [],
 }: OSFormProps) {
   const isMobile = useIsMobile();
+  const { statusConfig, orderedStatuses } = useStatusSettings();
   const { clients, createClient } = useClients();
   const { products, createProduct } = useProducts();
   const { services, createService } = useServices();
@@ -503,9 +505,9 @@ export function OSForm({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="bg-popover border border-border">
-                            {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                            {orderedStatuses.map((key) => (
                               <SelectItem key={key} value={key}>
-                                {config.label}
+                                {statusConfig[key].label}
                               </SelectItem>
                             ))}
                           </SelectContent>
