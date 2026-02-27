@@ -1,23 +1,26 @@
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useClients } from '@/hooks/useClients';
 import { ClientForm } from '@/components/clients/ClientForm';
-import { Search, Plus, User, Phone, Mail, Check, ArrowRight } from 'lucide-react';
+import { Search, Plus, User, Phone, Mail, Check, ArrowRight, CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatClientCode } from '@/lib/clientUtils';
 import { Client } from '@/types/client';
 
 interface ClientStepProps {
   selectedClientId: string | null;
+  createdAt: string;
   onSelect: (clientId: string | null) => void;
+  onChangeCreatedAt: (value: string) => void;
   onNext: () => void;
 }
 
-export function ClientStep({ selectedClientId, onSelect, onNext }: ClientStepProps) {
+export function ClientStep({ selectedClientId, createdAt, onSelect, onChangeCreatedAt, onNext }: ClientStepProps) {
   const { clients, createClient, isLoading } = useClients();
   const [search, setSearch] = useState('');
   const [clientFormOpen, setClientFormOpen] = useState(false);
@@ -56,10 +59,25 @@ export function ClientStep({ selectedClientId, onSelect, onNext }: ClientStepPro
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="text-center space-y-1 sm:space-y-2">
-        <h2 className="text-xl sm:text-2xl font-bold">Quem é o cliente?</h2>
+        <h2 className="text-xl sm:text-2xl font-bold">Nova Ordem de Serviço</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Selecione um cliente existente ou cadastre um novo
+          Defina a data de entrada e selecione o cliente
         </p>
+      </div>
+
+      {/* Data de Entrada */}
+      <div className="space-y-1.5 sm:space-y-2">
+        <Label htmlFor="wizard_created_at" className="flex items-center gap-1 text-sm">
+          <CalendarIcon className="h-4 w-4" />
+          Data de Entrada
+        </Label>
+        <Input
+          id="wizard_created_at"
+          type="date"
+          value={createdAt}
+          onChange={(e) => onChangeCreatedAt(e.target.value)}
+          className="text-sm sm:text-base"
+        />
       </div>
 
       {/* Selected Client Preview */}

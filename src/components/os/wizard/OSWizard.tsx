@@ -240,7 +240,9 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
         return (
           <ClientStep
             selectedClientId={formData.client_id}
+            createdAt={formData.created_at}
             onSelect={(clientId) => updateFormData({ client_id: clientId })}
+            onChangeCreatedAt={(value) => updateFormData({ created_at: value })}
             onNext={goNext}
           />
         );
@@ -264,12 +266,10 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
             status={formData.status}
             priority={formData.priority}
             estimatedCompletion={formData.estimated_completion}
-            createdAt={formData.created_at}
             onChangeReportedIssue={(value) => updateFormData({ reported_issue: value })}
             onChangeStatus={(value) => updateFormData({ status: value })}
             onChangePriority={(value) => updateFormData({ priority: value })}
             onChangeEstimatedCompletion={(value) => updateFormData({ estimated_completion: value })}
-            onChangeCreatedAt={(value) => updateFormData({ created_at: value })}
             onNext={goNext}
             onBack={goBack}
           />
