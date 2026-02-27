@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { ServiceOrder, PRIORITY_CONFIG } from '@/types/serviceOrder';
 import { useStatusSettings } from '@/hooks/useStatusSettings';
 import { Badge } from '@/components/ui/badge';
@@ -47,11 +48,23 @@ export function OSDetailView({
   onStatusChange,
 }: OSDetailViewProps) {
   const { statusConfig, orderedStatuses, getStatusConfig } = useStatusSettings();
+  const [localStatus, setLocalStatus] = useState<string>(order?.status ?? '');
+
+  useEffect(() => {
+    if (order?.status) {
+      setLocalStatus(order.status);
+    }
+  }, [order?.status]);
 
   if (!order) return null;
 
-  const statusCfg = getStatusConfig(order.status);
+  const statusCfg = getStatusConfig(localStatus || order.status);
   const priorityConfig = PRIORITY_CONFIG[order.priority];
+
+  const handleStatusChange = (newStatus: string) => {
+    setLocalStatus(newStatus);
+    onStatusChange(newStatus as any);
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -94,7 +107,7 @@ export function OSDetailView({
             {/* Status */}
             <div className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground">Status:</span>
-              <Select value={order.status} onValueChange={onStatusChange}>
+              <Select value={localStatus} onValueChange={handleStatusChange}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue />
                 </SelectTrigger>
