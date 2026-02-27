@@ -56,8 +56,8 @@ function generateA4Body({ order, items, companyName = 'Assistência Técnica', c
           <div class="os-info">
             <div class="os-number">OS ${formatOSNumber(order.order_number, order.created_at)}</div>
             <div class="os-date">${format(new Date(order.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</div>
-            <div class="status-badge" style="background: ${STATUS_CONFIG[order.status].bgColor}; color: ${STATUS_CONFIG[order.status].color.replace('text-', '')}">
-              ${STATUS_CONFIG[order.status].label}
+            <div class="status-badge" style="background: ${(STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || { bgColor: 'bg-gray-100' }).bgColor}; color: ${(STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || { color: 'text-gray-700' }).color.replace('text-', '')}">
+              ${(STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || { label: order.status }).label}
             </div>
           </div>
         </div>

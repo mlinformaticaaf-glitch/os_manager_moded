@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { WizardFormData, WizardItemData } from '../types';
-import { STATUS_CONFIG, PRIORITY_CONFIG } from '@/types/serviceOrder';
+import { STATUS_CONFIG, PRIORITY_CONFIG, OSDefaultStatus } from '@/types/serviceOrder';
+import { useStatusSettings } from '@/hooks/useStatusSettings';
 import { useClients } from '@/hooks/useClients';
 import { useEquipment } from '@/hooks/useEquipment';
 import { formatEquipmentCode } from '@/types/equipment';
@@ -42,11 +43,12 @@ export function SummaryStep({
 }: SummaryStepProps) {
   const { clients } = useClients();
   const { equipment: equipmentList } = useEquipment();
+  const { getStatusConfig } = useStatusSettings();
 
   const selectedClient = clients.find((c) => c.id === formData.client_id);
   const selectedEquipment = equipmentList.find((e) => e.id === formData.equipment_id);
 
-  const statusConfig = STATUS_CONFIG[formData.status];
+  const statusConfig = getStatusConfig(formData.status);
   const priorityConfig = PRIORITY_CONFIG[formData.priority];
 
   const totalServices = formData.items
