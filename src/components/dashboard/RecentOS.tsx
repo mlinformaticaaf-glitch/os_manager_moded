@@ -62,16 +62,15 @@ export function RecentOS() {
                     {order.client?.name || 'Cliente não informado'}
                   </span>
                 </div>
-                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+                <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
                   <span className={cn(
-                    "text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium whitespace-nowrap max-w-[80px] sm:max-w-none truncate text-center",
+                    "text-[10px] px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap leading-tight",
                     config.bgColor,
                     config.color
                   )}>
-                    <span className="sm:hidden">{config.shortLabel}</span>
-                    <span className="hidden sm:inline">{config.label}</span>
+                    {config.shortLabel}
                   </span>
-                  <span className="text-foreground font-medium text-xs sm:text-sm whitespace-nowrap">
+                  <span className="text-foreground font-medium text-xs whitespace-nowrap">
                     R$ {order.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
