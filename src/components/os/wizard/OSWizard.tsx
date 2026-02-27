@@ -35,6 +35,7 @@ const initialFormData: WizardFormData = {
   solution: '',
   internal_notes: '',
   estimated_completion: '',
+  created_at: new Date().toISOString().split('T')[0],
   discount: 0,
   payment_method: null,
   items: [],
@@ -119,6 +120,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
         solution: formData.solution || null,
         internal_notes: formData.internal_notes || null,
         estimated_completion: formData.estimated_completion || null,
+        created_at: formData.created_at ? new Date(formData.created_at + 'T12:00:00').toISOString() : undefined,
         discount: formData.discount,
         payment_method: formData.payment_method,
         total_services: totalServices,
@@ -262,10 +264,12 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
             status={formData.status}
             priority={formData.priority}
             estimatedCompletion={formData.estimated_completion}
+            createdAt={formData.created_at}
             onChangeReportedIssue={(value) => updateFormData({ reported_issue: value })}
             onChangeStatus={(value) => updateFormData({ status: value })}
             onChangePriority={(value) => updateFormData({ priority: value })}
             onChangeEstimatedCompletion={(value) => updateFormData({ estimated_completion: value })}
+            onChangeCreatedAt={(value) => updateFormData({ created_at: value })}
             onNext={goNext}
             onBack={goBack}
           />

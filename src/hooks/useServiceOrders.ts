@@ -28,14 +28,19 @@ export function useServiceOrders() {
   });
 
   const createOrder = useMutation({
-    mutationFn: async (order: Omit<ServiceOrder, 'id' | 'order_number' | 'created_at' | 'updated_at' | 'client' | 'items' | 'user_id'> & { items?: Omit<ServiceOrderItem, 'id' | 'service_order_id' | 'created_at'>[] }) => {
+    mutationFn: async (order: Omit<ServiceOrder, 'id' | 'order_number' | 'updated_at' | 'client' | 'items' | 'user_id'> & { created_at?: string; items?: Omit<ServiceOrderItem, 'id' | 'service_order_id' | 'created_at'>[] }) => {
       if (!user) throw new Error('User not authenticated');
       
-      const { items, ...orderData } = order;
+      const { items, created_at, ...orderData } = order;
       
+      const insertData: any = { ...orderData, user_id: user.id };
+      if (created_at) {
+        insertData.created_at = created_at;
+      }
+
       const { data: newOrder, error: orderError } = await supabase
         .from('service_orders')
-        .insert({ ...orderData, user_id: user.id } as any)
+        .insert(insertData)
         .select()
         .single();
 

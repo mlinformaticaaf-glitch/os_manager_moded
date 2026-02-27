@@ -20,6 +20,7 @@ export interface WizardFormData {
   solution: string;
   internal_notes: string;
   estimated_completion: string;
+  created_at: string;
   discount: number;
   payment_method: string | null;
   items: WizardItemData[];

@@ -18,10 +18,12 @@ interface ProblemStepProps {
   status: OSStatus;
   priority: OSPriority;
   estimatedCompletion: string;
+  createdAt: string;
   onChangeReportedIssue: (value: string) => void;
   onChangeStatus: (value: OSStatus) => void;
   onChangePriority: (value: OSPriority) => void;
   onChangeEstimatedCompletion: (value: string) => void;
+  onChangeCreatedAt: (value: string) => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -38,10 +40,12 @@ export function ProblemStep({
   status,
   priority,
   estimatedCompletion,
+  createdAt,
   onChangeReportedIssue,
   onChangeStatus,
   onChangePriority,
   onChangeEstimatedCompletion,
+  onChangeCreatedAt,
   onNext,
   onBack,
 }: ProblemStepProps) {
@@ -97,7 +101,7 @@ export function ProblemStep({
         </div>
       </div>
 
-      {/* Status and Date */}
+      {/* Status and Dates */}
       <div className="grid grid-cols-1 gap-3 sm:gap-4">
         <div className="space-y-1.5 sm:space-y-2">
           <Label className="text-sm">Status Inicial</Label>
@@ -114,15 +118,27 @@ export function ProblemStep({
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-1.5 sm:space-y-2">
-          <Label htmlFor="estimated_completion" className="text-sm">Previsão de Entrega</Label>
-          <Input
-            id="estimated_completion"
-            type="date"
-            value={estimatedCompletion}
-            onChange={(e) => onChangeEstimatedCompletion(e.target.value)}
-            className="text-sm sm:text-base"
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="created_at" className="text-sm">Data de Entrada</Label>
+            <Input
+              id="created_at"
+              type="date"
+              value={createdAt}
+              onChange={(e) => onChangeCreatedAt(e.target.value)}
+              className="text-sm sm:text-base"
+            />
+          </div>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="estimated_completion" className="text-sm">Previsão de Entrega</Label>
+            <Input
+              id="estimated_completion"
+              type="date"
+              value={estimatedCompletion}
+              onChange={(e) => onChangeEstimatedCompletion(e.target.value)}
+              className="text-sm sm:text-base"
+            />
+          </div>
         </div>
       </div>
 

@@ -74,6 +74,7 @@ const osSchema = z.object({
   solution: z.string().max(1000).optional().or(z.literal('')),
   internal_notes: z.string().max(500).optional().or(z.literal('')),
   estimated_completion: z.string().optional().or(z.literal('')),
+  created_at: z.string().optional().or(z.literal('')),
   discount: z.coerce.number().min(0).default(0),
   payment_method: z.string().optional().nullable(),
 });
@@ -159,6 +160,7 @@ export function OSForm({
       solution: '',
       internal_notes: '',
       estimated_completion: '',
+      created_at: new Date().toISOString().split('T')[0],
       discount: 0,
       payment_method: null,
     },
@@ -212,6 +214,7 @@ export function OSForm({
         solution: order?.solution ?? '',
         internal_notes: order?.internal_notes ?? '',
         estimated_completion: order?.estimated_completion ?? '',
+        created_at: order?.created_at ? order.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
         discount: order?.discount ?? 0,
         payment_method: order?.payment_method ?? null,
       });
@@ -303,6 +306,7 @@ export function OSForm({
     const cleanedData = {
       ...data,
       estimated_completion: data.estimated_completion?.trim() || null,
+      created_at: data.created_at?.trim() ? new Date(data.created_at + 'T12:00:00').toISOString() : undefined,
       equipment_id: data.equipment_id || null,
       serial_number: data.serial_number?.trim() || null,
       accessories: data.accessories?.trim() || null,
@@ -532,6 +536,21 @@ export function OSForm({
                     )}
                   />
                 </div>
+
+                {/* === DATA DE ENTRADA === */}
+                <FormField
+                  control={form.control}
+                  name="created_at"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data de Entrada</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <Separator />
 
