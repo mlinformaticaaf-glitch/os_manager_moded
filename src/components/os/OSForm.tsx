@@ -22,12 +22,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer';
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -61,7 +55,7 @@ import { ClientForm } from '@/components/clients/ClientForm';
 import { ServiceForm } from '@/components/services/ServiceForm';
 import { ProductForm } from '@/components/products/ProductForm';
 import { EquipmentForm } from '@/components/equipment/EquipmentForm';
-import { useIsMobile } from '@/hooks/use-mobile';
+
 
 const osSchema = z.object({
   client_id: z.string().optional().nullable(),
@@ -108,7 +102,6 @@ export function OSForm({
   isSubmitting,
   existingItems = [],
 }: OSFormProps) {
-  const isMobile = useIsMobile();
   const { statusConfig, orderedStatuses } = useStatusSettings();
   const { clients, createClient } = useClients();
   const { products, createProduct } = useProducts();
@@ -388,9 +381,9 @@ export function OSForm({
   };
 
   const formContent = (
-    <ScrollArea className="max-h-[calc(95vh-80px)] sm:max-h-[calc(90vh-80px)] overflow-x-hidden">
+    <ScrollArea className="w-full max-h-[calc(95vh-80px)] sm:max-h-[calc(90vh-80px)] overflow-x-hidden">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-full mx-auto min-w-0">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-full mx-auto min-w-0 overflow-x-hidden">
                 
                 {/* === SEÇÃO: CLIENTE === */}
                 <div className="space-y-4">
@@ -744,23 +737,24 @@ export function OSForm({
 
                 {/* === SEÇÃO: SERVIÇOS === */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <Wrench className="h-5 w-5" />
-                      Serviços
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 min-w-0">
+                    <h3 className="text-lg font-semibold flex items-center gap-2 min-w-0">
+                      <Wrench className="h-5 w-5 shrink-0" />
+                      <span className="truncate">Serviços</span>
                     </h3>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => setServiceFormOpen(true)}
+                      className="w-full sm:w-auto"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Novo Serviço
                     </Button>
                   </div>
 
-                  <div className="border rounded-lg p-4 space-y-3 bg-blue-50/50 dark:bg-blue-950/20">
+                  <div className="border rounded-lg p-3 sm:p-4 space-y-3 bg-blue-50/50 dark:bg-blue-950/20 min-w-0 overflow-x-hidden">
                     <div className="flex flex-col sm:flex-row gap-3 min-w-0">
                       <Popover open={serviceOpen} onOpenChange={setServiceOpen}>
                         <PopoverTrigger asChild>
@@ -799,14 +793,14 @@ export function OSForm({
                                         selectedService === service.id ? "opacity-100" : "opacity-0"
                                       )}
                                     />
-                                    <div className="flex items-center justify-between w-full">
-                                      <div className="flex flex-col">
-                                        <span>{service.name}</span>
+                                    <div className="flex items-center justify-between w-full gap-2 min-w-0">
+                                      <div className="flex flex-col min-w-0">
+                                        <span className="truncate">{service.name}</span>
                                         {service.code && (
-                                          <span className="text-xs text-muted-foreground">{service.code}</span>
+                                          <span className="text-xs text-muted-foreground truncate">{service.code}</span>
                                         )}
                                       </div>
-                                      <span className="text-sm font-medium">{formatCurrency(service.sale_price)}</span>
+                                      <span className="text-sm font-medium shrink-0">{formatCurrency(service.sale_price)}</span>
                                     </div>
                                   </CommandItem>
                                 ))}
@@ -816,20 +810,21 @@ export function OSForm({
                         </PopoverContent>
                       </Popover>
                       
-                      <div className="flex gap-2">
+                      <div className="flex w-full sm:w-auto gap-2">
                         <Input
                           type="number"
                           min={1}
                           step={1}
                           value={serviceQuantity}
                           onChange={(e) => setServiceQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                          className="w-20"
+                          className="w-24 sm:w-20"
                           placeholder="Qtd"
                         />
                         <Button
                           type="button"
                           onClick={addSelectedService}
                           disabled={!selectedService}
+                          className="flex-1 sm:flex-none"
                         >
                           <Plus className="h-4 w-4 mr-1" />
                           Adicionar
@@ -838,7 +833,7 @@ export function OSForm({
                     </div>
                     
                     {selectedService && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground break-words">
                         Selecionado: {activeServices.find(s => s.id === selectedService)?.name} - {formatCurrency(activeServices.find(s => s.id === selectedService)?.sale_price || 0)} x {serviceQuantity} = {formatCurrency((activeServices.find(s => s.id === selectedService)?.sale_price || 0) * serviceQuantity)}
                       </p>
                     )}
@@ -849,23 +844,24 @@ export function OSForm({
 
                 {/* === SEÇÃO: PRODUTOS === */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <Package className="h-5 w-5" />
-                      Produtos / Peças
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 min-w-0">
+                    <h3 className="text-lg font-semibold flex items-center gap-2 min-w-0">
+                      <Package className="h-5 w-5 shrink-0" />
+                      <span className="truncate">Produtos / Peças</span>
                     </h3>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => setProductFormOpen(true)}
+                      className="w-full sm:w-auto"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Novo Produto
                     </Button>
                   </div>
 
-                  <div className="border rounded-lg p-4 space-y-3 bg-muted/30">
+                  <div className="border rounded-lg p-3 sm:p-4 space-y-3 bg-muted/30 min-w-0 overflow-x-hidden">
                     <div className="flex flex-col sm:flex-row gap-3 min-w-0">
                       <Popover open={productOpen} onOpenChange={setProductOpen}>
                         <PopoverTrigger asChild>
@@ -904,14 +900,14 @@ export function OSForm({
                                         selectedProduct === product.id ? "opacity-100" : "opacity-0"
                                       )}
                                     />
-                                    <div className="flex items-center justify-between w-full">
-                                      <div className="flex flex-col">
-                                        <span>{product.name}</span>
+                                    <div className="flex items-center justify-between w-full gap-2 min-w-0">
+                                      <div className="flex flex-col min-w-0">
+                                        <span className="truncate">{product.name}</span>
                                         {product.category && (
-                                          <span className="text-xs text-muted-foreground">{product.category}</span>
+                                          <span className="text-xs text-muted-foreground truncate">{product.category}</span>
                                         )}
                                       </div>
-                                      <div className="text-right">
+                                      <div className="text-right shrink-0">
                                         <span className="text-sm font-medium">{formatCurrency(product.sale_price)}</span>
                                         <span className="text-xs text-muted-foreground ml-2">Est: {product.stock_quantity}</span>
                                       </div>
@@ -924,20 +920,21 @@ export function OSForm({
                         </PopoverContent>
                       </Popover>
                       
-                      <div className="flex gap-2">
+                      <div className="flex w-full sm:w-auto gap-2">
                         <Input
                           type="number"
                           min={1}
                           step={1}
                           value={productQuantity}
                           onChange={(e) => setProductQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                          className="w-20"
+                          className="w-24 sm:w-20"
                           placeholder="Qtd"
                         />
                         <Button
                           type="button"
                           onClick={addSelectedProduct}
                           disabled={!selectedProduct}
+                          className="flex-1 sm:flex-none"
                         >
                           <Plus className="h-4 w-4 mr-1" />
                           Adicionar
@@ -946,7 +943,7 @@ export function OSForm({
                     </div>
                     
                     {selectedProduct && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground break-words">
                         Selecionado: {activeProducts.find(p => p.id === selectedProduct)?.name} - {formatCurrency(activeProducts.find(p => p.id === selectedProduct)?.sale_price || 0)} x {productQuantity} = {formatCurrency((activeProducts.find(p => p.id === selectedProduct)?.sale_price || 0) * productQuantity)} | Estoque: {activeProducts.find(p => p.id === selectedProduct)?.stock_quantity}
                       </p>
                     )}
@@ -1067,13 +1064,13 @@ export function OSForm({
                     control={form.control}
                     name="discount"
                     render={({ field }) => (
-                      <div className="flex justify-between items-center text-sm">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm min-w-0">
                         <span>Desconto:</span>
                         <Input
                           type="number"
                           min={0}
                           step={0.01}
-                          className="w-24 h-8 text-right"
+                          className="w-full sm:w-24 h-8 text-left sm:text-right"
                           {...field}
                         />
                       </div>
@@ -1115,15 +1112,16 @@ export function OSForm({
 
 
                 {/* === AÇÕES === */}
-                <div className="flex flex-wrap justify-end gap-3 pt-4 border-t">
+                <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => onOpenChange(false)}
+                    className="w-full sm:w-auto"
                   >
                     Cancelar
                   </Button>
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {order ? 'Salvar' : 'Criar OS'}
                   </Button>
@@ -1136,7 +1134,7 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[700px] w-[calc(100vw-16px)] max-h-[95vh] sm:max-h-[90vh] p-0 gap-0 rounded-lg">
+        <DialogContent className="w-[calc(100vw-12px)] max-w-[calc(100vw-12px)] sm:max-w-[700px] max-h-[95vh] sm:max-h-[90vh] p-0 gap-0 rounded-lg overflow-x-hidden">
           <DialogHeader className="px-3 sm:px-6 py-3 sm:py-4 border-b">
             <DialogTitle className="text-center text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
