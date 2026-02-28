@@ -1178,16 +1178,29 @@ export function OSForm({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-3xl max-h-[90vh] p-0 gap-0">
-          <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
-            <DialogTitle className="text-center text-lg">
-              {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
-            </DialogTitle>
-          </DialogHeader>
-          {formContent}
-        </DialogContent>
-      </Dialog>
+      {isMobile ? (
+        <Drawer open={open} onOpenChange={onOpenChange}>
+          <DrawerContent className="max-h-[95dvh]">
+            <DrawerHeader className="border-b pb-3">
+              <DrawerTitle className="text-center text-lg">
+                {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
+              </DrawerTitle>
+            </DrawerHeader>
+            {formContent}
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+          <DialogContent className="sm:max-w-3xl max-h-[90vh] p-0 gap-0">
+            <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
+              <DialogTitle className="text-center text-lg">
+                {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
+              </DialogTitle>
+            </DialogHeader>
+            {formContent}
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Dialogs para cadastro inline */}
       <ClientForm
