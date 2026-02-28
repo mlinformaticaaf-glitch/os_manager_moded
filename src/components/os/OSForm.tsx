@@ -389,10 +389,10 @@ export function OSForm({
 
   const formContent = (
     <ScrollArea className={cn(
-      isMobile ? "h-[calc(95dvh-72px)]" : "h-[calc(90dvh-100px)]"
+      isMobile ? "h-[calc(95dvh-72px)] overflow-x-hidden" : "h-[calc(90dvh-100px)] overflow-x-hidden"
     )}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-2xl mx-auto">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-2xl max-w-full mx-auto min-w-0">
                 
                 {/* === SEÇÃO: CLIENTE === */}
                 <div className="space-y-4">
@@ -407,7 +407,7 @@ export function OSForm({
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel>Selecionar Cliente</FormLabel>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 min-w-0">
                           <Popover open={clientOpen} onOpenChange={setClientOpen}>
                             <PopoverTrigger asChild>
                               <FormControl>
@@ -415,9 +415,9 @@ export function OSForm({
                                   variant="outline"
                                   role="combobox"
                                   aria-expanded={clientOpen}
-                                  className="flex-1 justify-between font-normal"
+                                  className="flex-1 min-w-0 justify-between font-normal"
                                 >
-                                  {selectedClient ? selectedClient.name : "Buscar cliente..."}
+                                  <span className="truncate">{selectedClient ? selectedClient.name : "Buscar cliente..."}</span>
                                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                               </FormControl>
@@ -575,7 +575,7 @@ export function OSForm({
                       return (
                         <FormItem className="flex flex-col">
                           <FormLabel>Selecionar Equipamento</FormLabel>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 min-w-0">
                             <Popover open={equipmentOpen} onOpenChange={setEquipmentOpen}>
                               <PopoverTrigger asChild>
                                 <FormControl>
@@ -583,11 +583,13 @@ export function OSForm({
                                     variant="outline"
                                     role="combobox"
                                     aria-expanded={equipmentOpen}
-                                    className="flex-1 justify-between font-normal"
+                                    className="flex-1 min-w-0 justify-between font-normal"
                                   >
-                                    {selectedEquipment 
-                                      ? `${formatEquipmentCode(selectedEquipment.code)} - ${selectedEquipment.description}`
-                                      : "Buscar equipamento..."}
+                                    <span className="truncate">
+                                      {selectedEquipment 
+                                        ? `${formatEquipmentCode(selectedEquipment.code)} - ${selectedEquipment.description}`
+                                        : "Buscar equipamento..."}
+                                    </span>
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                   </Button>
                                 </FormControl>
@@ -761,17 +763,19 @@ export function OSForm({
                   </div>
 
                   <div className="border rounded-lg p-4 space-y-3 bg-blue-50/50 dark:bg-blue-950/20">
-                    <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3 min-w-0">
                       <Popover open={serviceOpen} onOpenChange={setServiceOpen}>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
                             role="combobox"
-                            className="flex-1 justify-between font-normal"
+                            className="flex-1 min-w-0 justify-between font-normal"
                           >
-                            {selectedService 
-                              ? activeServices.find(s => s.id === selectedService)?.name 
-                              : "Buscar serviço cadastrado..."}
+                            <span className="truncate">
+                              {selectedService 
+                                ? activeServices.find(s => s.id === selectedService)?.name 
+                                : "Buscar serviço cadastrado..."}
+                            </span>
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </PopoverTrigger>
@@ -864,17 +868,19 @@ export function OSForm({
                   </div>
 
                   <div className="border rounded-lg p-4 space-y-3 bg-muted/30">
-                    <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3 min-w-0">
                       <Popover open={productOpen} onOpenChange={setProductOpen}>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
                             role="combobox"
-                            className="flex-1 justify-between font-normal"
+                            className="flex-1 min-w-0 justify-between font-normal"
                           >
-                            {selectedProduct 
-                              ? activeProducts.find(p => p.id === selectedProduct)?.name 
-                              : "Buscar produto cadastrado..."}
+                            <span className="truncate">
+                              {selectedProduct 
+                                ? activeProducts.find(p => p.id === selectedProduct)?.name 
+                                : "Buscar produto cadastrado..."}
+                            </span>
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </PopoverTrigger>
@@ -1018,18 +1024,18 @@ export function OSForm({
                       Itens da OS ({items.length})
                     </div>
                     {items.map((item, index) => (
-                      <div key={index} className="p-3 flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
+                      <div key={index} className="p-3 flex items-center justify-between gap-2 min-w-0">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 min-w-0">
                             <span className={cn(
                               "text-xs px-2 py-0.5 rounded",
                               item.type === 'service' ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" : "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"
                             )}>
                               {item.type === 'service' ? 'Serviço' : 'Produto'}
                             </span>
-                            <span className="font-medium">{item.description}</span>
+                            <span className="font-medium truncate">{item.description}</span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-muted-foreground break-words">
                             {item.quantity} x {formatCurrency(item.unit_price)} = {formatCurrency(item.quantity * item.unit_price)}
                           </p>
                         </div>
@@ -1111,7 +1117,7 @@ export function OSForm({
 
 
                 {/* === AÇÕES === */}
-                <div className="flex justify-end gap-3 pt-4 border-t">
+                <div className="flex flex-wrap justify-end gap-3 pt-4 border-t">
                   <Button
                     type="button"
                     variant="outline"
@@ -1133,7 +1139,7 @@ export function OSForm({
     return (
       <>
         <Drawer open={open} onOpenChange={onOpenChange}>
-          <DrawerContent className="max-h-[95dvh] h-[95dvh] w-[calc(100vw-8px)]">
+          <DrawerContent className="max-h-[95dvh] h-[95dvh] w-full max-w-full">
             <DrawerHeader className="border-b pb-3 pt-4 px-4">
               <DrawerTitle className="text-center text-lg">
                 {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
