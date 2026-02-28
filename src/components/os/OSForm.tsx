@@ -26,6 +26,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import {
   Command,
@@ -381,7 +382,7 @@ export function OSForm({
   };
 
   const formContent = (
-    <ScrollArea className="w-full max-h-[calc(95vh-80px)] sm:max-h-[calc(90vh-80px)] overflow-x-hidden">
+    <ScrollArea className="w-full h-[calc(100dvh-72px)] sm:h-auto sm:max-h-[calc(90vh-80px)] overflow-x-hidden">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-full mx-auto min-w-0 overflow-x-hidden">
                 
@@ -1134,11 +1135,12 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[calc(100vw-12px)] max-w-[calc(100vw-12px)] sm:max-w-[700px] max-h-[95vh] sm:max-h-[90vh] p-0 gap-0 rounded-lg overflow-x-hidden">
+        <DialogContent className="left-0 top-0 translate-x-0 translate-y-0 w-screen max-w-none h-[100dvh] max-h-[100dvh] rounded-none border-0 p-0 gap-0 overflow-x-hidden sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:w-[calc(100vw-12px)] sm:max-w-[700px] sm:h-auto sm:max-h-[90vh] sm:rounded-lg sm:border">
           <DialogHeader className="px-3 sm:px-6 py-3 sm:py-4 border-b">
             <DialogTitle className="text-center text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
             </DialogTitle>
+            <DialogDescription className="sr-only">Formulário de edição da ordem de serviço.</DialogDescription>
           </DialogHeader>
           {formContent}
         </DialogContent>
