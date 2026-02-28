@@ -388,11 +388,9 @@ export function OSForm({
   };
 
   const formContent = (
-    <ScrollArea className={cn(
-      isMobile ? "h-[calc(95dvh-72px)] overflow-x-hidden" : "h-[calc(90dvh-100px)] overflow-x-hidden"
-    )}>
+    <ScrollArea className="max-h-[calc(95vh-80px)] sm:max-h-[calc(90vh-80px)] overflow-x-hidden">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-2xl max-w-full mx-auto min-w-0">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-full mx-auto min-w-0">
                 
                 {/* === SEÇÃO: CLIENTE === */}
                 <div className="space-y-4">
@@ -1135,58 +1133,11 @@ export function OSForm({
     </ScrollArea>
   );
 
-  if (isMobile) {
-    return (
-      <>
-        <Drawer open={open} onOpenChange={onOpenChange}>
-          <DrawerContent className="max-h-[95dvh] h-[95dvh] w-full max-w-full">
-            <DrawerHeader className="border-b pb-3 pt-4 px-4">
-              <DrawerTitle className="text-center text-lg">
-                {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
-              </DrawerTitle>
-            </DrawerHeader>
-            {formContent}
-          </DrawerContent>
-        </Drawer>
-
-        {/* Dialogs para cadastro inline */}
-        <ClientForm
-          open={clientFormOpen}
-          onOpenChange={setClientFormOpen}
-          onSubmit={handleCreateClient}
-          isSubmitting={createClient.isPending}
-        />
-
-        <ServiceForm
-          open={serviceFormOpen}
-          onOpenChange={setServiceFormOpen}
-          onSubmit={handleCreateService}
-          isSubmitting={createService.isPending}
-        />
-
-        <ProductForm
-          open={productFormOpen}
-          onOpenChange={setProductFormOpen}
-          onSubmit={handleCreateProduct}
-          isSubmitting={createProduct.isPending}
-        />
-
-        <EquipmentForm
-          open={equipmentFormOpen}
-          onOpenChange={setEquipmentFormOpen}
-          equipment={null}
-          onSubmit={handleCreateEquipment}
-          isSubmitting={createEquipment.isPending}
-        />
-      </>
-    );
-  }
-
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[calc(100vw-16px)] sm:w-full sm:max-w-3xl max-h-[90dvh] p-0 gap-0">
-          <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
+        <DialogContent className="sm:max-w-[700px] w-[calc(100vw-16px)] max-h-[95vh] sm:max-h-[90vh] p-0 gap-0 rounded-lg">
+          <DialogHeader className="px-3 sm:px-6 py-3 sm:py-4 border-b">
             <DialogTitle className="text-center text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
             </DialogTitle>
@@ -1195,28 +1146,24 @@ export function OSForm({
         </DialogContent>
       </Dialog>
 
-      {/* Dialogs para cadastro inline */}
       <ClientForm
         open={clientFormOpen}
         onOpenChange={setClientFormOpen}
         onSubmit={handleCreateClient}
         isSubmitting={createClient.isPending}
       />
-
       <ServiceForm
         open={serviceFormOpen}
         onOpenChange={setServiceFormOpen}
         onSubmit={handleCreateService}
         isSubmitting={createService.isPending}
       />
-
       <ProductForm
         open={productFormOpen}
         onOpenChange={setProductFormOpen}
         onSubmit={handleCreateProduct}
         isSubmitting={createProduct.isPending}
       />
-
       <EquipmentForm
         open={equipmentFormOpen}
         onOpenChange={setEquipmentFormOpen}
