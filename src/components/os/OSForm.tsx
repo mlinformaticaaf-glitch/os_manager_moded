@@ -389,10 +389,10 @@ export function OSForm({
 
   const formContent = (
     <ScrollArea className={cn(
-      isMobile ? "h-[calc(100dvh-80px)]" : "h-[calc(90vh-100px)]"
+      isMobile ? "h-[calc(95dvh-72px)]" : "h-[calc(90dvh-100px)]"
     )}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 max-w-2xl mx-auto">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-2xl mx-auto">
                 
                 {/* === SEÇÃO: CLIENTE === */}
                 <div className="space-y-4">
@@ -422,7 +422,7 @@ export function OSForm({
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[400px] p-0" align="start">
+                            <PopoverContent className="w-[min(400px,calc(100vw-32px))] p-0" align="start">
                               <Command shouldFilter={false}>
                                 <CommandInput 
                                   placeholder="Buscar por nome, telefone ou email..." 
@@ -592,7 +592,7 @@ export function OSForm({
                                   </Button>
                                 </FormControl>
                               </PopoverTrigger>
-                              <PopoverContent className="w-[400px] p-0" align="start">
+                              <PopoverContent className="w-[min(400px,calc(100vw-32px))] p-0" align="start">
                                 <Command shouldFilter={false}>
                                   <CommandInput 
                                     placeholder="Buscar por código ou descrição..." 
@@ -775,7 +775,7 @@ export function OSForm({
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[500px] p-0" align="start">
+                        <PopoverContent className="w-[min(500px,calc(100vw-32px))] p-0" align="start">
                           <Command shouldFilter={false}>
                             <CommandInput 
                               placeholder="Buscar por nome ou código..." 
@@ -878,7 +878,7 @@ export function OSForm({
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[500px] p-0" align="start">
+                        <PopoverContent className="w-[min(500px,calc(100vw-32px))] p-0" align="start">
                           <Command shouldFilter={false}>
                             <CommandInput 
                               placeholder="Buscar por nome ou SKU..." 
@@ -1133,7 +1133,7 @@ export function OSForm({
     return (
       <>
         <Drawer open={open} onOpenChange={onOpenChange}>
-          <DrawerContent className="max-h-[95dvh] h-[95dvh]">
+          <DrawerContent className="max-h-[95dvh] h-[95dvh] w-[calc(100vw-8px)]">
             <DrawerHeader className="border-b pb-3 pt-4 px-4">
               <DrawerTitle className="text-center text-lg">
                 {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
@@ -1178,29 +1178,16 @@ export function OSForm({
 
   return (
     <>
-      {isMobile ? (
-        <Drawer open={open} onOpenChange={onOpenChange}>
-          <DrawerContent className="max-h-[95dvh]">
-            <DrawerHeader className="border-b pb-3">
-              <DrawerTitle className="text-center text-lg">
-                {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
-              </DrawerTitle>
-            </DrawerHeader>
-            {formContent}
-          </DrawerContent>
-        </Drawer>
-      ) : (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-          <DialogContent className="sm:max-w-3xl max-h-[90vh] p-0 gap-0">
-            <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
-              <DialogTitle className="text-center text-lg">
-                {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
-              </DialogTitle>
-            </DialogHeader>
-            {formContent}
-          </DialogContent>
-        </Dialog>
-      )}
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="w-[calc(100vw-16px)] sm:w-full sm:max-w-3xl max-h-[90dvh] p-0 gap-0">
+          <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
+            <DialogTitle className="text-center text-lg">
+              {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
+            </DialogTitle>
+          </DialogHeader>
+          {formContent}
+        </DialogContent>
+      </Dialog>
 
       {/* Dialogs para cadastro inline */}
       <ClientForm
