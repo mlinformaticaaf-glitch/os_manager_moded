@@ -382,9 +382,9 @@ export function OSForm({
   };
 
   const formContent = (
-    <ScrollArea className="w-full h-[calc(100dvh-72px)] sm:h-auto sm:max-h-[calc(90vh-80px)] overflow-x-hidden">
+    <ScrollArea className="w-full h-[calc(95dvh-72px)] sm:h-auto sm:max-h-[calc(90vh-80px)] overflow-x-hidden">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="p-3 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-full mx-auto min-w-0 overflow-x-hidden">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="py-3 px-2.5 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-full mx-auto min-w-0 overflow-x-hidden">
                 
                 {/* === SEÇÃO: CLIENTE === */}
                 <div className="space-y-4">
@@ -1135,8 +1135,8 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="left-0 top-0 translate-x-0 translate-y-0 w-screen max-w-none h-[100dvh] max-h-[100dvh] rounded-none border-0 p-0 gap-0 overflow-x-hidden sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:w-[calc(100vw-12px)] sm:max-w-[700px] sm:h-auto sm:max-h-[90vh] sm:rounded-lg sm:border">
-          <DialogHeader className="px-3 sm:px-6 py-3 sm:py-4 border-b">
+        <DialogContent className="left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-full max-w-[min(95vw,350px)] max-h-[95dvh] rounded-lg p-0 gap-0 overflow-x-hidden sm:w-[calc(100vw-12px)] sm:max-w-[700px] sm:max-h-[90vh] sm:border">
+          <DialogHeader className="py-3 px-2.5 sm:px-6 sm:py-4 border-b">
             <DialogTitle className="text-center text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
             </DialogTitle>
