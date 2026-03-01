@@ -755,7 +755,7 @@ export function OSForm({
                     </Button>
                   </div>
 
-                  <div className="border rounded-lg p-3 sm:p-4 space-y-3 bg-blue-50/50 dark:bg-blue-950/20 min-w-0 overflow-x-hidden">
+                  <div className="border rounded-lg p-2 sm:p-4 space-y-3 bg-blue-50/50 dark:bg-blue-950/20 min-w-0 overflow-hidden">
                     <div className="flex flex-col sm:flex-row gap-3 min-w-0">
                       <Popover open={serviceOpen} onOpenChange={setServiceOpen}>
                         <PopoverTrigger asChild>
@@ -811,24 +811,24 @@ export function OSForm({
                         </PopoverContent>
                       </Popover>
                       
-                      <div className="flex w-full sm:w-auto gap-2">
+                      <div className="flex w-full sm:w-auto gap-2 min-w-0">
                         <Input
                           type="number"
                           min={1}
                           step={1}
                           value={serviceQuantity}
                           onChange={(e) => setServiceQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                          className="w-24 sm:w-20"
+                          className="w-16 sm:w-20 shrink-0"
                           placeholder="Qtd"
                         />
                         <Button
                           type="button"
                           onClick={addSelectedService}
                           disabled={!selectedService}
-                          className="flex-1 sm:flex-none"
+                          className="flex-1 min-w-0 sm:flex-none"
                         >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Adicionar
+                          <Plus className="h-4 w-4 mr-1 shrink-0" />
+                          <span className="truncate">Adicionar</span>
                         </Button>
                       </div>
                     </div>
@@ -862,7 +862,7 @@ export function OSForm({
                     </Button>
                   </div>
 
-                  <div className="border rounded-lg p-3 sm:p-4 space-y-3 bg-muted/30 min-w-0 overflow-x-hidden">
+                  <div className="border rounded-lg p-2 sm:p-4 space-y-3 bg-muted/30 min-w-0 overflow-hidden">
                     <div className="flex flex-col sm:flex-row gap-3 min-w-0">
                       <Popover open={productOpen} onOpenChange={setProductOpen}>
                         <PopoverTrigger asChild>
@@ -921,24 +921,24 @@ export function OSForm({
                         </PopoverContent>
                       </Popover>
                       
-                      <div className="flex w-full sm:w-auto gap-2">
+                      <div className="flex w-full sm:w-auto gap-2 min-w-0">
                         <Input
                           type="number"
                           min={1}
                           step={1}
                           value={productQuantity}
                           onChange={(e) => setProductQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                          className="w-24 sm:w-20"
+                          className="w-16 sm:w-20 shrink-0"
                           placeholder="Qtd"
                         />
                         <Button
                           type="button"
                           onClick={addSelectedProduct}
                           disabled={!selectedProduct}
-                          className="flex-1 sm:flex-none"
+                          className="flex-1 min-w-0 sm:flex-none"
                         >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Adicionar
+                          <Plus className="h-4 w-4 mr-1 shrink-0" />
+                          <span className="truncate">Adicionar</span>
                         </Button>
                       </div>
                     </div>
@@ -1135,7 +1135,7 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-full max-w-[min(95vw,350px)] max-h-[95dvh] rounded-lg p-0 gap-0 overflow-x-hidden sm:w-[calc(100vw-12px)] sm:max-w-[700px] sm:max-h-[90vh] sm:border">
+        <DialogContent className="left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] max-h-[95dvh] rounded-lg p-0 gap-0 overflow-x-hidden sm:w-[calc(100vw-12px)] sm:max-w-[700px] sm:max-h-[90vh] sm:border">
           <DialogHeader className="py-3 px-2.5 sm:px-6 sm:py-4 border-b">
             <DialogTitle className="text-center text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
