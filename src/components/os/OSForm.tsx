@@ -382,9 +382,12 @@ export function OSForm({
   };
 
   const formContent = (
-    <ScrollArea className="w-full h-[calc(95dvh-72px)] sm:h-auto sm:max-h-[calc(90vh-80px)] overflow-x-hidden">
+    <ScrollArea className="w-full h-[calc(100dvh-64px)] sm:h-[calc(100dvh-72px)] overflow-x-hidden">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="py-3 px-2.5 sm:p-6 space-y-4 sm:space-y-5 w-full max-w-full mx-auto min-w-0 overflow-x-hidden">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="py-2.5 px-2 sm:px-4 lg:px-6 space-y-3 sm:space-y-4 text-sm sm:text-base w-full max-w-full mx-auto min-w-0 overflow-x-hidden [&_input]:h-9 sm:[&_input]:h-10 [&_[role=combobox]]:h-9 sm:[&_[role=combobox]]:h-10 [&_textarea]:min-h-[72px] sm:[&_textarea]:min-h-[96px]"
+        >
                 
                 {/* === SEÇÃO: CLIENTE === */}
                 <div className="space-y-4">
@@ -1135,9 +1138,9 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] max-h-[95dvh] rounded-lg p-0 gap-0 overflow-x-hidden sm:w-[calc(100vw-12px)] sm:max-w-[700px] sm:max-h-[90vh] sm:border">
-          <DialogHeader className="py-3 px-2.5 sm:px-6 sm:py-4 border-b">
-            <DialogTitle className="text-center text-lg">
+        <DialogContent className="left-0 top-0 translate-x-0 translate-y-0 w-screen max-w-none h-[100dvh] max-h-[100dvh] rounded-none border-0 p-0 gap-0 overflow-x-hidden sm:left-0 sm:top-0 sm:translate-x-0 sm:translate-y-0 sm:w-screen sm:max-w-none sm:h-[100dvh] sm:max-h-[100dvh] sm:rounded-none sm:border-0">
+          <DialogHeader className="py-2.5 px-2.5 sm:px-4 lg:px-6 sm:py-3 border-b">
+            <DialogTitle className="text-center text-base sm:text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}
             </DialogTitle>
             <DialogDescription className="sr-only">Formulário de edição da ordem de serviço.</DialogDescription>
