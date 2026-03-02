@@ -41,10 +41,16 @@ export function MainLayout({ children, title, subtitle, onNewOS }: MainLayoutPro
   return (
     <div className="flex h-screen bg-background overflow-hidden w-full">
       <Sidebar currentPath={location.pathname} onNavigate={handleNavigate} onLogout={handleLogout} />
-      
+
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <Header title={title} subtitle={subtitle} onNewOS={handleNewOS} userEmail={user?.email} />
-        
+        <Header
+          title={title}
+          subtitle={subtitle}
+          onNewOS={handleNewOS}
+          userEmail={user?.email}
+          onLogout={handleLogout}
+        />
+
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>

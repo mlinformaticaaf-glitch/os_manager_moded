@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -112,109 +113,114 @@ export function OSPixButton({ order, variant = "outline", size = "sm" }: OSPixBu
       </Button>
 
       <Dialog open={showPixModal} onOpenChange={setShowPixModal}>
-        <DialogContent className="sm:max-w-[420px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5 text-purple-600" />
-              Pagamento via Pix
-            </DialogTitle>
-            <DialogDescription>
-              OS #{formatOSNumber(order.order_number, order.created_at)} - {order.client?.name || 'Cliente'}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-6">
-            {/* Amount */}
-            <div className="space-y-2">
-              <Label htmlFor="amount">Valor do Pagamento</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(parseFloat(e.target.value) || 0)}
-                  className="text-lg font-mono"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCustomAmount(order.total)}
-                  className="whitespace-nowrap"
-                >
-                  {formatCurrency(order.total)}
-                </Button>
-              </div>
-            </div>
-
-            {/* QR Code */}
-            {pixPayload && customAmount > 0 && (
-              <div className="flex flex-col items-center gap-4 p-4 bg-white rounded-lg">
-                <QRCodeSVG
-                  value={pixPayload}
-                  size={200}
-                  level="M"
-                  includeMargin
-                  className="rounded"
-                />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-gray-900">
-                    {formatCurrency(customAmount)}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {settings?.pix_beneficiary || settings?.name}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {customAmount <= 0 && (
-              <div className="flex flex-col items-center gap-2 p-6 bg-muted rounded-lg">
-                <AlertCircle className="h-8 w-8 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  Informe um valor maior que zero
-                </p>
-              </div>
-            )}
-
-            {/* Pix Key Info */}
-            <div className="text-center text-sm text-muted-foreground">
-              <p>Chave Pix: {formatPixKey(settings?.pix_key || '', settings?.pix_key_type || '')}</p>
-            </div>
-
-            {/* Copy Button */}
-            {pixPayload && customAmount > 0 && (
-              <Button
-                variant="outline"
-                onClick={handleCopyPayload}
-                className="w-full"
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-4 w-4 mr-2 text-success" />
-                    Código Copiado!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copiar Pix Copia e Cola
-                  </>
-                )}
-              </Button>
-            )}
+        <DialogContent className="sm:max-w-[420px] w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+          <div className="shrink-0 p-4 sm:p-6 pb-0">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <QrCode className="h-5 w-5 text-purple-600" />
+                Pagamento via Pix
+              </DialogTitle>
+              <DialogDescription>
+                OS #{formatOSNumber(order.order_number, order.created_at)} - {order.client?.name || 'Cliente'}
+              </DialogDescription>
+            </DialogHeader>
           </div>
 
-          <DialogFooter className="sm:justify-between">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="p-4 sm:p-6 space-y-6">
+              {/* Amount */}
+              <div className="space-y-2">
+                <Label htmlFor="amount">Valor do Pagamento</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={customAmount}
+                    onChange={(e) => setCustomAmount(parseFloat(e.target.value) || 0)}
+                    className="text-lg font-mono"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCustomAmount(order.total)}
+                    className="whitespace-nowrap"
+                  >
+                    {formatCurrency(order.total)}
+                  </Button>
+                </div>
+              </div>
+
+              {/* QR Code */}
+              {pixPayload && customAmount > 0 && (
+                <div className="flex flex-col items-center gap-4 p-4 bg-white rounded-lg">
+                  <QRCodeSVG
+                    value={pixPayload}
+                    size={200}
+                    level="M"
+                    includeMargin
+                    className="rounded"
+                  />
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-gray-900">
+                      {formatCurrency(customAmount)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {settings?.pix_beneficiary || settings?.name}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {customAmount <= 0 && (
+                <div className="flex flex-col items-center gap-2 p-6 bg-muted rounded-lg">
+                  <AlertCircle className="h-8 w-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    Informe um valor maior que zero
+                  </p>
+                </div>
+              )}
+
+              {/* Pix Key Info */}
+              <div className="text-center text-sm text-muted-foreground">
+                <p>Chave Pix: {formatPixKey(settings?.pix_key || '', settings?.pix_key_type || '')}</p>
+              </div>
+
+              {/* Copy Button */}
+              {pixPayload && customAmount > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={handleCopyPayload}
+                  className="w-full"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2 text-success" />
+                      Código Copiado!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copiar Pix Copia e Cola
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </ScrollArea>
+
+          <DialogFooter className="shrink-0 p-4 sm:p-6 pt-2 border-t sm:border-t-0 flex flex-col sm:flex-row gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate('/configuracoes')}
+              className="w-full sm:w-auto"
             >
               <Settings className="h-4 w-4 mr-2" />
               Configurar Pix
             </Button>
-            <Button variant="outline" onClick={() => setShowPixModal(false)}>
+            <Button variant="outline" onClick={() => setShowPixModal(false)} className="w-full sm:w-auto">
               Fechar
             </Button>
           </DialogFooter>

@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -122,203 +123,209 @@ export function ProductForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg w-[calc(100vw-16px)] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>
-            {product ? 'Editar Produto' : 'Novo Produto'}
-          </DialogTitle>
-          <DialogDescription>
-            {product 
-              ? `Código: ${formatProductCode(product.code)} • Atualize as informações do produto`
-              : 'O código será gerado automaticamente'}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-lg w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <div className="shrink-0 p-4 sm:p-6 pb-0">
+          <DialogHeader>
+            <DialogTitle>
+              {product ? 'Editar Produto' : 'Novo Produto'}
+            </DialogTitle>
+            <DialogDescription>
+              {product
+                ? `Código: ${formatProductCode(product.code)} • Atualize as informações do produto`
+                : 'O código será gerado automaticamente'}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome *</FormLabel>
-                  <FormControl>
-                    <CapitalizedInput placeholder="Nome do produto" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição</FormLabel>
-                  <FormControl>
-                    <CapitalizedTextarea 
-                      placeholder="Descrição do produto" 
-                      className="resize-none"
-                      rows={3}
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoria</FormLabel>
-                  <FormControl>
-                    <CapitalizedInput placeholder="Categoria" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="cost_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preço de Custo</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="sale_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preço de Venda</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="p-3 bg-muted rounded-lg">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Margem de Lucro:</span>
-                <span className={`font-medium ${profitMargin >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
-                  {profitMargin.toFixed(2)}%
-                </span>
-              </div>
-              <div className="flex justify-between items-center mt-1">
-                <span className="text-sm text-muted-foreground">Lucro por unidade:</span>
-                <span className={`font-medium ${salePrice - costPrice >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
-                  {formatCurrency(salePrice - costPrice)}
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="stock_quantity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estoque Atual</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="1" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="min_stock"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estoque Mínimo</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="1" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="unit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Unidade</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="p-4 sm:p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome *</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione" />
-                        </SelectTrigger>
+                        <CapitalizedInput placeholder="Nome do produto" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {UNIT_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="active"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Produto Ativo</FormLabel>
-                    <p className="text-sm text-muted-foreground">
-                      Produtos inativos não aparecem na seleção de OS
-                    </p>
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Descrição</FormLabel>
+                      <FormControl>
+                        <CapitalizedTextarea
+                          placeholder="Descrição do produto"
+                          className="resize-none"
+                          rows={3}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Categoria</FormLabel>
+                      <FormControl>
+                        <CapitalizedInput placeholder="Categoria" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="cost_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preço de Custo</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="sale_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preço de Venda</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="p-3 bg-muted rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Margem de Lucro:</span>
+                    <span className={`font-medium ${profitMargin >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+                      {profitMargin.toFixed(2)}%
+                    </span>
                   </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-sm text-muted-foreground">Lucro por unidade:</span>
+                    <span className={`font-medium ${salePrice - costPrice >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+                      {formatCurrency(salePrice - costPrice)}
+                    </span>
+                  </div>
+                </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? 'Salvando...' : product ? 'Atualizar' : 'Cadastrar'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="stock_quantity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Estoque Atual</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="1" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="min_stock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Estoque Mínimo</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="1" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="unit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Unidade</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {UNIT_OPTIONS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="active"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>Produto Ativo</FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                          Produtos inativos não aparecem na seleção de OS
+                        </p>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex gap-3 pt-6 pb-8">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => onOpenChange(false)}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting} className="flex-1">
+                    {isSubmitting ? 'Salvando...' : product ? 'Atualizar' : 'Cadastrar'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

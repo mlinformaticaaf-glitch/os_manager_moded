@@ -30,6 +30,9 @@ import { DeleteOSDialog } from '@/components/os/DeleteOSDialog';
 import { OSWizard } from '@/components/os/wizard';
 import { ServiceOrder, OSStatus } from '@/types/serviceOrder';
 import { useStatusSettings } from '@/hooks/useStatusSettings';
+import { ExportButton } from '@/components/common/ExportButton';
+import { FileText } from 'lucide-react';
+import { exportOSReportPDF } from '@/components/os/reports/OSReportGenerator';
 
 type ViewMode = 'kanban' | 'list';
 
@@ -246,8 +249,8 @@ export default function ServiceOrders() {
 
             {/* View Toggle and New Button */}
             <div className="flex gap-2 sm:gap-3">
-              <Tabs 
-                value={viewMode} 
+              <Tabs
+                value={viewMode}
                 onValueChange={(v) => {
                   const newMode = v as ViewMode;
                   setViewMode(newMode);
@@ -274,6 +277,16 @@ export default function ServiceOrders() {
               <Button onClick={handleCreate} size="sm" variant="outline" className="gap-1.5">
                 <Plus className="h-4 w-4" />
                 <span className="hidden sm:inline">Form. Clássico</span>
+              </Button>
+              <ExportButton data={filteredOrders} filename="ordens_de_servico" />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportOSReportPDF(filteredOrders)}
+                className="gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Relatório PDF</span>
               </Button>
             </div>
           </div>

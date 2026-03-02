@@ -111,7 +111,7 @@ export function OSForm({
   const activeProducts = products.filter(p => p.active);
   const activeServices = services.filter(s => s.active);
   const activeEquipment = equipmentList.filter(e => e.active);
-  
+
   const [items, setItems] = useState<ItemFormData[]>([]);
   const [newItem, setNewItem] = useState<ItemFormData>({
     type: 'service',
@@ -120,13 +120,13 @@ export function OSForm({
     unit_price: 0,
     product_id: undefined,
   });
-  
+
   // Quantity states for catalog items
   const [serviceQuantity, setServiceQuantity] = useState(1);
   const [productQuantity, setProductQuantity] = useState(1);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
-  
+
   // Combobox states
   const [clientOpen, setClientOpen] = useState(false);
   const [clientSearch, setClientSearch] = useState('');
@@ -136,7 +136,7 @@ export function OSForm({
   const [productSearch, setProductSearch] = useState('');
   const [equipmentOpen, setEquipmentOpen] = useState(false);
   const [equipmentSearch, setEquipmentSearch] = useState('');
-  
+
   // Dialog states
   const [clientFormOpen, setClientFormOpen] = useState(false);
   const [serviceFormOpen, setServiceFormOpen] = useState(false);
@@ -167,7 +167,7 @@ export function OSForm({
   // Filtered lists
   const filteredClients = useMemo(() => {
     if (!clientSearch) return clients;
-    return clients.filter(c => 
+    return clients.filter(c =>
       c.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
       c.phone?.includes(clientSearch) ||
       c.email?.toLowerCase().includes(clientSearch.toLowerCase())
@@ -176,7 +176,7 @@ export function OSForm({
 
   const filteredServices = useMemo(() => {
     if (!serviceSearch) return activeServices;
-    return activeServices.filter(s => 
+    return activeServices.filter(s =>
       s.name.toLowerCase().includes(serviceSearch.toLowerCase()) ||
       s.code?.toLowerCase().includes(serviceSearch.toLowerCase())
     );
@@ -184,7 +184,7 @@ export function OSForm({
 
   const filteredProducts = useMemo(() => {
     if (!productSearch) return activeProducts;
-    return activeProducts.filter(p => 
+    return activeProducts.filter(p =>
       p.name.toLowerCase().includes(productSearch.toLowerCase()) ||
       p.category?.toLowerCase().includes(productSearch.toLowerCase())
     );
@@ -192,7 +192,7 @@ export function OSForm({
 
   const filteredEquipment = useMemo(() => {
     if (!equipmentSearch) return activeEquipment;
-    return activeEquipment.filter(e => 
+    return activeEquipment.filter(e =>
       e.description.toLowerCase().includes(equipmentSearch.toLowerCase()) ||
       (e.code && `EQP-${e.code}`.toLowerCase().includes(equipmentSearch.toLowerCase()))
     );
@@ -222,6 +222,7 @@ export function OSForm({
         description: item.description,
         quantity: item.quantity,
         unit_price: item.unit_price,
+        product_id: item.product_id,
       })));
       setClientSearch('');
       setServiceSearch('');
@@ -314,7 +315,7 @@ export function OSForm({
       solution: data.solution?.trim() || null,
       internal_notes: data.internal_notes?.trim() || null,
     };
-    
+
     onSubmit({
       ...cleanedData,
       items,
@@ -382,754 +383,754 @@ export function OSForm({
   };
 
   const formContent = (
-    <ScrollArea className="w-full h-[calc(100dvh-64px)] sm:h-[calc(100dvh-72px)] overflow-x-hidden">
+    <ScrollArea className="flex-1 w-full h-auto min-h-0 overflow-x-hidden">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
           className="py-2.5 px-2 sm:px-4 lg:px-6 space-y-3 sm:space-y-4 text-sm sm:text-base w-full max-w-full mx-auto min-w-0 overflow-x-hidden [&_input]:h-9 sm:[&_input]:h-10 [&_[role=combobox]]:h-9 sm:[&_[role=combobox]]:h-10 [&_textarea]:min-h-[72px] sm:[&_textarea]:min-h-[96px]"
         >
-                
-                {/* === SEÇÃO: CLIENTE === */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <UserPlus className="h-5 w-5" />
-                    Cliente
-                  </h3>
-                  
-                  <FormField
-                    control={form.control}
-                    name="client_id"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Selecionar Cliente</FormLabel>
-                        <div className="flex gap-2 min-w-0">
-                          <Popover open={clientOpen} onOpenChange={setClientOpen}>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant="outline"
-                                  role="combobox"
-                                  aria-expanded={clientOpen}
-                                  className="flex-1 min-w-0 justify-between font-normal"
-                                >
-                                  <span className="truncate">{selectedClient ? selectedClient.name : "Buscar cliente..."}</span>
-                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[min(400px,calc(100vw-32px))] p-0" align="start">
-                              <Command shouldFilter={false}>
-                                <CommandInput 
-                                  placeholder="Buscar por nome, telefone ou email..." 
-                                  value={clientSearch}
-                                  onValueChange={setClientSearch}
-                                />
-                                <CommandList>
-                                  <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
-                                  <CommandGroup>
-                                    {filteredClients.map((client) => (
-                                      <CommandItem
-                                        key={client.id}
-                                        value={client.id}
-                                        onSelect={() => {
-                                          field.onChange(client.id);
-                                          setClientOpen(false);
-                                          setClientSearch('');
-                                        }}
-                                      >
-                                        <Check
-                                          className={cn(
-                                            "mr-2 h-4 w-4",
-                                            field.value === client.id ? "opacity-100" : "opacity-0"
-                                          )}
-                                        />
-                                        <div className="flex flex-col">
-                                          <span>{client.name}</span>
-                                          {client.phone && (
-                                            <span className="text-xs text-muted-foreground">{client.phone}</span>
-                                          )}
-                                        </div>
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
+
+          {/* === SEÇÃO: CLIENTE === */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Cliente
+            </h3>
+
+            <FormField
+              control={form.control}
+              name="client_id"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Selecionar Cliente</FormLabel>
+                  <div className="flex gap-2 min-w-0">
+                    <Popover open={clientOpen} onOpenChange={setClientOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
                           <Button
-                            type="button"
                             variant="outline"
-                            size="icon"
-                            onClick={() => setClientFormOpen(true)}
-                            title="Cadastrar novo cliente"
+                            role="combobox"
+                            aria-expanded={clientOpen}
+                            className="flex-1 min-w-0 justify-between font-normal"
                           >
-                            <Plus className="h-4 w-4" />
+                            <span className="truncate">{selectedClient ? selectedClient.name : "Buscar cliente..."}</span>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
-                          {field.value && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => field.onChange(null)}
-                              title="Remover cliente"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Separator />
-
-                {/* === SEÇÃO: STATUS E PRIORIDADE === */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="bg-popover border border-border">
-                            {orderedStatuses.map((key) => (
-                              <SelectItem key={key} value={key}>
-                                {statusConfig[key].label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="priority"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Prioridade</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="bg-popover border border-border">
-                            {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
-                              <SelectItem key={key} value={key}>
-                                {config.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* === DATA DE ENTRADA === */}
-                <FormField
-                  control={form.control}
-                  name="created_at"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Data de Entrada</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Separator />
-
-                {/* === SEÇÃO: EQUIPAMENTO === */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Monitor className="h-5 w-5" />
-                    Equipamento
-                  </h3>
-                  
-                  <FormField
-                    control={form.control}
-                    name="equipment_id"
-                    render={({ field }) => {
-                      const selectedEquipment = equipmentList.find(e => e.id === field.value);
-                      return (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Selecionar Equipamento</FormLabel>
-                          <div className="flex gap-2 min-w-0">
-                            <Popover open={equipmentOpen} onOpenChange={setEquipmentOpen}>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    aria-expanded={equipmentOpen}
-                                    className="flex-1 min-w-0 justify-between font-normal"
-                                  >
-                                    <span className="truncate">
-                                      {selectedEquipment 
-                                        ? `${formatEquipmentCode(selectedEquipment.code)} - ${selectedEquipment.description}`
-                                        : "Buscar equipamento..."}
-                                    </span>
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-[min(400px,calc(100vw-32px))] p-0" align="start">
-                                <Command shouldFilter={false}>
-                                  <CommandInput 
-                                    placeholder="Buscar por código ou descrição..." 
-                                    value={equipmentSearch}
-                                    onValueChange={setEquipmentSearch}
-                                  />
-                                  <CommandList>
-                                    <CommandEmpty>Nenhum equipamento encontrado.</CommandEmpty>
-                                    <CommandGroup>
-                                      {filteredEquipment.map((eq) => (
-                                        <CommandItem
-                                          key={eq.id}
-                                          value={eq.id}
-                                          onSelect={() => {
-                                            field.onChange(eq.id);
-                                            setEquipmentOpen(false);
-                                            setEquipmentSearch('');
-                                          }}
-                                        >
-                                          <Check
-                                            className={cn(
-                                              "mr-2 h-4 w-4",
-                                              field.value === eq.id ? "opacity-100" : "opacity-0"
-                                            )}
-                                          />
-                                          <div className="flex flex-col">
-                                            <span>{formatEquipmentCode(eq.code)} - {eq.description}</span>
-                                          </div>
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => setEquipmentFormOpen(true)}
-                              title="Cadastrar novo equipamento"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
-                            {field.value && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => field.onChange(null)}
-                                title="Remover equipamento"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="serial_number"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Número de Série</FormLabel>
-                          <FormControl>
-                            <Input placeholder="S/N" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="accessories"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Acessórios</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ex: Carregador, mouse" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="device_password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Senha do Dispositivo</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ex: 1234 ou padrão de desbloqueio" {...field} />
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Separator />
-
-                {/* === SEÇÃO: PROBLEMA === */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Problema</h3>
-                  
-                  <FormField
-                    control={form.control}
-                    name="reported_issue"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Problema Relatado *</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Descreva o problema relatado pelo cliente..."
-                            className="resize-none"
-                            rows={3}
-                            {...field}
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[min(400px,calc(100vw-32px))] p-0" align="start">
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            placeholder="Buscar por nome, telefone ou email..."
+                            value={clientSearch}
+                            onValueChange={setClientSearch}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="estimated_completion"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Previsão de Entrega</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Separator />
-
-                {/* === SEÇÃO: SERVIÇOS === */}
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 min-w-0">
-                    <h3 className="text-lg font-semibold flex items-center gap-2 min-w-0">
-                      <Wrench className="h-5 w-5 shrink-0" />
-                      <span className="truncate">Serviços</span>
-                    </h3>
+                          <CommandList>
+                            <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
+                            <CommandGroup>
+                              {filteredClients.map((client) => (
+                                <CommandItem
+                                  key={client.id}
+                                  value={client.id}
+                                  onSelect={() => {
+                                    field.onChange(client.id);
+                                    setClientOpen(false);
+                                    setClientSearch('');
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === client.id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  <div className="flex flex-col">
+                                    <span>{client.name}</span>
+                                    {client.phone && (
+                                      <span className="text-xs text-muted-foreground">{client.phone}</span>
+                                    )}
+                                  </div>
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <Button
                       type="button"
                       variant="outline"
-                      size="sm"
-                      onClick={() => setServiceFormOpen(true)}
-                      className="w-full sm:w-auto"
+                      size="icon"
+                      onClick={() => setClientFormOpen(true)}
+                      title="Cadastrar novo cliente"
                     >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Novo Serviço
+                      <Plus className="h-4 w-4" />
                     </Button>
-                  </div>
-
-                  <div className="border rounded-lg p-2 sm:p-4 space-y-3 bg-blue-50/50 dark:bg-blue-950/20 min-w-0 overflow-hidden">
-                    <div className="flex flex-col sm:flex-row gap-3 min-w-0">
-                      <Popover open={serviceOpen} onOpenChange={setServiceOpen}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className="flex-1 min-w-0 justify-between font-normal"
-                          >
-                            <span className="truncate">
-                              {selectedService 
-                                ? activeServices.find(s => s.id === selectedService)?.name 
-                                : "Buscar serviço cadastrado..."}
-                            </span>
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[min(500px,calc(100vw-32px))] p-0" align="start">
-                          <Command shouldFilter={false}>
-                            <CommandInput 
-                              placeholder="Buscar por nome ou código..." 
-                              value={serviceSearch}
-                              onValueChange={setServiceSearch}
-                            />
-                            <CommandList>
-                              <CommandEmpty>Nenhum serviço encontrado.</CommandEmpty>
-                              <CommandGroup>
-                                {filteredServices.map((service) => (
-                                  <CommandItem
-                                    key={service.id}
-                                    value={service.id}
-                                    onSelect={() => selectServiceFromCatalog(service.id)}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        selectedService === service.id ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                    <div className="flex items-center justify-between w-full gap-2 min-w-0">
-                                      <div className="flex flex-col min-w-0">
-                                        <span className="truncate">{service.name}</span>
-                                        {service.code && (
-                                          <span className="text-xs text-muted-foreground truncate">{service.code}</span>
-                                        )}
-                                      </div>
-                                      <span className="text-sm font-medium shrink-0">{formatCurrency(service.sale_price)}</span>
-                                    </div>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      
-                      <div className="flex w-full sm:w-auto gap-2 min-w-0">
-                        <Input
-                          type="number"
-                          min={1}
-                          step={1}
-                          value={serviceQuantity}
-                          onChange={(e) => setServiceQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                          className="w-16 sm:w-20 shrink-0"
-                          placeholder="Qtd"
-                        />
-                        <Button
-                          type="button"
-                          onClick={addSelectedService}
-                          disabled={!selectedService}
-                          className="flex-1 min-w-0 sm:flex-none"
-                        >
-                          <Plus className="h-4 w-4 mr-1 shrink-0" />
-                          <span className="truncate">Adicionar</span>
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {selectedService && (
-                      <p className="text-sm text-muted-foreground break-words">
-                        Selecionado: {activeServices.find(s => s.id === selectedService)?.name} - {formatCurrency(activeServices.find(s => s.id === selectedService)?.sale_price || 0)} x {serviceQuantity} = {formatCurrency((activeServices.find(s => s.id === selectedService)?.sale_price || 0) * serviceQuantity)}
-                      </p>
+                    {field.value && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => field.onChange(null)}
+                        title="Remover cliente"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     )}
                   </div>
-                </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-                <Separator />
+          <Separator />
 
-                {/* === SEÇÃO: PRODUTOS === */}
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 min-w-0">
-                    <h3 className="text-lg font-semibold flex items-center gap-2 min-w-0">
-                      <Package className="h-5 w-5 shrink-0" />
-                      <span className="truncate">Produtos / Peças</span>
-                    </h3>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setProductFormOpen(true)}
-                      className="w-full sm:w-auto"
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Novo Produto
-                    </Button>
-                  </div>
-
-                  <div className="border rounded-lg p-2 sm:p-4 space-y-3 bg-muted/30 min-w-0 overflow-hidden">
-                    <div className="flex flex-col sm:flex-row gap-3 min-w-0">
-                      <Popover open={productOpen} onOpenChange={setProductOpen}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className="flex-1 min-w-0 justify-between font-normal"
-                          >
-                            <span className="truncate">
-                              {selectedProduct 
-                                ? activeProducts.find(p => p.id === selectedProduct)?.name 
-                                : "Buscar produto cadastrado..."}
-                            </span>
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[min(500px,calc(100vw-32px))] p-0" align="start">
-                          <Command shouldFilter={false}>
-                            <CommandInput 
-                              placeholder="Buscar por nome ou SKU..." 
-                              value={productSearch}
-                              onValueChange={setProductSearch}
-                            />
-                            <CommandList>
-                              <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
-                              <CommandGroup>
-                                {filteredProducts.map((product) => (
-                                  <CommandItem
-                                    key={product.id}
-                                    value={product.id}
-                                    onSelect={() => selectProductFromCatalog(product.id)}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        selectedProduct === product.id ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                    <div className="flex items-center justify-between w-full gap-2 min-w-0">
-                                      <div className="flex flex-col min-w-0">
-                                        <span className="truncate">{product.name}</span>
-                                        {product.category && (
-                                          <span className="text-xs text-muted-foreground truncate">{product.category}</span>
-                                        )}
-                                      </div>
-                                      <div className="text-right shrink-0">
-                                        <span className="text-sm font-medium">{formatCurrency(product.sale_price)}</span>
-                                        <span className="text-xs text-muted-foreground ml-2">Est: {product.stock_quantity}</span>
-                                      </div>
-                                    </div>
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      
-                      <div className="flex w-full sm:w-auto gap-2 min-w-0">
-                        <Input
-                          type="number"
-                          min={1}
-                          step={1}
-                          value={productQuantity}
-                          onChange={(e) => setProductQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                          className="w-16 sm:w-20 shrink-0"
-                          placeholder="Qtd"
-                        />
-                        <Button
-                          type="button"
-                          onClick={addSelectedProduct}
-                          disabled={!selectedProduct}
-                          className="flex-1 min-w-0 sm:flex-none"
-                        >
-                          <Plus className="h-4 w-4 mr-1 shrink-0" />
-                          <span className="truncate">Adicionar</span>
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {selectedProduct && (
-                      <p className="text-sm text-muted-foreground break-words">
-                        Selecionado: {activeProducts.find(p => p.id === selectedProduct)?.name} - {formatCurrency(activeProducts.find(p => p.id === selectedProduct)?.sale_price || 0)} x {productQuantity} = {formatCurrency((activeProducts.find(p => p.id === selectedProduct)?.sale_price || 0) * productQuantity)} | Estoque: {activeProducts.find(p => p.id === selectedProduct)?.stock_quantity}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* === ITEM MANUAL === */}
-                <div className="border rounded-lg p-3 sm:p-4 space-y-4">
-                  <h4 className="font-medium text-sm sm:text-base">Adicionar Item Manual</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                    <Select
-                      value={newItem.type}
-                      onValueChange={(value: 'product' | 'service') =>
-                        setNewItem({ ...newItem, type: value })
-                      }
-                    >
+          {/* === SEÇÃO: STATUS E PRIORIDADE === */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-popover border border-border">
-                        <SelectItem value="service">Serviço</SelectItem>
-                        <SelectItem value="product">Produto</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    </FormControl>
+                    <SelectContent className="bg-popover border border-border">
+                      {orderedStatuses.map((key) => (
+                        <SelectItem key={key} value={key}>
+                          {statusConfig[key].label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                    <Input
-                      placeholder="Descrição"
-                      value={newItem.description}
-                      onChange={(e) =>
-                        setNewItem({ ...newItem, description: e.target.value })
-                      }
-                      className="sm:col-span-3"
-                    />
-                  </div>
+            <FormField
+              control={form.control}
+              name="priority"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Prioridade</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-popover border border-border">
+                      {Object.entries(PRIORITY_CONFIG).map(([key, config]) => (
+                        <SelectItem key={key} value={key}>
+                          {config.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <Input
-                      type="number"
-                      placeholder="Qtd"
-                      min={0.01}
-                      step={0.01}
-                      value={newItem.quantity}
-                      onChange={(e) =>
-                        setNewItem({ ...newItem, quantity: parseFloat(e.target.value) || 0 })
-                      }
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Valor Unit."
-                      min={0}
-                      step={0.01}
-                      value={newItem.unit_price}
-                      onChange={(e) =>
-                        setNewItem({ ...newItem, unit_price: parseFloat(e.target.value) || 0 })
-                      }
-                    />
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      = {formatCurrency(newItem.quantity * newItem.unit_price)}
-                    </div>
-                    <Button type="button" onClick={addItem} size="sm" className="w-full">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Adicionar
-                    </Button>
-                  </div>
-                </div>
+          {/* === DATA DE ENTRADA === */}
+          <FormField
+            control={form.control}
+            name="created_at"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Data de Entrada</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                {/* === ITENS ADICIONADOS === */}
-                {items.length > 0 && (
-                  <div className="border rounded-lg divide-y">
-                    <div className="p-3 bg-muted/50 font-medium">
-                      Itens da OS ({items.length})
-                    </div>
-                    {items.map((item, index) => (
-                      <div key={index} className="p-3 flex items-center justify-between gap-2 min-w-0">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className={cn(
-                              "text-xs px-2 py-0.5 rounded",
-                              item.type === 'service' ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" : "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"
-                            )}>
-                              {item.type === 'service' ? 'Serviço' : 'Produto'}
-                            </span>
-                            <span className="font-medium truncate">{item.description}</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground break-words">
-                            {item.quantity} x {formatCurrency(item.unit_price)} = {formatCurrency(item.quantity * item.unit_price)}
-                          </p>
-                        </div>
+          <Separator />
+
+          {/* === SEÇÃO: EQUIPAMENTO === */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <Monitor className="h-5 w-5" />
+              Equipamento
+            </h3>
+
+            <FormField
+              control={form.control}
+              name="equipment_id"
+              render={({ field }) => {
+                const selectedEquipment = equipmentList.find(e => e.id === field.value);
+                return (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Selecionar Equipamento</FormLabel>
+                    <div className="flex gap-2 min-w-0">
+                      <Popover open={equipmentOpen} onOpenChange={setEquipmentOpen}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={equipmentOpen}
+                              className="flex-1 min-w-0 justify-between font-normal"
+                            >
+                              <span className="truncate">
+                                {selectedEquipment
+                                  ? `${formatEquipmentCode(selectedEquipment.code)} - ${selectedEquipment.description}`
+                                  : "Buscar equipamento..."}
+                              </span>
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[min(400px,calc(100vw-32px))] p-0" align="start">
+                          <Command shouldFilter={false}>
+                            <CommandInput
+                              placeholder="Buscar por código ou descrição..."
+                              value={equipmentSearch}
+                              onValueChange={setEquipmentSearch}
+                            />
+                            <CommandList>
+                              <CommandEmpty>Nenhum equipamento encontrado.</CommandEmpty>
+                              <CommandGroup>
+                                {filteredEquipment.map((eq) => (
+                                  <CommandItem
+                                    key={eq.id}
+                                    value={eq.id}
+                                    onSelect={() => {
+                                      field.onChange(eq.id);
+                                      setEquipmentOpen(false);
+                                      setEquipmentSearch('');
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        field.value === eq.id ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                    <div className="flex flex-col">
+                                      <span>{formatEquipmentCode(eq.code)} - {eq.description}</span>
+                                    </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setEquipmentFormOpen(true)}
+                        title="Cadastrar novo equipamento"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                      {field.value && (
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => removeItem(index)}
-                          className="text-destructive hover:text-destructive"
+                          onClick={() => field.onChange(null)}
+                          title="Remover equipamento"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                      </div>
-                    ))}
-                  </div>
+                      )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="serial_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número de Série</FormLabel>
+                    <FormControl>
+                      <Input placeholder="S/N" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
+              />
 
-                <Separator />
+              <FormField
+                control={form.control}
+                name="accessories"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Acessórios</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Carregador, mouse" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                {/* === SEÇÃO: TOTAIS === */}
-                <div className="border rounded-lg p-4 space-y-2 bg-muted/30">
-                  <div className="flex justify-between text-sm">
-                    <span>Serviços:</span>
-                    <span>{formatCurrency(totalServices)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Produtos:</span>
-                    <span>{formatCurrency(totalProducts)}</span>
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name="discount"
-                    render={({ field }) => (
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm min-w-0">
-                        <span>Desconto:</span>
-                        <Input
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          className="w-full sm:w-24 h-8 text-left sm:text-right"
-                          {...field}
-                        />
-                      </div>
-                    )}
+            <FormField
+              control={form.control}
+              name="device_password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Senha do Dispositivo</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ex: 1234 ou padrão de desbloqueio" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <Separator />
+
+          {/* === SEÇÃO: PROBLEMA === */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Problema</h3>
+
+            <FormField
+              control={form.control}
+              name="reported_issue"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Problema Relatado *</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Descreva o problema relatado pelo cliente..."
+                      className="resize-none"
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="estimated_completion"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Previsão de Entrega</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <Separator />
+
+          {/* === SEÇÃO: SERVIÇOS === */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 min-w-0">
+              <h3 className="text-lg font-semibold flex items-center gap-2 min-w-0">
+                <Wrench className="h-5 w-5 shrink-0" />
+                <span className="truncate">Serviços</span>
+              </h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setServiceFormOpen(true)}
+                className="w-full sm:w-auto"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Novo Serviço
+              </Button>
+            </div>
+
+            <div className="border rounded-lg p-2 sm:p-4 space-y-3 bg-blue-50/50 dark:bg-blue-950/20 min-w-0 overflow-hidden">
+              <div className="flex flex-col sm:flex-row gap-3 min-w-0">
+                <Popover open={serviceOpen} onOpenChange={setServiceOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className="flex-1 min-w-0 justify-between font-normal"
+                    >
+                      <span className="truncate">
+                        {selectedService
+                          ? activeServices.find(s => s.id === selectedService)?.name
+                          : "Buscar serviço cadastrado..."}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[min(500px,calc(100vw-32px))] p-0" align="start">
+                    <Command shouldFilter={false}>
+                      <CommandInput
+                        placeholder="Buscar por nome ou código..."
+                        value={serviceSearch}
+                        onValueChange={setServiceSearch}
+                      />
+                      <CommandList>
+                        <CommandEmpty>Nenhum serviço encontrado.</CommandEmpty>
+                        <CommandGroup>
+                          {filteredServices.map((service) => (
+                            <CommandItem
+                              key={service.id}
+                              value={service.id}
+                              onSelect={() => selectServiceFromCatalog(service.id)}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedService === service.id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              <div className="flex items-center justify-between w-full gap-2 min-w-0">
+                                <div className="flex flex-col min-w-0">
+                                  <span className="truncate">{service.name}</span>
+                                  {service.code && (
+                                    <span className="text-xs text-muted-foreground truncate">{service.code}</span>
+                                  )}
+                                </div>
+                                <span className="text-sm font-medium shrink-0">{formatCurrency(service.sale_price)}</span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                <div className="flex w-full sm:w-auto gap-2 min-w-0">
+                  <Input
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={serviceQuantity}
+                    onChange={(e) => setServiceQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-16 sm:w-20 shrink-0"
+                    placeholder="Qtd"
                   />
-                  <div className="flex justify-between font-bold text-lg border-t pt-2">
-                    <span>Total:</span>
-                    <span>{formatCurrency(total)}</span>
-                  </div>
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="payment_method"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Forma de Pagamento</FormLabel>
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={(value) => field.onChange(value || null)}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="bg-popover border border-border">
-                          <SelectItem value="pix">PIX</SelectItem>
-                          <SelectItem value="cash">Dinheiro</SelectItem>
-                          <SelectItem value="credit">Cartão Crédito</SelectItem>
-                          <SelectItem value="debit">Cartão Débito</SelectItem>
-                          <SelectItem value="promissory">Promissória</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-
-                {/* === AÇÕES === */}
-                <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t">
                   <Button
                     type="button"
-                    variant="outline"
-                    onClick={() => onOpenChange(false)}
-                    className="w-full sm:w-auto"
+                    onClick={addSelectedService}
+                    disabled={!selectedService}
+                    className="flex-1 min-w-0 sm:flex-none"
                   >
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {order ? 'Salvar' : 'Criar OS'}
+                    <Plus className="h-4 w-4 mr-1 shrink-0" />
+                    <span className="truncate">Adicionar</span>
                   </Button>
                 </div>
+              </div>
+
+              {selectedService && (
+                <p className="text-sm text-muted-foreground break-words">
+                  Selecionado: {activeServices.find(s => s.id === selectedService)?.name} - {formatCurrency(activeServices.find(s => s.id === selectedService)?.sale_price || 0)} x {serviceQuantity} = {formatCurrency((activeServices.find(s => s.id === selectedService)?.sale_price || 0) * serviceQuantity)}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* === SEÇÃO: PRODUTOS === */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 min-w-0">
+              <h3 className="text-lg font-semibold flex items-center gap-2 min-w-0">
+                <Package className="h-5 w-5 shrink-0" />
+                <span className="truncate">Produtos / Peças</span>
+              </h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setProductFormOpen(true)}
+                className="w-full sm:w-auto"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Novo Produto
+              </Button>
+            </div>
+
+            <div className="border rounded-lg p-2 sm:p-4 space-y-3 bg-muted/30 min-w-0 overflow-hidden">
+              <div className="flex flex-col sm:flex-row gap-3 min-w-0">
+                <Popover open={productOpen} onOpenChange={setProductOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className="flex-1 min-w-0 justify-between font-normal"
+                    >
+                      <span className="truncate">
+                        {selectedProduct
+                          ? activeProducts.find(p => p.id === selectedProduct)?.name
+                          : "Buscar produto cadastrado..."}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[min(500px,calc(100vw-32px))] p-0" align="start">
+                    <Command shouldFilter={false}>
+                      <CommandInput
+                        placeholder="Buscar por nome ou SKU..."
+                        value={productSearch}
+                        onValueChange={setProductSearch}
+                      />
+                      <CommandList>
+                        <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
+                        <CommandGroup>
+                          {filteredProducts.map((product) => (
+                            <CommandItem
+                              key={product.id}
+                              value={product.id}
+                              onSelect={() => selectProductFromCatalog(product.id)}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedProduct === product.id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              <div className="flex items-center justify-between w-full gap-2 min-w-0">
+                                <div className="flex flex-col min-w-0">
+                                  <span className="truncate">{product.name}</span>
+                                  {product.category && (
+                                    <span className="text-xs text-muted-foreground truncate">{product.category}</span>
+                                  )}
+                                </div>
+                                <div className="text-right shrink-0">
+                                  <span className="text-sm font-medium">{formatCurrency(product.sale_price)}</span>
+                                  <span className="text-xs text-muted-foreground ml-2">Est: {product.stock_quantity}</span>
+                                </div>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                <div className="flex w-full sm:w-auto gap-2 min-w-0">
+                  <Input
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={productQuantity}
+                    onChange={(e) => setProductQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-16 sm:w-20 shrink-0"
+                    placeholder="Qtd"
+                  />
+                  <Button
+                    type="button"
+                    onClick={addSelectedProduct}
+                    disabled={!selectedProduct}
+                    className="flex-1 min-w-0 sm:flex-none"
+                  >
+                    <Plus className="h-4 w-4 mr-1 shrink-0" />
+                    <span className="truncate">Adicionar</span>
+                  </Button>
+                </div>
+              </div>
+
+              {selectedProduct && (
+                <p className="text-sm text-muted-foreground break-words">
+                  Selecionado: {activeProducts.find(p => p.id === selectedProduct)?.name} - {formatCurrency(activeProducts.find(p => p.id === selectedProduct)?.sale_price || 0)} x {productQuantity} = {formatCurrency((activeProducts.find(p => p.id === selectedProduct)?.sale_price || 0) * productQuantity)} | Estoque: {activeProducts.find(p => p.id === selectedProduct)?.stock_quantity}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* === ITEM MANUAL === */}
+          <div className="border rounded-lg p-3 sm:p-4 space-y-4">
+            <h4 className="font-medium text-sm sm:text-base">Adicionar Item Manual</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <Select
+                value={newItem.type}
+                onValueChange={(value: 'product' | 'service') =>
+                  setNewItem({ ...newItem, type: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border">
+                  <SelectItem value="service">Serviço</SelectItem>
+                  <SelectItem value="product">Produto</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Input
+                placeholder="Descrição"
+                value={newItem.description}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, description: e.target.value })
+                }
+                className="sm:col-span-3"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <Input
+                type="number"
+                placeholder="Qtd"
+                min={0.01}
+                step={0.01}
+                value={newItem.quantity}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, quantity: parseFloat(e.target.value) || 0 })
+                }
+              />
+              <Input
+                type="number"
+                placeholder="Valor Unit."
+                min={0}
+                step={0.01}
+                value={newItem.unit_price}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, unit_price: parseFloat(e.target.value) || 0 })
+                }
+              />
+              <div className="flex items-center text-sm text-muted-foreground">
+                = {formatCurrency(newItem.quantity * newItem.unit_price)}
+              </div>
+              <Button type="button" onClick={addItem} size="sm" className="w-full">
+                <Plus className="h-4 w-4 mr-1" />
+                Adicionar
+              </Button>
+            </div>
+          </div>
+
+          {/* === ITENS ADICIONADOS === */}
+          {items.length > 0 && (
+            <div className="border rounded-lg divide-y">
+              <div className="p-3 bg-muted/50 font-medium">
+                Itens da OS ({items.length})
+              </div>
+              {items.map((item, index) => (
+                <div key={index} className="p-3 flex items-center justify-between gap-2 min-w-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className={cn(
+                        "text-xs px-2 py-0.5 rounded",
+                        item.type === 'service' ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" : "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"
+                      )}>
+                        {item.type === 'service' ? 'Serviço' : 'Produto'}
+                      </span>
+                      <span className="font-medium truncate">{item.description}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground break-words">
+                      {item.quantity} x {formatCurrency(item.unit_price)} = {formatCurrency(item.quantity * item.unit_price)}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeItem(index)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <Separator />
+
+          {/* === SEÇÃO: TOTAIS === */}
+          <div className="border rounded-lg p-4 space-y-2 bg-muted/30">
+            <div className="flex justify-between text-sm">
+              <span>Serviços:</span>
+              <span>{formatCurrency(totalServices)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Produtos:</span>
+              <span>{formatCurrency(totalProducts)}</span>
+            </div>
+            <FormField
+              control={form.control}
+              name="discount"
+              render={({ field }) => (
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm min-w-0">
+                  <span>Desconto:</span>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    className="w-full sm:w-24 h-8 text-left sm:text-right"
+                    {...field}
+                  />
+                </div>
+              )}
+            />
+            <div className="flex justify-between font-bold text-lg border-t pt-2">
+              <span>Total:</span>
+              <span>{formatCurrency(total)}</span>
+            </div>
+          </div>
+
+          <FormField
+            control={form.control}
+            name="payment_method"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Forma de Pagamento</FormLabel>
+                <Select
+                  value={field.value || ''}
+                  onValueChange={(value) => field.onChange(value || null)}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="bg-popover border border-border">
+                    <SelectItem value="pix">PIX</SelectItem>
+                    <SelectItem value="cash">Dinheiro</SelectItem>
+                    <SelectItem value="credit">Cartão Crédito</SelectItem>
+                    <SelectItem value="debit">Cartão Débito</SelectItem>
+                    <SelectItem value="promissory">Promissória</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+
+          {/* === AÇÕES === */}
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-6 pb-12 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto"
+            >
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {order ? 'Salvar' : 'Criar OS'}
+            </Button>
+          </div>
         </form>
       </Form>
     </ScrollArea>
@@ -1138,7 +1139,7 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="left-0 top-0 translate-x-0 translate-y-0 w-screen max-w-none h-[100dvh] max-h-[100dvh] rounded-none border-0 p-0 gap-0 overflow-x-hidden sm:left-0 sm:top-0 sm:translate-x-0 sm:translate-y-0 sm:w-screen sm:max-w-none sm:h-[100dvh] sm:max-h-[100dvh] sm:rounded-none sm:border-0">
+        <DialogContent className="sm:max-w-5xl w-full max-w-full h-[100dvh] sm:h-auto sm:max-h-[95vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
           <DialogHeader className="py-2.5 px-2.5 sm:px-4 lg:px-6 sm:py-3 border-b">
             <DialogTitle className="text-center text-base sm:text-lg">
               {order ? `Editar OS ${formatOSNumber(order.order_number, order.created_at)}` : 'Nova Ordem de Serviço'}

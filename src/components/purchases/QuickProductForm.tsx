@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -83,153 +84,159 @@ export function QuickProductForm({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Cadastrar Novo Produto</DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            O código será gerado automaticamente (PROD-X)
-          </p>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-md w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <div className="shrink-0 p-4 sm:p-6 pb-0">
+          <DialogHeader>
+            <DialogTitle>Cadastrar Novo Produto</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              O código será gerado automaticamente (PROD-X)
+            </p>
+          </DialogHeader>
+        </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome *</FormLabel>
-                  <FormControl>
-                    <CapitalizedInput placeholder="Nome do produto" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoria</FormLabel>
-                  <FormControl>
-                    <CapitalizedInput placeholder="Categoria" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="cost_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preço de Custo *</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="sale_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preço de Venda</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {costPrice > 0 && (
-              <div className="p-2 bg-muted rounded-md text-sm">
-                <span className="text-muted-foreground">Margem: </span>
-                <span className={profitMargin >= 0 ? 'text-green-600' : 'text-red-600'}>
-                  {profitMargin.toFixed(1)}%
-                </span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-3 gap-3">
-              <FormField
-                control={form.control}
-                name="stock_quantity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estoque</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="1" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="min_stock"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Est. Mínimo</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="1" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="unit"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Unidade</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="p-4 sm:p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome *</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
+                        <CapitalizedInput placeholder="Nome do produto" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {UNIT_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <div className="flex gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleOpenChange(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? 'Salvando...' : 'Cadastrar'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Categoria</FormLabel>
+                      <FormControl>
+                        <CapitalizedInput placeholder="Categoria" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="cost_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preço de Custo *</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="sale_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preço de Venda</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {costPrice > 0 && (
+                  <div className="p-2 bg-muted rounded-md text-sm">
+                    <span className="text-muted-foreground">Margem: </span>
+                    <span className={profitMargin >= 0 ? 'text-green-600' : 'text-red-600'}>
+                      {profitMargin.toFixed(1)}%
+                    </span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-3 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="stock_quantity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Estoque</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="1" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="min_stock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Est. Mínimo</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="1" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="unit"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Unidade</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {UNIT_OPTIONS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-6 pb-8">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleOpenChange(false)}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting} className="flex-1">
+                    {isSubmitting ? 'Salvando...' : 'Cadastrar'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

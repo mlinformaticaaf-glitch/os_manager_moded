@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useSuppliers } from '@/hooks/useSuppliers';
 import { useProducts } from '@/hooks/useProducts';
@@ -183,12 +184,12 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
   const updateItem = (index: number, field: keyof PurchaseItem, value: string | number) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
-    
+
     // Recalculate total
     if (field === 'quantity' || field === 'unit_price') {
       newItems[index].total = Number(newItems[index].quantity) * Number(newItems[index].unit_price);
     }
-    
+
     setItems(newItems);
   };
 
@@ -227,309 +228,315 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-[calc(100vw-16px)] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>{isEditing ? 'Editar Compra' : 'Nova Compra'}</DialogTitle>
-          <DialogDescription>
-            {isEditing ? 'Atualize os dados da compra' : 'Registre uma nova compra de produtos'}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-2xl w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <div className="shrink-0 p-4 sm:p-6 pb-0">
+          <DialogHeader>
+            <DialogTitle>{isEditing ? 'Editar Compra' : 'Nova Compra'}</DialogTitle>
+            <DialogDescription>
+              {isEditing ? 'Atualize os dados da compra' : 'Registre uma nova compra de produtos'}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            {/* Supplier and Invoice */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="supplier_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Fornecedor</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {activeSuppliers.map((supplier) => (
-                          <SelectItem key={supplier.id} value={supplier.id}>
-                            {supplier.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="p-4 sm:p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                {/* Supplier and Invoice */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="supplier_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Fornecedor</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {activeSuppliers.map((supplier) => (
+                              <SelectItem key={supplier.id} value={supplier.id}>
+                                {supplier.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="invoice_number"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nota Fiscal</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Número da NF" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Dates */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="purchase_date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Data da Compra *</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="due_date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Vencimento</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <Separator />
-
-            {/* Items */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium">Produtos</h3>
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => setQuickProductOpen(true)}>
-                    <PackagePlus className="h-4 w-4 mr-1" />
-                    Novo Produto
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={addManualItem}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Item Manual
-                  </Button>
+                  <FormField
+                    control={form.control}
+                    name="invoice_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nota Fiscal</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Número da NF" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              </div>
 
-              {/* Add from catalog */}
-              <div className="flex gap-2">
-                <Select value={selectedProductId} onValueChange={addProductFromCatalog}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Adicionar produto do catálogo..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {products.filter(p => p.active).map((product) => (
-                      <SelectItem key={product.id} value={product.id}>
-                        {product.name} - {formatCurrency(product.cost_price)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                {/* Dates */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="purchase_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Data da Compra *</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              {/* Items list */}
-              {items.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Nenhum produto adicionado
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {items.map((item, index) => (
-                    <div key={index} className="flex gap-2 items-start p-3 rounded-lg border bg-muted/30">
-                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-4 gap-2">
-                        <div className="sm:col-span-2">
-                          <CapitalizedInput
-                            placeholder="Produto"
-                            value={item.product_name}
-                            onChange={(e) => updateItem(index, 'product_name', e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <Input
-                            type="number"
-                            min="1"
-                            placeholder="Qtd"
-                            value={item.quantity}
-                            onChange={(e) => updateItem(index, 'quantity', Number(e.target.value))}
-                          />
-                        </div>
-                        <div>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="Valor"
-                            value={item.unit_price}
-                            onChange={(e) => updateItem(index, 'unit_price', Number(e.target.value))}
-                          />
-                        </div>
-                      </div>
-                      <div className="text-right min-w-[80px]">
-                        <p className="text-sm font-medium">{formatCurrency(item.total)}</p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeItem(index)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                  <FormField
+                    control={form.control}
+                    name="due_date"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Vencimento</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <Separator />
+
+                {/* Items */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">Produtos</h3>
+                    <div className="flex gap-2">
+                      <Button type="button" variant="outline" size="sm" onClick={() => setQuickProductOpen(true)}>
+                        <PackagePlus className="h-4 w-4 mr-1" />
+                        Novo Produto
+                      </Button>
+                      <Button type="button" variant="outline" size="sm" onClick={addManualItem}>
+                        <Plus className="h-4 w-4 mr-1" />
+                        Item Manual
                       </Button>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Add from catalog */}
+                  <div className="flex gap-2">
+                    <Select value={selectedProductId} onValueChange={addProductFromCatalog}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Adicionar produto do catálogo..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {products.filter(p => p.active).map((product) => (
+                          <SelectItem key={product.id} value={product.id}>
+                            {product.name} - {formatCurrency(product.cost_price)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Items list */}
+                  {items.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      Nenhum produto adicionado
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {items.map((item, index) => (
+                        <div key={index} className="flex gap-2 items-start p-3 rounded-lg border bg-muted/30">
+                          <div className="flex-1 grid grid-cols-1 sm:grid-cols-4 gap-2">
+                            <div className="sm:col-span-2">
+                              <CapitalizedInput
+                                placeholder="Produto"
+                                value={item.product_name}
+                                onChange={(e) => updateItem(index, 'product_name', e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <Input
+                                type="number"
+                                min="1"
+                                placeholder="Qtd"
+                                value={item.quantity}
+                                onChange={(e) => updateItem(index, 'quantity', Number(e.target.value))}
+                              />
+                            </div>
+                            <div>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Valor"
+                                value={item.unit_price}
+                                onChange={(e) => updateItem(index, 'unit_price', Number(e.target.value))}
+                              />
+                            </div>
+                          </div>
+                          <div className="text-right min-w-[80px]">
+                            <p className="text-sm font-medium">{formatCurrency(item.total)}</p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeItem(index)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <Separator />
+                <Separator />
 
-            {/* Totals */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="discount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Desconto (R$)</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="0" step="0.01" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                {/* Totals */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="discount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Desconto (R$)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="shipping"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Frete (R$)</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="0" step="0.01" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="shipping"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Frete (R$)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Subtotal</span>
-                <span>{formatCurrency(subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Desconto</span>
-                <span className="text-destructive">-{formatCurrency(discount)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Frete</span>
-                <span>+{formatCurrency(shipping)}</span>
-              </div>
-              <Separator />
-              <div className="flex justify-between font-bold text-lg">
-                <span>Total</span>
-                <span className="text-primary">{formatCurrency(total)}</span>
-              </div>
-            </div>
+                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Desconto</span>
+                    <span className="text-destructive">-{formatCurrency(discount)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Frete</span>
+                    <span>+{formatCurrency(shipping)}</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span className="text-primary">{formatCurrency(total)}</span>
+                  </div>
+                </div>
 
-            <Separator />
+                <Separator />
 
-            {/* Payment */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="payment_status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status do Pagamento</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                {/* Payment */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="payment_status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status do Pagamento</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {PAYMENT_STATUS_OPTIONS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="payment_method"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Forma de Pagamento</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione..." />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {PAYMENT_METHOD_OPTIONS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Observações</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
+                        <CapitalizedTextarea placeholder="Informações adicionais..." {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {PAYMENT_STATUS_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="payment_method"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Forma de Pagamento</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {PAYMENT_METHOD_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Observações</FormLabel>
-                  <FormControl>
-                    <CapitalizedTextarea placeholder="Informações adicionais..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-3 pt-4">
-              <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" className="flex-1" disabled={isSubmitting || items.length === 0}>
-                {isSubmitting ? 'Salvando...' : isEditing ? 'Salvar Alterações' : 'Registrar Compra'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                <div className="flex gap-3 pt-6 pb-8">
+                  <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="flex-1" disabled={isSubmitting || items.length === 0}>
+                    {isSubmitting ? 'Salvando...' : isEditing ? 'Salvar Alterações' : 'Registrar Compra'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </ScrollArea>
 
         {/* Quick Product Form Modal */}
         <QuickProductForm

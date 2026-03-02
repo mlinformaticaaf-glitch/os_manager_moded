@@ -1,20 +1,24 @@
-import { useMemo } from "react";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Wallet, 
-  ArrowUpCircle, 
-  ArrowDownCircle, 
+import { useState, useMemo } from "react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  ArrowUpCircle,
+  ArrowDownCircle,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Calendar
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
 import { CashFlowChart } from "./CashFlowChart";
 import { MonthlyComparisonChart } from "./MonthlyComparisonChart";
 import { UpcomingTransactions } from "./UpcomingTransactions";
-import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, addDays, isBefore } from "date-fns";
+import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, addDays, isBefore, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FinancialTransaction } from "@/types/financial";
 
@@ -24,12 +28,12 @@ interface FinancialDashboardProps {
 
 export function FinancialDashboard({ onTransactionClick }: FinancialDashboardProps) {
   const { transactions, isLoading } = useFinancialTransactions();
+  const [viewDate, setViewDate] = useState(new Date());
 
   const stats = useMemo(() => {
+    const monthStart = startOfMonth(viewDate);
+    const monthEnd = endOfMonth(viewDate);
     const now = new Date();
-    const monthStart = startOfMonth(now);
-    const monthEnd = endOfMonth(now);
-    const next7Days = addDays(now, 7);
 
     let totalIncome = 0;
     let totalExpense = 0;
@@ -42,18 +46,18 @@ export function FinancialDashboard({ onTransactionClick }: FinancialDashboardPro
       const isThisMonth = dueDate && isWithinInterval(dueDate, { start: monthStart, end: monthEnd });
 
       if (t.type === 'income') {
-        if (t.status === 'paid') {
+        if (t.status === 'paid' && isThisMonth) {
           totalIncome += Number(t.amount);
-        } else if (t.status === 'pending') {
+        } else if (t.status === 'pending' && isThisMonth) {
           pendingIncome += Number(t.amount);
           if (dueDate && isBefore(dueDate, now)) {
             overdueCount++;
           }
         }
       } else {
-        if (t.status === 'paid') {
+        if (t.status === 'paid' && isThisMonth) {
           totalExpense += Number(t.amount);
-        } else if (t.status === 'pending') {
+        } else if (t.status === 'pending' && isThisMonth) {
           pendingExpense += Number(t.amount);
           if (dueDate && isBefore(dueDate, now)) {
             overdueCount++;
@@ -74,7 +78,11 @@ export function FinancialDashboard({ onTransactionClick }: FinancialDashboardPro
       pendingBalance,
       overdueCount,
     };
-  }, [transactions]);
+  }, [transactions, viewDate]);
+
+  const handlePrevMonth = () => setViewDate(prev => subMonths(prev, 1));
+  const handleNextMonth = () => setViewDate(prev => addMonths(prev, 1));
+  const handleCurrentMonth = () => setViewDate(new Date());
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -102,12 +110,55 @@ export function FinancialDashboard({ onTransactionClick }: FinancialDashboardPro
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Month Selector */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card p-4 rounded-xl border border-border shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <Calendar className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground capitalize">
+              {format(viewDate, "MMMM 'de' yyyy", { locale: ptBR })}
+            </h2>
+            <p className="text-xs text-muted-foreground">Resumo financeiro do período</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handlePrevMonth}
+            className="h-9 w-9 rounded-full"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={handleCurrentMonth}
+            className="text-xs h-9 px-4 rounded-full font-medium"
+          >
+            Mês Atual
+          </Button>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleNextMonth}
+            className="h-9 w-9 rounded-full"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
         <Card className="border-l-4 border-l-success">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-4">
             <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate pr-2">
-              Total Recebido
+              Recebido no Período
             </CardTitle>
             <ArrowUpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success shrink-0" />
           </CardHeader>
@@ -124,7 +175,7 @@ export function FinancialDashboard({ onTransactionClick }: FinancialDashboardPro
         <Card className="border-l-4 border-l-destructive">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-4">
             <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate pr-2">
-              Total Pago
+              Pago no Período
             </CardTitle>
             <ArrowDownCircle className="h-4 w-4 sm:h-5 sm:w-5 text-destructive shrink-0" />
           </CardHeader>
@@ -141,7 +192,7 @@ export function FinancialDashboard({ onTransactionClick }: FinancialDashboardPro
         <Card className="border-l-4 border-l-primary">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-4">
             <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate pr-2">
-              Saldo Atual
+              Saldo do Mês
             </CardTitle>
             <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0" />
           </CardHeader>
@@ -167,7 +218,7 @@ export function FinancialDashboard({ onTransactionClick }: FinancialDashboardPro
               {stats.overdueCount}
             </div>
             <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 truncate">
-              Pendentes de regularização
+              No período selecionado
             </p>
           </CardContent>
         </Card>

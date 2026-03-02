@@ -8,6 +8,7 @@ import { ClientsTable } from '@/components/clients/ClientsTable';
 import { ClientForm } from '@/components/clients/ClientForm';
 import { DeleteClientDialog } from '@/components/clients/DeleteClientDialog';
 import { Client } from '@/types/client';
+import { ExportButton } from '@/components/common/ExportButton';
 
 export default function Clients() {
   const { clients, isLoading, createClient, updateClient, deleteClient } = useClients();
@@ -18,7 +19,7 @@ export default function Clients() {
 
   const filteredClients = useMemo(() => {
     if (!search.trim()) return clients;
-    
+
     const searchLower = search.toLowerCase();
     return clients.filter(
       (client) =>
@@ -72,10 +73,13 @@ export default function Clients() {
               className="pl-10"
             />
           </div>
-          <Button onClick={handleCreate}>
-            <Plus className="mr-2 h-4 w-4" />
-            Novo Cliente
-          </Button>
+          <div className="flex gap-2">
+            <ExportButton data={filteredClients} filename="clientes" />
+            <Button onClick={handleCreate}>
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Cliente
+            </Button>
+          </div>
         </div>
 
         {/* Content */}

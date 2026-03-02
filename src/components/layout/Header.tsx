@@ -15,9 +15,10 @@ interface HeaderProps {
   subtitle?: string;
   onNewOS?: () => void;
   userEmail?: string | null;
+  onLogout?: () => void;
 }
 
-export function Header({ title, subtitle, onNewOS, userEmail }: HeaderProps) {
+export function Header({ title, subtitle, onNewOS, userEmail, onLogout }: HeaderProps) {
   const isMobile = useIsMobile();
 
   return (
@@ -66,7 +67,10 @@ export function Header({ title, subtitle, onNewOS, userEmail }: HeaderProps) {
               Meu Perfil
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              onClick={onLogout}
+              className="text-destructive focus:text-destructive cursor-pointer"
+            >
               <LogOut className="w-4 h-4 mr-2" />
               Sair
             </DropdownMenuItem>

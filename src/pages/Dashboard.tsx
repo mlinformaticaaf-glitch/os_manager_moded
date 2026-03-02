@@ -45,7 +45,7 @@ export function Dashboard() {
     const lastMonthEnd = endOfMonth(subMonths(now, 1));
 
     // OS abertas (não concluídas nem entregues)
-    const openOS = serviceOrders.filter(os => 
+    const openOS = serviceOrders.filter(os =>
       !['completed', 'delivered', 'cancelled'].includes(os.status)
     ).length;
 
@@ -54,24 +54,25 @@ export function Dashboard() {
     let lastMonthRevenue = 0;
 
     transactions.forEach(t => {
-      if (t.type !== 'income' || t.status !== 'paid') return;
-      const paidDate = t.paid_date ? parseISO(t.paid_date) : null;
-      if (!paidDate) return;
+      if (t.type !== 'income' || t.status === 'cancelled') return;
 
-      if (isWithinInterval(paidDate, { start: monthStart, end: monthEnd })) {
+      const date = t.due_date ? parseISO(t.due_date) : null;
+      if (!date) return;
+
+      if (isWithinInterval(date, { start: monthStart, end: monthEnd })) {
         currentMonthRevenue += Number(t.amount);
       }
-      if (isWithinInterval(paidDate, { start: lastMonthStart, end: lastMonthEnd })) {
+      if (isWithinInterval(date, { start: lastMonthStart, end: lastMonthEnd })) {
         lastMonthRevenue += Number(t.amount);
       }
     });
 
-    const revenueChange = lastMonthRevenue > 0 
+    const revenueChange = lastMonthRevenue > 0
       ? ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue * 100).toFixed(0)
       : 0;
 
     // Produtos com estoque baixo
-    const lowStockProducts = products.filter(p => 
+    const lowStockProducts = products.filter(p =>
       p.stock_quantity <= p.min_stock && p.active
     ).length;
 
@@ -149,24 +150,24 @@ export function Dashboard() {
             <p className="text-xs sm:text-sm text-muted-foreground">Acompanhe o fluxo de trabalho</p>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
-            <button 
+            <button
               onClick={() => handleOSViewModeChange('kanban')}
               className={cn(
                 "flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-colors",
-                osViewMode === 'kanban' 
-                  ? "text-primary bg-primary/10 hover:bg-primary/20" 
+                osViewMode === 'kanban'
+                  ? "text-primary bg-primary/10 hover:bg-primary/20"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               )}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Quadro</span>
             </button>
-            <button 
+            <button
               onClick={() => handleOSViewModeChange('list')}
               className={cn(
                 "flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-colors",
-                osViewMode === 'list' 
-                  ? "text-primary bg-primary/10 hover:bg-primary/20" 
+                osViewMode === 'list'
+                  ? "text-primary bg-primary/10 hover:bg-primary/20"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               )}
             >
@@ -175,7 +176,7 @@ export function Dashboard() {
             </button>
           </div>
         </div>
-        
+
         {osViewMode === 'kanban' ? (
           <KanbanBoard />
         ) : (

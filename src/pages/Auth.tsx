@@ -8,14 +8,14 @@ import { Label } from "@/components/ui/label";
 import { ClipboardList, Mail, Lock, Loader2, ArrowRight, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { lovable } from "@/integrations/lovable";
+// Remoção da importação do lovable para evitar conflitos com o login direto do Supabase
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-    <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.26c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/>
-    <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-    <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
+    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4" />
+    <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18l-2.909-2.26c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853" />
+    <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" />
+    <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335" />
   </svg>
 );
 
@@ -45,35 +45,22 @@ export default function Auth() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
-  
+
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleGoogleSignIn = async () => {
-    setGoogleLoading(true);
-    try {
-      const { error } = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      
-      if (error) {
-        toast({
-          title: "Erro",
-          description: error.message || "Falha ao entrar com Google",
-          variant: "destructive",
-        });
-      }
-    } catch (err) {
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro inesperado",
-        variant: "destructive",
-      });
-    } finally {
-      setGoogleLoading(false);
-    }
+  const handleGoogleSignIn = () => {
+    // Bypass manual do redirecionamento para evitar a URL ~oauth que não existe fora do ambiente Lovable
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://peitasmlqqbmfwpzwjis.supabase.co";
+    const redirectUrl = `${window.location.origin}/`;
+
+    // Caminho padrão do Supabase Auth para OAuth
+    const authUrl = `${supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectUrl)}`;
+
+    console.log("Iniciando login Google direto via Supabase...");
+    window.location.href = authUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,13 +96,13 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      const { error } = isLogin 
+      const { error } = isLogin
         ? await signIn(email, password)
         : await signUp(email, password);
 
       if (error) {
         let message = error.message;
-        
+
         // Friendly error messages
         if (message.includes("Invalid login credentials")) {
           message = "Email ou senha incorretos";
@@ -261,18 +248,18 @@ export default function Auth() {
           <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6">
             <Mail className="w-8 h-8 text-primary" />
           </div>
-          
+
           <h2 className="text-2xl font-bold text-foreground mb-3">
             Email enviado
           </h2>
-          
+
           <p className="text-muted-foreground mb-6">
             Enviamos um link de recuperação para{" "}
             <span className="text-foreground font-medium">{email}</span>.
             <br />
             Clique no link para definir sua nova senha.
           </p>
-          
+
           <div className="bg-muted/50 rounded-lg p-4 mb-6 text-sm text-muted-foreground">
             <p>Não recebeu o email? Verifique sua pasta de spam ou lixo eletrônico.</p>
           </div>
@@ -291,7 +278,7 @@ export default function Auth() {
                 "Reenviar email"
               )}
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={() => {
@@ -316,18 +303,18 @@ export default function Auth() {
           <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-8 h-8 text-success" />
           </div>
-          
+
           <h2 className="text-2xl font-bold text-foreground mb-3">
             Verifique seu email
           </h2>
-          
+
           <p className="text-muted-foreground mb-6">
             Enviamos um link de confirmação para{" "}
             <span className="text-foreground font-medium">{email}</span>.
             <br />
             Clique no link para ativar sua conta.
           </p>
-          
+
           <div className="bg-muted/50 rounded-lg p-4 mb-6 text-sm text-muted-foreground">
             <p>Não recebeu o email? Verifique sua pasta de spam ou lixo eletrônico.</p>
           </div>
@@ -346,7 +333,7 @@ export default function Auth() {
                 "Reenviar email"
               )}
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={() => {
@@ -445,7 +432,7 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex">
       {/* Left Panel - Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0"
           style={{
             background: "linear-gradient(135deg, hsl(220, 25%, 8%) 0%, hsl(217, 91%, 15%) 50%, hsl(220, 20%, 6%) 100%)"
@@ -455,7 +442,7 @@ export default function Auth() {
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
         </div>
-        
+
         <div className="relative z-10 flex flex-col justify-center px-16">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center">
@@ -466,13 +453,13 @@ export default function Auth() {
               <p className="text-sm text-muted-foreground uppercase tracking-widest">Sistema de Gestão</p>
             </div>
           </div>
-          
+
           <h2 className="text-4xl font-bold text-foreground leading-tight mb-6">
             Gerencie suas ordens<br />
             de serviço com<br />
             <span className="text-gradient">eficiência total</span>
           </h2>
-          
+
           <ul className="space-y-4 text-muted-foreground">
             <li className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-primary" />
@@ -508,8 +495,8 @@ export default function Auth() {
               {isLogin ? "Bem-vindo de volta" : "Criar conta"}
             </h2>
             <p className="text-muted-foreground">
-              {isLogin 
-                ? "Entre com suas credenciais para acessar o sistema" 
+              {isLogin
+                ? "Entre com suas credenciais para acessar o sistema"
                 : "Preencha os dados abaixo para se cadastrar"}
             </p>
           </div>

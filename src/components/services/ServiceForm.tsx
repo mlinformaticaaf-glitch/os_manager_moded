@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Service } from '@/types/service';
 
@@ -111,162 +112,168 @@ export function ServiceForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg w-[calc(100vw-16px)] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle>
-            {service ? 'Editar Serviço' : 'Novo Serviço'}
-          </DialogTitle>
-          <DialogDescription>
-            {service ? 'Atualize as informações do serviço' : 'Preencha os dados do novo serviço'}
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-lg w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <div className="shrink-0 p-4 sm:p-6 pb-0">
+          <DialogHeader>
+            <DialogTitle>
+              {service ? 'Editar Serviço' : 'Novo Serviço'}
+            </DialogTitle>
+            <DialogDescription>
+              {service ? 'Atualize as informações do serviço' : 'Preencha os dados do novo serviço'}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome *</FormLabel>
-                  <FormControl>
-                    <CapitalizedInput placeholder="Nome do serviço" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="p-4 sm:p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome *</FormLabel>
+                      <FormControl>
+                        <CapitalizedInput placeholder="Nome do serviço" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição</FormLabel>
-                  <FormControl>
-                    <CapitalizedTextarea 
-                      placeholder="Descrição detalhada do serviço" 
-                      className="resize-none"
-                      rows={3}
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Descrição</FormLabel>
+                      <FormControl>
+                        <CapitalizedTextarea
+                          placeholder="Descrição detalhada do serviço"
+                          className="resize-none"
+                          rows={3}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Categoria</FormLabel>
-                    <FormControl>
-                      <CapitalizedInput placeholder="Ex: Manutenção" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Categoria</FormLabel>
+                        <FormControl>
+                          <CapitalizedInput placeholder="Ex: Manutenção" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="estimated_time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tempo Estimado</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: 2 horas" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="estimated_time"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tempo Estimado</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: 2 horas" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="cost_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Custo</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="cost_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Custo</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <FormField
-                control={form.control}
-                name="sale_price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preço de Venda</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.01" min="0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="sale_price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Preço de Venda</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" min="0" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-            <div className="p-3 bg-muted rounded-lg">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Margem de Lucro:</span>
-                <span className={`font-medium ${profitMargin >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
-                  {profitMargin.toFixed(2)}%
-                </span>
-              </div>
-              <div className="flex justify-between items-center mt-1">
-                <span className="text-sm text-muted-foreground">Lucro por serviço:</span>
-                <span className={`font-medium ${salePrice - costPrice >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
-                  {formatCurrency(salePrice - costPrice)}
-                </span>
-              </div>
-            </div>
-
-            <FormField
-              control={form.control}
-              name="active"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Serviço Ativo</FormLabel>
-                    <p className="text-sm text-muted-foreground">
-                      Serviços inativos não aparecem na seleção de OS
-                    </p>
+                <div className="p-3 bg-muted rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Margem de Lucro:</span>
+                    <span className={`font-medium ${profitMargin >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+                      {profitMargin.toFixed(2)}%
+                    </span>
                   </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-sm text-muted-foreground">Lucro por serviço:</span>
+                    <span className={`font-medium ${salePrice - costPrice >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
+                      {formatCurrency(salePrice - costPrice)}
+                    </span>
+                  </div>
+                </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? 'Salvando...' : service ? 'Atualizar' : 'Cadastrar'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                <FormField
+                  control={form.control}
+                  name="active"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>Serviço Ativo</FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                          Serviços inativos não aparecem na seleção de OS
+                        </p>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex gap-3 pt-6 pb-8">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => onOpenChange(false)}
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting} className="flex-1">
+                    {isSubmitting ? 'Salvando...' : service ? 'Atualizar' : 'Cadastrar'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

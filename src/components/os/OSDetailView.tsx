@@ -29,6 +29,7 @@ import { OSPrintButton } from './print/OSPrintButton';
 import { OSWhatsAppButton } from './whatsapp/OSWhatsAppButton';
 import { OSPixButton } from './pix/OSPixButton';
 import { formatOSNumber } from '@/lib/osUtils';
+import { OSStatusHistory } from './OSStatusHistory';
 
 interface OSDetailViewProps {
   open: boolean;
@@ -78,31 +79,33 @@ export function OSDetailView({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] p-0 gap-0">
-        <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <DialogTitle className="flex items-center gap-3">
-              <span className="text-xl sm:text-2xl font-bold">OS #{formatOSNumber(order.order_number, order.created_at)}</span>
-              <Badge className={cn('text-xs', priorityConfig.color, 'bg-transparent border')}>
-                {priorityConfig.label}
-              </Badge>
-            </DialogTitle>
-            <div className="flex items-center gap-2 flex-wrap">
-              <OSPixButton order={order} />
-              <OSWhatsAppButton order={order} items={items} />
-              <OSPrintButton order={order} items={items} />
-              <Button variant="outline" size="sm" onClick={onEdit}>
-                <Pencil className="h-4 w-4 mr-2" />
-                Editar
-              </Button>
+      <DialogContent className="sm:max-w-3xl w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <div className="shrink-0 border-b">
+          <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <DialogTitle className="flex items-center gap-3">
+                <span className="text-xl sm:text-2xl font-bold">OS #{formatOSNumber(order.order_number, order.created_at)}</span>
+                <Badge className={cn('text-xs', priorityConfig.color, 'bg-transparent border')}>
+                  {priorityConfig.label}
+                </Badge>
+              </DialogTitle>
+              <div className="flex items-center gap-2 flex-wrap">
+                <OSPixButton order={order} />
+                <OSWhatsAppButton order={order} items={items} />
+                <OSPrintButton order={order} items={items} />
+                <Button variant="outline" size="sm" onClick={onEdit}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Editar
+                </Button>
+              </div>
             </div>
-          </div>
-          <DialogDescription>
-            Detalhes completos da ordem de serviço
-          </DialogDescription>
-        </DialogHeader>
+            <DialogDescription>
+              Detalhes completos da ordem de serviço
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <ScrollArea className="max-h-[calc(90vh-120px)]">
+        <ScrollArea className="flex-1 min-h-0">
           <div className="p-6 space-y-6">
             {/* Status */}
             <div className="flex items-center gap-4">
@@ -254,11 +257,11 @@ export function OSDetailView({
               </div>
               {order.payment_method && (
                 <p className="text-sm text-muted-foreground">
-                  Pagamento: {order.payment_method === 'pix' ? 'PIX' : 
+                  Pagamento: {order.payment_method === 'pix' ? 'PIX' :
                     order.payment_method === 'cash' ? 'Dinheiro' :
-                    order.payment_method === 'credit' ? 'Cartão Crédito' :
-                    order.payment_method === 'debit' ? 'Cartão Débito' :
-                    order.payment_method === 'promissory' ? 'Promissória' : order.payment_method}
+                      order.payment_method === 'credit' ? 'Cartão Crédito' :
+                        order.payment_method === 'debit' ? 'Cartão Débito' :
+                          order.payment_method === 'promissory' ? 'Promissória' : order.payment_method}
                 </p>
               )}
             </div>
@@ -279,6 +282,11 @@ export function OSDetailView({
                 <p>Entregue em: {format(new Date(order.delivered_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</p>
               )}
             </div>
+
+            <Separator />
+
+            {/* Status History */}
+            <OSStatusHistory orderId={order.id} />
 
             {order.internal_notes && (
               <>

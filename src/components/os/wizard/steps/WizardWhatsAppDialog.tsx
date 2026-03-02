@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageCircle, Send, Bell, CreditCard, FileText } from 'lucide-react';
@@ -79,98 +80,113 @@ export function WizardWhatsAppDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
         {step === 'select' ? (
           <>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <MessageCircle className="h-5 w-5 text-primary" />
-                Enviar via WhatsApp
-              </DialogTitle>
-              <DialogDescription>
-                Escolha o tipo de mensagem para enviar ao cliente
-              </DialogDescription>
-            </DialogHeader>
+            <div className="shrink-0 p-4 sm:p-6 pb-0">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5 text-primary" />
+                  Enviar via WhatsApp
+                </DialogTitle>
+                <DialogDescription>
+                  Escolha o tipo de mensagem para enviar ao cliente
+                </DialogDescription>
+              </DialogHeader>
+            </div>
 
-            <div className="grid gap-3 py-4">
-              <Button
-                variant="outline"
-                className="h-auto py-4 justify-start gap-3"
-                onClick={() => handleSelectMessageType('full')}
-              >
-                <FileText className="h-5 w-5 text-primary" />
-                <div className="text-left">
-                  <p className="font-medium">Enviar OS Completa</p>
-                  <p className="text-sm text-muted-foreground">
-                    Detalhes do equipamento, serviços e valores
-                  </p>
-                </div>
-              </Button>
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-4 sm:p-6">
+                <div className="grid gap-3 py-4">
+                  <Button
+                    variant="outline"
+                    className="h-auto py-4 justify-start gap-3 w-full"
+                    onClick={() => handleSelectMessageType('full')}
+                  >
+                    <FileText className="h-5 w-5 text-primary shrink-0" />
+                    <div className="text-left">
+                      <p className="font-medium">Enviar OS Completa</p>
+                      <p className="text-sm text-muted-foreground">
+                        Detalhes do equipamento, serviços e valores
+                      </p>
+                    </div>
+                  </Button>
 
-              <Button
-                variant="outline"
-                className="h-auto py-4 justify-start gap-3"
-                onClick={() => handleSelectMessageType('status')}
-              >
-                <Bell className="h-5 w-5 text-primary" />
-                <div className="text-left">
-                  <p className="font-medium">Atualização de Status</p>
-                  <p className="text-sm text-muted-foreground">
-                    Informar o cliente sobre o andamento
-                  </p>
-                </div>
-              </Button>
+                  <Button
+                    variant="outline"
+                    className="h-auto py-4 justify-start gap-3 w-full"
+                    onClick={() => handleSelectMessageType('status')}
+                  >
+                    <Bell className="h-5 w-5 text-primary shrink-0" />
+                    <div className="text-left">
+                      <p className="font-medium">Atualização de Status</p>
+                      <p className="text-sm text-muted-foreground">
+                        Informar o cliente sobre o andamento
+                      </p>
+                    </div>
+                  </Button>
 
-              <Button
-                variant="outline"
-                className="h-auto py-4 justify-start gap-3"
-                onClick={() => handleSelectMessageType('payment')}
-              >
-                <CreditCard className="h-5 w-5 text-primary" />
-                <div className="text-left">
-                  <p className="font-medium">Lembrete de Pagamento</p>
-                  <p className="text-sm text-muted-foreground">
-                    Lembrar sobre pagamento pendente
-                  </p>
+                  <Button
+                    variant="outline"
+                    className="h-auto py-4 justify-start gap-3 w-full"
+                    onClick={() => handleSelectMessageType('payment')}
+                  >
+                    <CreditCard className="h-5 w-5 text-primary shrink-0" />
+                    <div className="text-left">
+                      <p className="font-medium">Lembrete de Pagamento</p>
+                      <p className="text-sm text-muted-foreground">
+                        Lembrar sobre pagamento pendente
+                      </p>
+                    </div>
+                  </Button>
                 </div>
+              </div>
+            </ScrollArea>
+            <div className="shrink-0 p-4 sm:p-6 pt-0 border-t sm:border-t-0 flex justify-end">
+              <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
+                Cancelar
               </Button>
             </div>
           </>
         ) : (
           <>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <MessageCircle className="h-5 w-5 text-primary" />
-                Revisar Mensagem
-              </DialogTitle>
-              <DialogDescription>
-                Revise e edite a mensagem antes de enviar para {order.client?.name}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Para:</span>
-                <span className="font-medium text-foreground">{order.client?.phone}</span>
-              </div>
-
-              <Textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="min-h-[300px] font-mono text-sm"
-                placeholder="Digite a mensagem..."
-              />
+            <div className="shrink-0 p-4 sm:p-6 pb-0">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5 text-primary" />
+                  Revisar Mensagem
+                </DialogTitle>
+                <DialogDescription>
+                  Revise e edite a mensagem antes de enviar para {order.client?.name}
+                </DialogDescription>
+              </DialogHeader>
             </div>
 
-            <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setStep('select')}>
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-4 sm:p-6 space-y-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>Para:</span>
+                  <span className="font-medium text-foreground">{order.client?.phone}</span>
+                </div>
+
+                <Textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="min-h-[300px] font-mono text-sm"
+                  placeholder="Digite a mensagem..."
+                />
+              </div>
+            </ScrollArea>
+
+            <div className="shrink-0 p-4 sm:p-6 pt-2 border-t sm:border-t-0 flex flex-col sm:flex-row gap-2">
+              <Button variant="outline" onClick={() => setStep('select')} className="w-full sm:flex-1">
                 Voltar
               </Button>
-              <Button onClick={handleSend} className="bg-primary hover:bg-primary/90">
+              <Button onClick={handleSend} className="bg-primary hover:bg-primary/90 w-full sm:flex-1">
                 <Send className="h-4 w-4 mr-2" />
                 Enviar no WhatsApp
               </Button>
-            </DialogFooter>
+            </div>
           </>
         )}
       </DialogContent>

@@ -51,6 +51,7 @@ export interface ServiceOrderItem {
   quantity: number;
   unit_price: number;
   total: number;
+  product_id?: string;
   created_at: string;
 }
 

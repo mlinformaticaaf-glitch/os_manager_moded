@@ -313,12 +313,12 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-[700px] w-[calc(100vw-16px)] max-h-[95vh] sm:max-h-[90vh] p-0 gap-0 rounded-lg">
-          <div className="p-3 sm:p-6 border-b">
+        <DialogContent className="sm:max-w-[700px] w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+          <div className="p-3 sm:p-6 border-b shrink-0">
             <WizardProgress currentStep={currentStep} completedSteps={completedSteps} />
           </div>
-          <ScrollArea className="max-h-[calc(95vh-100px)] sm:max-h-[calc(90vh-120px)]">
-            <div className="p-3 sm:p-6">{renderStep()}</div>
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="p-3 sm:p-6 pb-20 sm:pb-6">{renderStep()}</div>
           </ScrollArea>
         </DialogContent>
       </Dialog>

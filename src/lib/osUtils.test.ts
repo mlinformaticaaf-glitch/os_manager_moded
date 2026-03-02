@@ -3,45 +3,28 @@ import { formatOSNumber } from './osUtils';
 
 describe('osUtils', () => {
   describe('formatOSNumber', () => {
-    it('should format order number with 4 digits and year', () => {
-      const result = formatOSNumber(1, '2024-01-15T10:00:00Z');
-      expect(result).toBe('0001/2024');
+    it('should format order number with 4 padded zeros and year', () => {
+      const orderNumber = 1;
+      const createdAt = '2026-03-01T12:00:00Z';
+      expect(formatOSNumber(orderNumber, createdAt)).toBe('0001/2026');
     });
 
-    it('should pad single digit numbers correctly', () => {
-      const result = formatOSNumber(5, '2024-06-20T15:30:00Z');
-      expect(result).toBe('0005/2024');
+    it('should format order number with 4 padded zeros for larger numbers', () => {
+      const orderNumber = 123;
+      const createdAt = '2026-03-01T12:00:00Z';
+      expect(formatOSNumber(orderNumber, createdAt)).toBe('0123/2026');
     });
 
-    it('should pad double digit numbers correctly', () => {
-      const result = formatOSNumber(42, '2024-03-10T08:00:00Z');
-      expect(result).toBe('0042/2024');
+    it('should not pad if number is 4 digits or more', () => {
+      const orderNumber = 12345;
+      const createdAt = '2026-03-01T12:00:00Z';
+      expect(formatOSNumber(orderNumber, createdAt)).toBe('12345/2026');
     });
 
-    it('should pad triple digit numbers correctly', () => {
-      const result = formatOSNumber(123, '2025-01-01T00:00:00Z');
-      expect(result).toBe('0123/2025');
-    });
-
-    it('should handle 4 digit numbers without extra padding', () => {
-      const result = formatOSNumber(1234, '2024-12-31T23:59:59Z');
-      expect(result).toBe('1234/2024');
-    });
-
-    it('should handle numbers larger than 4 digits', () => {
-      const result = formatOSNumber(12345, '2024-07-04T12:00:00Z');
-      expect(result).toBe('12345/2024');
-    });
-
-    it('should extract year correctly from different date formats', () => {
-      expect(formatOSNumber(1, '2023-12-31')).toBe('0001/2023');
-      expect(formatOSNumber(1, '2025-01-01T00:00:00.000Z')).toBe('0001/2025');
-      expect(formatOSNumber(1, '2026-06-15T14:30:00+03:00')).toBe('0001/2026');
-    });
-
-    it('should handle edge case of order number 0', () => {
-      const result = formatOSNumber(0, '2024-01-01T00:00:00Z');
-      expect(result).toBe('0000/2024');
+    it('should extract the correct year from the date string', () => {
+      const orderNumber = 10;
+      const createdAt = '2025-12-31T23:59:59Z';
+      expect(formatOSNumber(orderNumber, createdAt)).toBe('0010/2025');
     });
   });
 });

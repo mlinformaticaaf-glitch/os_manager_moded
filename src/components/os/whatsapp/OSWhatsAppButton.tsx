@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Send, Bell, CreditCard, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -50,7 +51,7 @@ export function OSWhatsAppButton({ order, items, variant = "outline", size = "sm
 
   const handleSelectMessageType = (type: MessageType) => {
     let formattedMessage = '';
-    
+
     switch (type) {
       case 'full':
         formattedMessage = formatWhatsAppMessage({ order, items, companyName, footerMessage, warrantyTerms });
@@ -80,7 +81,7 @@ export function OSWhatsAppButton({ order, items, variant = "outline", size = "sm
 
     openWhatsApp(order.client.phone, message);
     setShowPreview(false);
-    
+
     toast({
       title: "WhatsApp aberto",
       description: "A mensagem foi preparada. Clique em enviar no WhatsApp.",
@@ -128,36 +129,40 @@ export function OSWhatsAppButton({ order, items, variant = "outline", size = "sm
       </DropdownMenu>
 
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-green-600" />
-              Enviar via WhatsApp
-            </DialogTitle>
-            <DialogDescription>
-              Revise e edite a mensagem antes de enviar para {order.client?.name}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Para:</span>
-              <span className="font-medium text-foreground">{order.client?.phone}</span>
-            </div>
-            
-            <Textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="min-h-[300px] font-mono text-sm"
-              placeholder="Digite a mensagem..."
-            />
+        <DialogContent className="sm:max-w-[500px] w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+          <div className="shrink-0 p-4 sm:p-6 pb-0">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-green-600" />
+                Enviar via WhatsApp
+              </DialogTitle>
+              <DialogDescription>
+                Revise e edite a mensagem antes de enviar para {order.client?.name}
+              </DialogDescription>
+            </DialogHeader>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPreview(false)}>
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="p-4 sm:p-6 space-y-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Para:</span>
+                <span className="font-medium text-foreground">{order.client?.phone}</span>
+              </div>
+
+              <Textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="min-h-[300px] font-mono text-sm"
+                placeholder="Digite a mensagem..."
+              />
+            </div>
+          </ScrollArea>
+
+          <DialogFooter className="shrink-0 p-4 sm:p-6 pt-2 border-t sm:border-t-0 flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowPreview(false)} className="w-full sm:flex-1">
               Cancelar
             </Button>
-            <Button onClick={handleSend} className="bg-green-600 hover:bg-green-700">
+            <Button onClick={handleSend} className="bg-green-600 hover:bg-green-700 w-full sm:flex-1">
               <Send className="h-4 w-4 mr-2" />
               Enviar no WhatsApp
             </Button>

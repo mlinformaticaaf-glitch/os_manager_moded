@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Migrador de Dados OS Manager</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:disabled {
+            background: #ccc;
+        }
+
+        #log {
+            white-space: pre-wrap;
+            background: #222;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            color: #4ade80;
+        }
+
+        .error {
+            color: #f87171;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Migrador de Dados Supabase</h1>
+    <p>Este utilitário transfere dados do seu banco "Lovable" atual para o seu novo projeto Supabase.</p>
+
+    <div class="card">
+        <h3>1. Origem (Lovable Atual)</h3>
+        <p><small>Para ler os dados protegidos, precisamos que você faça login com sua conta do sistema antigo.</small>
+        </p>
+        <div class="form-group">
+            <label>URL do SQL (conforme seu .env):</label>
+            <input type="text" id="oldUrl" value="https://ckzrhsdfrerskhurvxqc.supabase.co">
+        </div>
+        <div class="form-group">
+            <label>E-mail de Login:</label>
+            <input type="email" id="oldEmail" placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+            <label>Senha:</label>
+            <input type="password" id="oldPassword" placeholder="Sua senha do sistema">
+        </div>
+        <input type="hidden" id="oldKey"
+            value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrenJoc2RmcmVyc2todXJ2eHFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MzAxMzUsImV4cCI6MjA4NTEwNjEzNX0.bTSMru1T5456nODL6KBEDY3POx8yiv7w1NUS5Cucchk">
+    </div>
+
+    <div class="card">
+        <h3>2. Destino (Seu Novo Projeto)</h3>
+        <div class="form-group">
+            <label>URL do Novo Supabase:</label>
+            <input type="text" id="newUrl" value="https://peitasmlqfbmfpzwjis.supabase.co">
+        </div>
+        <div class="form-group">
+            <label>Chave de Destino (Service Role Key):</label>
+            <input type="password" id="newKey"
+                value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBlaXRhc21scXFibWZ3cHp3amlzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjQ0ODE1MiwiZXhwIjoyMDg4MDI0MTUyfQ.qLkIeFqcy22KrCbMUzhNeRCTDMFqS1IKDeVKg50CDmM">
+        </div>
+        <p><small>Nota: Usei a sua <b>Service Role Key</b> para garantir a permissão de escrita e ignorar regras de
+                RLS.</small></p>
+    </div>
+
+    <button id="btnStart">Conectar e Migrar Dados</button>
+
+    <h3>Status da Migração:</h3>
+    <div id="log">Aguardando início...</div>
+
+    <script>
+        const tables = [
+            'company_settings',
+            'suppliers',
+            'equipment',
+            'clients',
+            'products',
+            'services',
+            'status_settings',
+            'purchases',
+            'purchase_items',
+            'service_orders',
+            'service_order_items',
+            'financial_transactions',
+            'service_order_logs',
+            'boletos',
+            'boleto_payments'
+        ];
+
+        const logElement = document.getElementById('log');
+        const btnStart = document.getElementById('btnStart');
+
+        function log(msg, type = '') {
+            const span = document.createElement('span');
+            span.className = type;
+            span.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n`;
+            logElement.appendChild(span);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        async function loginOldProject(url, email, password, anonKey) {
+            log('Tentando autenticar no projeto antigo...');
+            const response = await fetch(`${url}/auth/v1/token?grant_type=password`, {
+                method: 'POST',
+                headers: {
+                    'apikey': anonKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(`Falha no login: ${err.error_description || err.message || 'Verifique e-mail e senha'}`);
+            }
+
+            const data = await response.json();
+            log('Autenticação realizada com sucesso!', 'success');
+            return data.access_token;
+        }
+
+        async function migrateTable(tableName, oldUrl, authToken, oldKey, newUrl, newKey) {
+            log(`Migrando tabela: ${tableName}...`);
+            try {
+                // Fetch data using the user's AUTH TOKEN
+                const response = await fetch(`${oldUrl}/rest/v1/${tableName}?select=*`, {
+                    headers: {
+                        'apikey': oldKey,
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) throw new Error(`Falha ao ler dados: ${response.statusText}`);
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    log(`Tabela ${tableName} está vazia ou inacessível. Pulando.`, 'success');
+                    return;
+                }
+
+                log(`Lidos ${data.length} registros de ${tableName}. Inserindo no destino...`);
+
+                // Insert data into new database using Service Role Key
+                const postResponse = await fetch(`${newUrl}/rest/v1/${tableName}`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': newKey,
+                        'Authorization': `Bearer ${newKey}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify(data.map(row => {
+                        // Limpa campos que podem causar conflito se necessário
+                        return row;
+                    }))
+                });
+
+                if (!postResponse.ok) {
+                    const errorDetails = await postResponse.text();
+                    throw new Error(`Falha ao inserir dados: ${postResponse.statusText} - ${errorDetails}`);
+                }
+
+                log(`Sucesso: ${data.length} registros migrados em ${tableName}.`, 'success');
+            } catch (err) {
+                log(`ERRO em ${tableName}: ${err.message}`, 'error');
+            }
+        }
+
+        btnStart.addEventListener('click', async () => {
+            const oldUrl = document.getElementById('oldUrl').value.trim().replace(/\/$/, "");
+            const oldEmail = document.getElementById('oldEmail').value.trim();
+            const oldPassword = document.getElementById('oldPassword').value.trim();
+            const oldKey = document.getElementById('oldKey').value.trim();
+            const newUrl = document.getElementById('newUrl').value.trim().replace(/\/$/, "");
+            const newKey = document.getElementById('newKey').value.trim();
+
+            if (!oldEmail || !oldPassword) {
+                alert('Por favor, insira o seu e-mail e senha do sistema antigo.');
+                return;
+            }
+
+            btnStart.disabled = true;
+            logElement.textContent = '';
+            log('Iniciando processo de migração...');
+
+            for (const table of tables) {
+                await migrateTable(table, oldUrl, oldKey, newUrl, newKey);
+            }
+
+            log('MIGRAÇÃO CONCLUÍDA!', 'success');
+            btnStart.disabled = false;
+        });
+    </script>
+</body>
+
+</html>

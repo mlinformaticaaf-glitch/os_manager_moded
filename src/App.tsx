@@ -23,7 +23,7 @@ const queryClient = new QueryClient();
 
 function AuthRedirect() {
   const { user, loading } = useAuth();
-  
+
   if (loading) return null;
   if (user) return <Navigate to="/" replace />;
   return <Auth />;
@@ -38,6 +38,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<AuthRedirect />} />
+            <Route path="/auth/callback" element={<Navigate to="/" replace />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/"
