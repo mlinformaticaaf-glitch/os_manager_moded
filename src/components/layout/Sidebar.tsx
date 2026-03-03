@@ -1,11 +1,12 @@
-import { 
-  LayoutDashboard, 
-  ClipboardList, 
-  Users, 
-  Package, 
+import {
+  LayoutDashboard,
+  ClipboardList,
+  Users,
+  Package,
   Wrench,
   DollarSign,
   ShoppingCart,
+  ShoppingBag,
   Settings,
   Building2,
   ChevronLeft,
@@ -31,6 +32,7 @@ interface NavItem {
 const baseNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: ClipboardList, label: "Ordens de Serviço", href: "/os" },
+  { icon: ShoppingBag, label: "Vendas", href: "/vendas" },
   { icon: Users, label: "Clientes", href: "/clientes" },
   { icon: Monitor, label: "Equipamentos", href: "/equipamentos" },
   { icon: Package, label: "Produtos", href: "/produtos" },
@@ -46,16 +48,16 @@ interface SidebarProps {
   onLogout?: () => void;
 }
 
-function SidebarContent({ 
-  currentPath, 
-  onNavigate, 
-  onLogout, 
+function SidebarContent({
+  currentPath,
+  onNavigate,
+  onLogout,
   collapsed = false,
   onCollapse,
   onItemClick,
   navItems
-}: SidebarProps & { 
-  collapsed?: boolean; 
+}: SidebarProps & {
+  collapsed?: boolean;
   onCollapse?: () => void;
   onItemClick?: () => void;
   navItems: NavItem[];
@@ -135,7 +137,7 @@ function SidebarContent({
             {!collapsed && <span className="text-sm">Sair</span>}
           </button>
         )}
-        
+
         {onCollapse && (
           <button
             onClick={onCollapse}
@@ -163,7 +165,7 @@ export function Sidebar({ currentPath, onNavigate, onLogout }: SidebarProps) {
   const { orders: serviceOrders } = useServiceOrders();
 
   const navItems = useMemo(() => {
-    const openOSCount = serviceOrders.filter(os => 
+    const openOSCount = serviceOrders.filter(os =>
       !['completed', 'delivered', 'cancelled'].includes(os.status)
     ).length;
 
@@ -177,18 +179,18 @@ export function Sidebar({ currentPath, onNavigate, onLogout }: SidebarProps) {
     return (
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="fixed top-3 left-3 z-50 md:hidden bg-background/80 backdrop-blur-sm border border-border"
           >
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-[280px] p-0 bg-sidebar border-sidebar-border">
-          <SidebarContent 
-            currentPath={currentPath} 
-            onNavigate={onNavigate} 
+          <SidebarContent
+            currentPath={currentPath}
+            onNavigate={onNavigate}
             onLogout={onLogout}
             onItemClick={() => setMobileOpen(false)}
             navItems={navItems}
@@ -199,15 +201,15 @@ export function Sidebar({ currentPath, onNavigate, onLogout }: SidebarProps) {
   }
 
   return (
-    <aside 
+    <aside
       className={cn(
         "h-screen bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 hidden md:flex",
         collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
-      <SidebarContent 
-        currentPath={currentPath} 
-        onNavigate={onNavigate} 
+      <SidebarContent
+        currentPath={currentPath}
+        onNavigate={onNavigate}
         onLogout={onLogout}
         collapsed={collapsed}
         onCollapse={() => setCollapsed(!collapsed)}

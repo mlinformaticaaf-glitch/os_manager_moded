@@ -75,20 +75,24 @@ export function QuickServiceForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
-        <div className="shrink-0 p-4 sm:p-6 pb-0">
-          <DialogHeader>
-            <DialogTitle>Cadastro Rápido de Serviço</DialogTitle>
-            <DialogDescription>
-              Cadastre um novo serviço rapidamente
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+      <DialogContent className="sm:max-w-md w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[80vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <Form {...form}>
+          <form
+            id="quick-service-form"
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="flex-1 min-h-0 flex flex-col overflow-hidden"
+          >
+            <div className="shrink-0 p-4 sm:p-6 pb-0">
+              <DialogHeader>
+                <DialogTitle>Cadastro Rápido de Serviço</DialogTitle>
+                <DialogDescription>
+                  Cadastre um novo serviço rapidamente
+                </DialogDescription>
+              </DialogHeader>
+            </div>
 
-        <ScrollArea className="flex-1 min-h-0">
-          <div className="p-4 sm:p-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-4 sm:p-6 pb-0 space-y-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -166,7 +170,7 @@ export function QuickServiceForm({
                   />
                 </div>
 
-                <div className="p-3 bg-muted rounded-lg">
+                <div className="p-3 bg-muted rounded-lg mb-8">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Margem de Lucro:</span>
                     <span className={`font-medium ${profitMargin >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'}`}>
@@ -180,24 +184,24 @@ export function QuickServiceForm({
                     </span>
                   </div>
                 </div>
+              </div>
+            </ScrollArea>
+          </form>
+        </Form>
 
-                <div className="flex gap-3 pt-6 pb-8">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => onOpenChange(false)}
-                    className="flex-1"
-                  >
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting} className="flex-1">
-                    {isSubmitting ? 'Salvando...' : 'Cadastrar'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </ScrollArea>
+        <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="flex-1"
+          >
+            Cancelar
+          </Button>
+          <Button form="quick-service-form" type="submit" disabled={isSubmitting} className="flex-1">
+            {isSubmitting ? 'Salvando...' : 'Cadastrar'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

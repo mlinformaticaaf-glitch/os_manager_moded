@@ -3,7 +3,7 @@ import { useState } from "react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { RecentOS } from "@/components/dashboard/RecentOS";
-import { KanbanBoard } from "@/components/os/KanbanBoard";
+import { DashboardStatusBlocks } from "@/components/dashboard/DashboardStatusBlocks";
 import { DashboardOSList } from "@/components/dashboard/DashboardOSList";
 import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
 import { useServiceOrders } from "@/hooks/useServiceOrders";
@@ -13,16 +13,16 @@ import { useMemo } from "react";
 import { startOfMonth, endOfMonth, subMonths, parseISO, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
 
-type OSViewMode = 'kanban' | 'list';
+type OSViewMode = 'blocks' | 'list';
 
 const OS_VIEW_MODE_KEY = 'dashboard-os-view-mode';
 
 function getStoredOSViewMode(): OSViewMode {
   const stored = localStorage.getItem(OS_VIEW_MODE_KEY);
-  if (stored === 'kanban' || stored === 'list') {
+  if (stored === 'blocks' || stored === 'list') {
     return stored;
   }
-  return 'kanban';
+  return 'blocks';
 }
 
 export function Dashboard() {
@@ -142,25 +142,25 @@ export function Dashboard() {
         <RecentOS />
       </div>
 
-      {/* Kanban/List Section */}
+      {/* Status Blocks/List Section */}
       <div>
         <div className="flex items-center justify-between mb-3 sm:mb-4">
           <div>
-            <h2 className="text-base sm:text-lg font-semibold text-foreground">Quadro de OS</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">Acompanhe o fluxo de trabalho</p>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">Status das OS</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">Visão geral por categorias</p>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             <button
-              onClick={() => handleOSViewModeChange('kanban')}
+              onClick={() => handleOSViewModeChange('blocks')}
               className={cn(
                 "flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-colors",
-                osViewMode === 'kanban'
+                osViewMode === 'blocks'
                   ? "text-primary bg-primary/10 hover:bg-primary/20"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               )}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Quadro</span>
+              <span className="hidden sm:inline">Status</span>
             </button>
             <button
               onClick={() => handleOSViewModeChange('list')}
@@ -177,8 +177,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        {osViewMode === 'kanban' ? (
-          <KanbanBoard />
+        {osViewMode === 'blocks' ? (
+          <DashboardStatusBlocks />
         ) : (
           <div className="bg-card rounded-lg border border-border p-4">
             <DashboardOSList />

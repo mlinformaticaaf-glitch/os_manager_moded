@@ -1,4 +1,4 @@
-import { Bell, Package, ClipboardList, ShoppingCart, DollarSign, CheckCheck, X } from "lucide-react";
+import { Bell, Package, ClipboardList, ShoppingCart, DollarSign, ArrowUpCircle, CheckCheck, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -22,6 +22,8 @@ function getNotificationIcon(type: Notification['type']) {
       return ShoppingCart;
     case 'overdue_financial':
       return DollarSign;
+    case 'overdue_receivable':
+      return ArrowUpCircle;
     default:
       return Bell;
   }
@@ -78,7 +80,7 @@ export function NotificationsDropdown() {
             </Button>
           )}
         </div>
-        
+
         {count === 0 ? (
           <div className="py-8 text-center text-muted-foreground text-sm">
             <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -99,8 +101,8 @@ export function NotificationsDropdown() {
                       <div className="flex items-start gap-3 w-full">
                         <div className={cn(
                           "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5",
-                          notification.severity === 'error' 
-                            ? "bg-destructive/10 text-destructive" 
+                          notification.severity === 'error'
+                            ? "bg-destructive/10 text-destructive"
                             : "bg-orange-500/10 text-orange-500"
                         )}>
                           <Icon className="w-4 h-4" />

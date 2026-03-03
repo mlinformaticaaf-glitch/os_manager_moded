@@ -228,20 +228,24 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
-        <div className="shrink-0 p-4 sm:p-6 pb-0">
-          <DialogHeader>
-            <DialogTitle>{isEditing ? 'Editar Compra' : 'Nova Compra'}</DialogTitle>
-            <DialogDescription>
-              {isEditing ? 'Atualize os dados da compra' : 'Registre uma nova compra de produtos'}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+      <DialogContent className="sm:max-w-2xl w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[95vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <Form {...form}>
+          <form
+            id="purchase-form"
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="flex-1 min-h-0 flex flex-col overflow-hidden"
+          >
+            <div className="shrink-0 p-4 sm:p-6 pb-0">
+              <DialogHeader>
+                <DialogTitle>{isEditing ? 'Editar Compra' : 'Nova Compra'}</DialogTitle>
+                <DialogDescription>
+                  {isEditing ? 'Atualize os dados da compra' : 'Registre uma nova compra de produtos'}
+                </DialogDescription>
+              </DialogHeader>
+            </div>
 
-        <ScrollArea className="flex-1 min-h-0">
-          <div className="p-4 sm:p-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-4 sm:p-6 pb-0 space-y-6">
                 {/* Supplier and Invoice */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
@@ -515,7 +519,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                   control={form.control}
                   name="notes"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="pb-8">
                       <FormLabel>Observações</FormLabel>
                       <FormControl>
                         <CapitalizedTextarea placeholder="Informações adicionais..." {...field} />
@@ -524,19 +528,19 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                     </FormItem>
                   )}
                 />
+              </div>
+            </ScrollArea>
+          </form>
+        </Form>
 
-                <div className="flex gap-3 pt-6 pb-8">
-                  <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" className="flex-1" disabled={isSubmitting || items.length === 0}>
-                    {isSubmitting ? 'Salvando...' : isEditing ? 'Salvar Alterações' : 'Registrar Compra'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </ScrollArea>
+        <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
+          <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button form="purchase-form" type="submit" className="flex-1" disabled={isSubmitting || items.length === 0}>
+            {isSubmitting ? 'Salvando...' : isEditing ? 'Salvar Alterações' : 'Registrar Compra'}
+          </Button>
+        </div>
 
         {/* Quick Product Form Modal */}
         <QuickProductForm

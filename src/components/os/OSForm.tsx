@@ -385,11 +385,11 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-5xl w-full max-w-full h-[100dvh] sm:h-auto sm:max-h-[95vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <DialogContent className="sm:max-w-5xl w-full max-w-full h-[100dvh] sm:h-[95vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="flex flex-col h-full overflow-hidden"
+              className="flex-1 min-h-0 flex flex-col overflow-hidden"
             >
               <DialogHeader className="shrink-0 py-2.5 px-2.5 sm:px-4 lg:px-6 sm:py-3 border-b">
                 <DialogTitle className="text-center text-base sm:text-lg">
@@ -398,7 +398,7 @@ export function OSForm({
                 <DialogDescription className="sr-only">Formulário de edição da ordem de serviço.</DialogDescription>
               </DialogHeader>
 
-              <ScrollArea className="flex-1 w-full h-auto min-h-0 overflow-x-hidden">
+              <ScrollArea className="flex-1 min-h-0">
                 <div className="py-4 px-2 sm:px-4 lg:px-6 space-y-3 sm:space-y-4 text-sm sm:text-base w-full max-w-full mx-auto min-w-0 overflow-x-hidden [&_input]:h-9 sm:[&_input]:h-10 [&_[role=combobox]]:h-9 sm:[&_[role=combobox]]:h-10 [&_textarea]:min-h-[72px] sm:[&_textarea]:min-h-[96px]">
 
 

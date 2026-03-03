@@ -15,6 +15,7 @@ import Products from "./pages/Products";
 import Services from "./pages/Services";
 import Suppliers from "./pages/Suppliers";
 import Purchases from "./pages/Purchases";
+import Sales from "./pages/Sales";
 import Financial from "./pages/Financial";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -101,6 +102,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Purchases />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/vendas"
+              element={
+                <ProtectedRoute>
+                  <Sales />
                 </ProtectedRoute>
               }
             />

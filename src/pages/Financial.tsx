@@ -13,8 +13,26 @@ export default function Financial() {
   const [selectedTransaction, setSelectedTransaction] = useState<FinancialTransactionWithClient | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
-  
+
   const { transactions } = useFinancialTransactions();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Count: pending (no due date yet) + overdue (past due_date and still pending)
+  const pendingReceivablesCount = transactions.filter(t => {
+    if (t.type !== 'income' || t.status !== 'pending') return false;
+    if (!t.due_date) return true; // pending with no date: always show
+    const due = new Date(t.due_date + 'T00:00:00');
+    return due <= today; // overdue or due today
+  }).length;
+
+  const pendingPayablesCount = transactions.filter(t => {
+    if (t.type !== 'expense' || t.status !== 'pending') return false;
+    if (!t.due_date) return true;
+    const due = new Date(t.due_date + 'T00:00:00');
+    return due <= today;
+  }).length;
 
   // Handle navigation state to open a specific transaction
   useEffect(() => {
@@ -49,9 +67,23 @@ export default function Financial() {
           <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
             <TabsList className="bg-muted/50 w-max sm:w-auto">
               <TabsTrigger value="dashboard" className="text-xs sm:text-sm px-2 sm:px-3">Dashboard</TabsTrigger>
-              <TabsTrigger value="receivables" className="text-xs sm:text-sm px-2 sm:px-3">A Receber</TabsTrigger>
+              <TabsTrigger value="receivables" className="text-xs sm:text-sm px-2 sm:px-3 gap-1.5">
+                A Receber
+                {pendingReceivablesCount > 0 && (
+                  <span className="flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    {pendingReceivablesCount}
+                  </span>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="received" className="text-xs sm:text-sm px-2 sm:px-3">Recebidos</TabsTrigger>
-              <TabsTrigger value="payables" className="text-xs sm:text-sm px-2 sm:px-3">A Pagar</TabsTrigger>
+              <TabsTrigger value="payables" className="text-xs sm:text-sm px-2 sm:px-3 gap-1.5">
+                A Pagar
+                {pendingPayablesCount > 0 && (
+                  <span className="flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                    {pendingPayablesCount}
+                  </span>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="paid" className="text-xs sm:text-sm px-2 sm:px-3">Pagos</TabsTrigger>
               <TabsTrigger value="reports" className="text-xs sm:text-sm px-2 sm:px-3">Relatórios</TabsTrigger>
             </TabsList>
@@ -62,7 +94,7 @@ export default function Financial() {
           </TabsContent>
 
           <TabsContent value="receivables">
-            <TransactionsTable 
+            <TransactionsTable
               filterType="income"
               filterStatus="pending"
               onEdit={handleEdit}
@@ -71,7 +103,7 @@ export default function Financial() {
           </TabsContent>
 
           <TabsContent value="received">
-            <TransactionsTable 
+            <TransactionsTable
               filterType="income"
               filterStatus="paid"
               onEdit={handleEdit}
@@ -80,7 +112,7 @@ export default function Financial() {
           </TabsContent>
 
           <TabsContent value="payables">
-            <TransactionsTable 
+            <TransactionsTable
               filterType="expense"
               filterStatus="pending"
               onEdit={handleEdit}
@@ -89,7 +121,7 @@ export default function Financial() {
           </TabsContent>
 
           <TabsContent value="paid">
-            <TransactionsTable 
+            <TransactionsTable
               filterType="expense"
               filterStatus="paid"
               onEdit={handleEdit}
@@ -98,7 +130,7 @@ export default function Financial() {
           </TabsContent>
 
           <TabsContent value="all">
-            <TransactionsTable 
+            <TransactionsTable
               onEdit={handleEdit}
               onNew={handleNewTransaction}
             />

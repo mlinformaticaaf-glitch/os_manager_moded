@@ -89,20 +89,24 @@ export function QuickProductForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
-        <div className="shrink-0 p-4 sm:p-6 pb-0">
-          <DialogHeader>
-            <DialogTitle>Cadastro Rápido de Produto</DialogTitle>
-            <DialogDescription>
-              Cadastre um novo produto rapidamente
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+      <DialogContent className="sm:max-w-md w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[85vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <Form {...form}>
+          <form
+            id="quick-product-form"
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="flex-1 min-h-0 flex flex-col overflow-hidden"
+          >
+            <div className="shrink-0 p-4 sm:p-6 pb-0">
+              <DialogHeader>
+                <DialogTitle>Cadastro Rápido de Produto</DialogTitle>
+                <DialogDescription>
+                  Cadastre um novo produto rapidamente
+                </DialogDescription>
+              </DialogHeader>
+            </div>
 
-        <ScrollArea className="flex-1 min-h-0">
-          <div className="p-4 sm:p-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-4 sm:p-6 pb-0 space-y-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -195,7 +199,7 @@ export function QuickProductForm({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-8">
                   <FormField
                     control={form.control}
                     name="stock_quantity"
@@ -249,24 +253,24 @@ export function QuickProductForm({
                     )}
                   />
                 </div>
+              </div>
+            </ScrollArea>
+          </form>
+        </Form>
 
-                <div className="flex gap-3 pt-6 pb-8">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => onOpenChange(false)}
-                    className="flex-1"
-                  >
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={isSubmitting} className="flex-1">
-                    {isSubmitting ? 'Salvando...' : 'Cadastrar'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </ScrollArea>
+        <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="flex-1"
+          >
+            Cancelar
+          </Button>
+          <Button form="quick-product-form" type="submit" disabled={isSubmitting} className="flex-1">
+            {isSubmitting ? 'Salvando...' : 'Cadastrar'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

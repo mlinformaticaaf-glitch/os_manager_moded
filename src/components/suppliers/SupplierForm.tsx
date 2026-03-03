@@ -113,7 +113,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg w-full max-w-full sm:w-[calc(100vw-16px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+      <DialogContent className="sm:max-w-lg w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
         <div className="shrink-0 p-4 sm:p-6 pb-0">
           <DialogHeader>
             <DialogTitle>{supplier ? 'Editar Fornecedor' : 'Novo Fornecedor'}</DialogTitle>
@@ -124,9 +124,9 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
         </div>
 
         <ScrollArea className="flex-1 min-h-0">
-          <div className="p-4 sm:p-6">
+          <div className="p-4 sm:p-6 pb-0">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <form id="supplier-form" onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -266,7 +266,7 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                   control={form.control}
                   name="active"
                   render={({ field }) => (
-                    <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                    <FormItem className="flex items-center justify-between rounded-lg border p-3 mb-8">
                       <div className="space-y-0.5">
                         <FormLabel>Fornecedor Ativo</FormLabel>
                         <p className="text-sm text-muted-foreground">
@@ -279,19 +279,19 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                     </FormItem>
                   )}
                 />
-
-                <div className="flex gap-3 pt-6 pb-8">
-                  <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit" className="flex-1" disabled={isSubmitting}>
-                    {isSubmitting ? 'Salvando...' : supplier ? 'Atualizar' : 'Cadastrar'}
-                  </Button>
-                </div>
               </form>
             </Form>
           </div>
         </ScrollArea>
+
+        <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
+          <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button form="supplier-form" type="submit" className="flex-1" disabled={isSubmitting}>
+            {isSubmitting ? 'Salvando...' : supplier ? 'Atualizar' : 'Cadastrar'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useProducts } from '@/hooks/useProducts';
 import { useServiceOrders } from '@/hooks/useServiceOrders';
 import { usePurchases } from '@/hooks/usePurchases';
@@ -7,7 +7,7 @@ import { formatOSNumber } from '@/lib/osUtils';
 
 export interface Notification {
   id: string;
-  type: 'low_stock' | 'overdue_os' | 'overdue_purchase' | 'overdue_financial';
+  type: 'low_stock' | 'overdue_os' | 'overdue_purchase' | 'overdue_financial' | 'overdue_receivable';
   title: string;
   description: string;
   route: string;
@@ -96,24 +96,45 @@ export function useNotifications() {
         });
       });
 
-    // Financial transactions overdue
+    // Financial transactions overdue — expenses (A Pagar)
     transactions
       .filter(transaction => {
         const isPending = transaction.status === 'pending';
         const isExpense = transaction.type === 'expense';
         const hasDueDate = !!transaction.due_date;
-        const isOverdue = transaction.due_date && transaction.due_date < today;
-        return isPending && isExpense && hasDueDate && isOverdue;
+        const isDueOrOverdue = transaction.due_date && transaction.due_date <= today;
+        return isPending && isExpense && hasDueDate && isDueOrOverdue;
       })
       .forEach(transaction => {
         notifs.push({
           id: `overdue_financial_${transaction.id}`,
           type: 'overdue_financial',
-          title: 'Conta Vencida',
-          description: `${transaction.description} - R$ ${transaction.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+          title: 'Conta a Pagar Vencida',
+          description: `${transaction.description} - R$ ${Number(transaction.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
           route: '/financeiro',
           state: { viewTransactionId: transaction.id },
           severity: 'error',
+        });
+      });
+
+    // Financial transactions overdue — income (A Receber)
+    transactions
+      .filter(transaction => {
+        const isPending = transaction.status === 'pending';
+        const isIncome = transaction.type === 'income';
+        const hasDueDate = !!transaction.due_date;
+        const isDueOrOverdue = transaction.due_date && transaction.due_date <= today;
+        return isPending && isIncome && hasDueDate && isDueOrOverdue;
+      })
+      .forEach(transaction => {
+        notifs.push({
+          id: `overdue_receivable_${transaction.id}`,
+          type: 'overdue_receivable',
+          title: 'Conta a Receber Vencida',
+          description: `${transaction.description} - R$ ${Number(transaction.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+          route: '/financeiro',
+          state: { viewTransactionId: transaction.id },
+          severity: 'warning',
         });
       });
 
@@ -122,23 +143,9 @@ export function useNotifications() {
 
   const isLoading = productsLoading || ordersLoading || purchasesLoading || financialLoading;
 
-  // Clean up dismissed IDs that no longer exist (only after all data has loaded)
-  useEffect(() => {
-    if (isLoading) return;
-    const activeIds = new Set(allNotifications.map(n => n.id));
-    const currentDismissed = getDismissedIds();
-    let changed = false;
-    for (const id of currentDismissed) {
-      if (!activeIds.has(id)) {
-        currentDismissed.delete(id);
-        changed = true;
-      }
-    }
-    if (changed) {
-      saveDismissedIds(currentDismissed);
-      setDismissedIds(new Set(currentDismissed));
-    }
-  }, [allNotifications, isLoading]);
+  // NOTE: We intentionally do NOT clean up dismissed IDs when a notification disappears.
+  // This ensures that once a user dismisses a notification, it never reappears,
+  // even if the underlying data reloads or is temporarily unavailable.
 
   const notifications = useMemo(
     () => allNotifications.filter(n => !dismissedIds.has(n.id)),

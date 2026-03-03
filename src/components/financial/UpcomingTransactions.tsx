@@ -20,7 +20,7 @@ export function UpcomingTransactions({ transactions, onTransactionClick }: Upcom
       .filter(t => {
         if (t.status !== 'pending') return false;
         if (!t.due_date) return false;
-        
+
         const dueDate = parseISO(t.due_date);
         return isBefore(dueDate, next30Days);
       })
@@ -73,10 +73,10 @@ export function UpcomingTransactions({ transactions, onTransactionClick }: Upcom
           <div className="divide-y divide-border">
             {upcomingTransactions.map((transaction) => {
               const dueStatus = getDueDateStatus(transaction.due_date!);
-              
+
               return (
-                <div 
-                  key={transaction.id} 
+                <div
+                  key={transaction.id}
                   className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 hover:bg-muted/50 transition-colors cursor-pointer"
                   onClick={() => onTransactionClick?.(transaction)}
                 >
@@ -88,11 +88,12 @@ export function UpcomingTransactions({ transactions, onTransactionClick }: Upcom
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium truncate">{transaction.description}</p>
                     <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                      {transaction.category === 'service_order' && 'Ordem de Serviço'}
-                      {transaction.category === 'purchase' && 'Compra'}
-                      {transaction.category === 'salary' && 'Salário'}
-                      {transaction.category === 'rent' && 'Aluguel'}
-                      {transaction.category === 'utilities' && 'Contas'}
+                      {transaction.category === 'service_order' && 'Ordem de Serviço (Entrada)'}
+                      {transaction.category === 'services' && 'Serviços (Entrada)'}
+                      {transaction.category === 'sales' && 'Vendas (Entrada)'}
+                      {transaction.category === 'purchase' && 'Compra (Saída)'}
+                      {transaction.category === 'expenses' && 'Despesas (Saída)'}
+                      {transaction.category === 'withdrawals' && 'Retiradas (Saída)'}
                       {transaction.category === 'other' && 'Outros'}
                     </p>
                   </div>

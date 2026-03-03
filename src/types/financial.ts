@@ -11,6 +11,9 @@ export interface FinancialTransaction {
   status: 'pending' | 'paid' | 'cancelled';
   payment_method: string | null;
   notes: string | null;
+  recurring: boolean;
+  recurring_period: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  installments: number;
   created_at: string;
   updated_at: string;
 }
@@ -24,12 +27,13 @@ export const TRANSACTION_TYPE_OPTIONS = [
 ];
 
 export const TRANSACTION_CATEGORY_OPTIONS = [
-  { value: 'service_order', label: 'Ordem de Serviço' },
-  { value: 'purchase', label: 'Compra' },
-  { value: 'salary', label: 'Salário' },
-  { value: 'rent', label: 'Aluguel' },
-  { value: 'utilities', label: 'Contas' },
-  { value: 'other', label: 'Outros' },
+  { value: 'service_order', label: 'Ordem de Serviço (Entrada)', type: 'income' },
+  { value: 'services', label: 'Serviços (Entrada)', type: 'income' },
+  { value: 'sales', label: 'Vendas (Entrada)', type: 'income' },
+  { value: 'purchase', label: 'Compra (Saída)', type: 'expense' },
+  { value: 'expenses', label: 'Despesas (Saída)', type: 'expense' },
+  { value: 'withdrawals', label: 'Retiradas (Saída)', type: 'expense' },
+  { value: 'other', label: 'Outros', type: 'both' },
 ];
 
 export const TRANSACTION_STATUS_OPTIONS = [

@@ -90,7 +90,7 @@ export function useStatusSettings() {
     return merged;
   }, [settings]);
 
-  // Ordered status keys for kanban columns etc.
+  // Ordered status keys for status blocks etc.
   const orderedStatuses = useMemo(() => {
     const all = Object.keys(statusConfig) as OSStatus[];
     return all.sort((a, b) => statusConfig[a].position - statusConfig[b].position);

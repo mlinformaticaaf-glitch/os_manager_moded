@@ -143,20 +143,6 @@
     box-shadow: var(--shadow-glow);
   }
 
-  .kanban-column {
-    @apply bg-muted/50 rounded-lg sm:rounded-xl p-3 sm:p-4 min-h-[400px] sm:min-h-[500px];
-  }
-
-  .kanban-card {
-    @apply bg-card border border-border/50 rounded-lg p-3 sm:p-4 cursor-pointer transition-all duration-200;
-    box-shadow: 0 2px 8px -2px hsla(0, 0%, 0%, 0.3);
-  }
-
-  .kanban-card:hover {
-    @apply border-primary/40 -translate-y-0.5;
-    box-shadow: 0 8px 20px -4px hsla(0, 0%, 0%, 0.4);
-  }
-
   .sidebar-link {
     @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground transition-all duration-200;
   }

@@ -22,7 +22,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Plus, Search, Loader2, LayoutGrid, List, CalendarIcon, X, Wand2 } from 'lucide-react';
 import { useServiceOrders, useServiceOrderItems } from '@/hooks/useServiceOrders';
-import { OSKanbanView } from '@/components/os/OSKanbanView';
+import { OSStatusBlockView } from '@/components/os/OSStatusBlockView';
 import { OSListView } from '@/components/os/OSListView';
 import { OSForm } from '@/components/os/OSForm';
 import { OSDetailView } from '@/components/os/OSDetailView';
@@ -34,16 +34,16 @@ import { ExportButton } from '@/components/common/ExportButton';
 import { FileText } from 'lucide-react';
 import { exportOSReportPDF } from '@/components/os/reports/OSReportGenerator';
 
-type ViewMode = 'kanban' | 'list';
+type ViewMode = 'blocks' | 'list';
 
 const VIEW_MODE_KEY = 'os-view-mode';
 
 function getStoredViewMode(): ViewMode {
   const stored = localStorage.getItem(VIEW_MODE_KEY);
-  if (stored === 'kanban' || stored === 'list') {
+  if (stored === 'blocks' || stored === 'list') {
     return stored;
   }
-  return 'kanban';
+  return 'blocks';
 }
 
 export default function ServiceOrders() {
@@ -258,9 +258,9 @@ export default function ServiceOrders() {
                 }}
               >
                 <TabsList className="h-9">
-                  <TabsTrigger value="kanban" className="gap-1.5 px-2.5">
+                  <TabsTrigger value="blocks" className="gap-1.5 px-2.5">
                     <LayoutGrid className="h-4 w-4" />
-                    <span className="hidden sm:inline text-xs">Kanban</span>
+                    <span className="hidden sm:inline text-xs">Status</span>
                   </TabsTrigger>
                   <TabsTrigger value="list" className="gap-1.5 px-2.5">
                     <List className="h-4 w-4" />
@@ -297,8 +297,8 @@ export default function ServiceOrders() {
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
-        ) : viewMode === 'kanban' ? (
-          <OSKanbanView
+        ) : viewMode === 'blocks' ? (
+          <OSStatusBlockView
             orders={filteredOrders}
             onView={handleView}
             onEdit={handleEdit}
