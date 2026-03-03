@@ -8,10 +8,9 @@ interface MainLayoutProps {
   children: React.ReactNode;
   title: string;
   subtitle?: string;
-  onNewOS?: () => void;
 }
 
-export function MainLayout({ children, title, subtitle, onNewOS }: MainLayoutProps) {
+export function MainLayout({ children, title, subtitle }: MainLayoutProps) {
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,13 +20,6 @@ export function MainLayout({ children, title, subtitle, onNewOS }: MainLayoutPro
     navigate(path);
   };
 
-  const handleNewOS = () => {
-    if (onNewOS) {
-      onNewOS();
-    } else {
-      navigate("/os");
-    }
-  };
 
   const handleLogout = async () => {
     await signOut();
@@ -46,7 +38,6 @@ export function MainLayout({ children, title, subtitle, onNewOS }: MainLayoutPro
         <Header
           title={title}
           subtitle={subtitle}
-          onNewOS={handleNewOS}
           userEmail={user?.email}
           onLogout={handleLogout}
         />

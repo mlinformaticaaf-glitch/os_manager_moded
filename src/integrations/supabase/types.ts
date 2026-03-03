@@ -379,11 +379,125 @@ export type Database = {
           },
         ]
       }
+      sale_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string | null
+          product_name: string
+          sale_id: string
+          quantity: number
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          product_name: string
+          sale_id: string
+          quantity?: number
+          total?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          product_name?: string
+          sale_id?: string
+          quantity?: number
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          discount: number
+          due_date: string | null
+          id: string
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          payment_status: string
+          sale_date: string
+          sale_number: number
+          shipping: number
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          discount?: number
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          sale_date?: string
+          sale_number?: number
+          shipping?: number
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          discount?: number
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          sale_date?: string
+          sale_number?: number
+          shipping?: number
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_order_items: {
         Row: {
           created_at: string
           description: string
           id: string
+          product_id: string | null
           quantity: number
           service_order_id: string
           total: number
@@ -394,25 +508,32 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          product_id?: string | null
           quantity?: number
           service_order_id: string
           total?: number
           type: string
           unit_price?: number
-          product_id?: string | null
         }
         Update: {
           created_at?: string
           description?: string
           id?: string
+          product_id?: string | null
           quantity?: number
           service_order_id?: string
           total?: number
           type?: string
           unit_price?: number
-          product_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "service_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "service_order_items_service_order_id_fkey"
             columns: ["service_order_id"]

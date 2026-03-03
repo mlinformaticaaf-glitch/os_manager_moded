@@ -93,11 +93,11 @@ export function useSales() {
                 .insert({
                     user_id: user.id,
                     type: 'income',
-                    category: 'sale',
+                    category: 'sales',
                     reference_id: newSale.id,
                     description: `Venda #${newSale.sale_number}`,
                     amount: newSale.total,
-                    due_date: sale.due_date,
+                    due_date: sale.due_date || sale.sale_date,
                     paid_date: sale.payment_status === 'paid' ? new Date().toISOString().split('T')[0] : null,
                     status: sale.payment_status === 'paid' ? 'paid' : 'pending',
                     payment_method: sale.payment_method,
@@ -220,13 +220,13 @@ export function useSales() {
                 .from('financial_transactions')
                 .update({
                     amount: sale.total,
-                    due_date: sale.due_date,
+                    due_date: sale.due_date || sale.sale_date,
                     paid_date: sale.payment_status === 'paid' ? new Date().toISOString().split('T')[0] : null,
                     status: sale.payment_status === 'paid' ? 'paid' : 'pending',
                     payment_method: sale.payment_method,
                 })
                 .eq('reference_id', id)
-                .eq('category', 'sale');
+                .eq('category', 'sales');
 
             return updatedSale;
         },
@@ -277,7 +277,7 @@ export function useSales() {
                     payment_method: payment_method,
                 })
                 .eq('reference_id', id)
-                .eq('category', 'sale');
+                .eq('category', 'sales');
 
             return updated;
         },
@@ -333,7 +333,7 @@ export function useSales() {
                 .from('financial_transactions')
                 .delete()
                 .eq('reference_id', id)
-                .eq('category', 'sale');
+                .eq('category', 'sales');
 
             // Delete sale (items will cascade)
             const { error } = await supabase

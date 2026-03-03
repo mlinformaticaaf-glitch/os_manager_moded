@@ -17,7 +17,7 @@ export function useFinancialTransactions() {
     queryKey: ['financial-transactions', user?.id],
     queryFn: async (): Promise<FinancialTransactionWithClient[]> => {
       if (!user?.id) return [];
-      
+
       const { data, error } = await supabase
         .from('financial_transactions')
         .select('*')
@@ -27,23 +27,43 @@ export function useFinancialTransactions() {
       if (error) throw error;
       const transactions = data as FinancialTransaction[];
 
-      // Fetch client names for service_order transactions
+      // Fetch client names for service_order and sales transactions
       const soRefIds = transactions
         .filter(t => t.category === 'service_order' && t.reference_id)
         .map(t => t.reference_id as string);
 
-      if (soRefIds.length === 0) return transactions;
-
-      const { data: orders } = await supabase
-        .from('service_orders')
-        .select('id, client_id, client:clients(name)')
-        .in('id', soRefIds);
+      const saleRefIds = transactions
+        .filter(t => t.category === 'sales' && t.reference_id)
+        .map(t => t.reference_id as string);
 
       const clientMap = new Map<string, string>();
-      if (orders) {
-        for (const o of orders as any[]) {
-          if (o.client?.name) {
-            clientMap.set(o.id, o.client.name);
+
+      if (soRefIds.length > 0) {
+        const { data: orders } = await supabase
+          .from('service_orders')
+          .select('id, client:clients(name)')
+          .in('id', soRefIds);
+
+        if (orders) {
+          for (const o of orders as any[]) {
+            if (o.client?.name) {
+              clientMap.set(o.id, o.client.name);
+            }
+          }
+        }
+      }
+
+      if (saleRefIds.length > 0) {
+        const { data: sales } = await supabase
+          .from('sales')
+          .select('id, client:clients(name)')
+          .in('id', saleRefIds);
+
+        if (sales) {
+          for (const s of sales as any[]) {
+            if (s.client?.name) {
+              clientMap.set(s.id, s.client.name);
+            }
           }
         }
       }

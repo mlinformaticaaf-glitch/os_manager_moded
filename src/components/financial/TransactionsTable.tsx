@@ -1,10 +1,10 @@
 import { useState, useMemo } from "react";
-import { 
-  Plus, 
-  Search, 
-  MoreHorizontal, 
-  Pencil, 
-  Trash2, 
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
   CheckCircle,
   ArrowUpCircle,
   ArrowDownCircle,
@@ -53,14 +53,14 @@ interface TransactionsTableProps {
   onNew: () => void;
 }
 
-function TransactionCard({ 
-  transaction, 
-  onEdit, 
-  onDelete, 
-  onMarkAsPaid 
-}: { 
-  transaction: FinancialTransactionWithClient; 
-  onEdit: (transaction: FinancialTransactionWithClient) => void; 
+function TransactionCard({
+  transaction,
+  onEdit,
+  onDelete,
+  onMarkAsPaid
+}: {
+  transaction: FinancialTransactionWithClient;
+  onEdit: (transaction: FinancialTransactionWithClient) => void;
   onDelete: (transaction: FinancialTransactionWithClient) => void;
   onMarkAsPaid: (transaction: FinancialTransactionWithClient) => void;
 }) {
@@ -132,7 +132,7 @@ function TransactionCard({
                 Editar
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => onDelete(transaction)}
                 className="text-destructive"
               >
@@ -143,10 +143,10 @@ function TransactionCard({
           </DropdownMenu>
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
         <span className="text-xs text-muted-foreground">
-          {transaction.due_date 
+          {transaction.due_date
             ? format(parseISO(transaction.due_date), 'dd/MM/yyyy', { locale: ptBR })
             : 'Sem vencimento'
           }
@@ -177,23 +177,19 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
     return transactions.filter(t => {
       // Type filter
       if (filterType && t.type !== filterType) return false;
-      
+
       // Fixed status filter from prop
       if (filterStatus && t.status !== filterStatus) return false;
 
       // Status filter from dropdown
       if (!filterStatus && statusFilter !== 'all' && t.status !== statusFilter) return false;
 
-      // Date filter - use due_date for pending, paid_date for paid, fallback to due_date
+      // Date filter - use due_date for pending, paid_date for paid, fallback to due_date then created_at
       const dateField = filterStatus === 'paid' ? (t.paid_date || t.due_date) : t.due_date;
-      if (dateField) {
-        const txDate = parseISO(dateField);
-        if (txDate < dateStart || txDate > dateEnd) return false;
-      } else {
-        // If no date, exclude from filtered results
-        return false;
-      }
-      
+      const txDate = dateField ? parseISO(dateField) : parseISO(t.created_at);
+
+      if (txDate < dateStart || txDate > dateEnd) return false;
+
       // Search
       if (search) {
         const searchLower = search.toLowerCase();
@@ -202,7 +198,7 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
           t.category.toLowerCase().includes(searchLower)
         );
       }
-      
+
       return true;
     });
   }, [transactions, filterType, filterStatus, statusFilter, search, dateStart, dateEnd]);
@@ -249,10 +245,10 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
     return option?.label || category;
   };
 
-  const title = filterType === 'income' 
-    ? 'Contas a Receber' 
-    : filterType === 'expense' 
-      ? 'Contas a Pagar' 
+  const title = filterType === 'income'
+    ? 'Contas a Receber'
+    : filterType === 'expense'
+      ? 'Contas a Pagar'
       : 'Todas as Transações';
 
   return (
@@ -342,8 +338,8 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
               </TableHeader>
               <TableBody>
                 {filteredTransactions.map((transaction) => (
-                  <TableRow 
-                    key={transaction.id} 
+                  <TableRow
+                    key={transaction.id}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => onEdit(transaction)}
                   >
@@ -365,7 +361,7 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
                     </TableCell>
                     <TableCell className="hidden md:table-cell">{getCategoryLabel(transaction.category)}</TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      {transaction.due_date 
+                      {transaction.due_date
                         ? format(parseISO(transaction.due_date), 'dd/MM/yyyy', { locale: ptBR })
                         : '-'
                       }
@@ -393,7 +389,7 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
                             Editar
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => setDeleteTransaction(transaction)}
                             className="text-destructive"
                           >

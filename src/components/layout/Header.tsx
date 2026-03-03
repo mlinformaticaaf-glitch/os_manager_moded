@@ -13,12 +13,11 @@ import { NotificationsDropdown } from "./NotificationsDropdown";
 interface HeaderProps {
   title: string;
   subtitle?: string;
-  onNewOS?: () => void;
   userEmail?: string | null;
   onLogout?: () => void;
 }
 
-export function Header({ title, subtitle, onNewOS, userEmail, onLogout }: HeaderProps) {
+export function Header({ title, subtitle, userEmail, onLogout }: HeaderProps) {
   const isMobile = useIsMobile();
 
   return (
@@ -31,14 +30,6 @@ export function Header({ title, subtitle, onNewOS, userEmail, onLogout }: Header
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
-        {/* New OS Button */}
-        {onNewOS && (
-          <Button onClick={onNewOS} size={isMobile ? "icon" : "default"} className="gap-2">
-            <Plus className="w-4 h-4" />
-            {!isMobile && <span>Nova OS</span>}
-          </Button>
-        )}
-
         {/* Notifications */}
         <NotificationsDropdown />
 
