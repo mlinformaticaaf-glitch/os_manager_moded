@@ -142,12 +142,23 @@ export function useServiceOrders() {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status, previousStatus }: { id: string; status: OSStatus; previousStatus?: OSStatus }) => {
+    mutationFn: async ({ id, status }: { id: string; status: OSStatus }) => {
       if (!user) throw new Error('User not authenticated');
+
+      const updates: any = { status };
+
+      // Update timestamps based on status
+      if (status === 'completed') {
+        updates.completed_at = new Date().toISOString();
+      } else if (status === 'delivered') {
+        updates.delivered_at = new Date().toISOString();
+        // Also ensure completed_at is set if it wasn't already
+        updates.completed_at = new Date().toISOString();
+      }
 
       const { error } = await supabase
         .from('service_orders')
-        .update({ status })
+        .update(updates)
         .eq('id', id);
 
       if (error) throw error;
