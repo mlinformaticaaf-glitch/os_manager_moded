@@ -29,6 +29,7 @@ import { CapitalizedInput } from "@/components/ui/capitalized-input";
 import { CapitalizedTextarea } from "@/components/ui/capitalized-textarea";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { CurrencyInput } from "@/components/ui/currency-input";
 
 import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
 import { FinancialTransaction, TRANSACTION_TYPE_OPTIONS, TRANSACTION_CATEGORY_OPTIONS, TRANSACTION_STATUS_OPTIONS } from "@/types/financial";
@@ -285,7 +286,10 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                       <FormItem>
                         <FormLabel>Valor (R$) *</FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" min="0" {...field} />
+                          <CurrencyInput
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

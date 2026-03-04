@@ -23,6 +23,7 @@ import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { Service } from '@/types/service';
 
 const serviceSchema = z.object({
@@ -199,7 +200,7 @@ export function ServiceForm({
                       <FormItem>
                         <FormLabel>Custo</FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" min="0" {...field} />
+                          <CurrencyInput value={field.value} onValueChange={field.onChange} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -213,7 +214,7 @@ export function ServiceForm({
                       <FormItem>
                         <FormLabel>Preço de Venda</FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.01" min="0" {...field} />
+                          <CurrencyInput value={field.value} onValueChange={field.onChange} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -30,6 +30,7 @@ import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { Separator } from '@/components/ui/separator';
 import { useSuppliers } from '@/hooks/useSuppliers';
 import { useProducts } from '@/hooks/useProducts';
@@ -380,13 +381,10 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                               />
                             </div>
                             <div>
-                              <Input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                placeholder="Valor"
+                              <CurrencyInput
                                 value={item.unit_price}
-                                onChange={(e) => updateItem(index, 'unit_price', Number(e.target.value))}
+                                onValueChange={(val) => updateItem(index, 'unit_price', val)}
+                                className="h-10"
                               />
                             </div>
                           </div>
@@ -418,7 +416,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                       <FormItem>
                         <FormLabel>Desconto (R$)</FormLabel>
                         <FormControl>
-                          <Input type="number" min="0" step="0.01" {...field} />
+                          <CurrencyInput value={field.value} onValueChange={field.onChange} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -432,7 +430,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                       <FormItem>
                         <FormLabel>Frete (R$)</FormLabel>
                         <FormControl>
-                          <Input type="number" min="0" step="0.01" {...field} />
+                          <CurrencyInput value={field.value} onValueChange={field.onChange} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

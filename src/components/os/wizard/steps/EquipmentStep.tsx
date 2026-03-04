@@ -98,22 +98,28 @@ export function EquipmentStep({
       {/* Search and Actions */}
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             placeholder="Buscar equipamento..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 text-sm sm:text-base"
+            className="pl-10 h-11 sm:h-10 text-base"
           />
         </div>
-        <Button variant="outline" size="sm" onClick={() => setEquipmentFormOpen(true)} className="shrink-0">
-          <Plus className="h-4 w-4 sm:mr-2" />
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setEquipmentFormOpen(true)}
+          className="shrink-0 h-11 w-11 sm:h-10 sm:w-auto sm:px-4"
+          title="Novo Equipamento"
+        >
+          <Plus className="h-5 w-5 sm:mr-2" />
           <span className="hidden sm:inline">Novo</span>
         </Button>
       </div>
 
       {/* Equipment List */}
-      <ScrollArea className="h-[150px] sm:h-[200px] rounded-lg border">
+      <ScrollArea className="h-[180px] sm:h-[200px] rounded-lg border">
         <div className="p-2 space-y-1">
           {isLoading ? (
             <div className="flex items-center justify-center py-8 text-muted-foreground">
@@ -198,25 +204,25 @@ export function EquipmentStep({
       </div>
 
       {/* Navigation */}
-      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-4 border-t">
-        <Button variant="ghost" size="sm" onClick={onBack}>
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t mt-4">
+        <Button variant="ghost" size="sm" onClick={onBack} className="h-11 sm:h-9">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button
             variant="ghost"
             size="sm"
-            className="flex-1 sm:flex-none"
+            className="h-11 sm:h-9 text-muted-foreground hover:text-foreground"
             onClick={() => {
               onSelectEquipment(null);
               onNext();
             }}
           >
-            Pular
+            Pular Equipamento
           </Button>
-          <Button onClick={onNext} size="sm" className="flex-1 sm:flex-none">
-            Continuar
+          <Button onClick={onNext} size="lg" className="sm:size-default h-12 sm:h-10 font-semibold">
+            Continuar para Problema
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </div>

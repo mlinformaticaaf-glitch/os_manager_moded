@@ -13,6 +13,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { useToast } from "@/hooks/use-toast";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
 import { QrCode, Copy, Check, AlertCircle, Settings } from "lucide-react";
@@ -132,14 +133,11 @@ export function OSPixButton({ order, variant = "outline", size = "sm" }: OSPixBu
               <div className="space-y-2">
                 <Label htmlFor="amount">Valor do Pagamento</Label>
                 <div className="flex gap-2">
-                  <Input
+                  <CurrencyInput
                     id="amount"
-                    type="number"
-                    step="0.01"
-                    min="0"
                     value={customAmount}
-                    onChange={(e) => setCustomAmount(parseFloat(e.target.value) || 0)}
-                    className="text-lg font-mono"
+                    onValueChange={(val) => setCustomAmount(val)}
+                    className="text-lg font-mono h-11"
                   />
                   <Button
                     variant="outline"

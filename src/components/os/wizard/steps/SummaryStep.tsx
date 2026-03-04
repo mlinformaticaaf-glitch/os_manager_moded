@@ -82,26 +82,29 @@ export function SummaryStep({
           </p>
         </div>
 
-        <Card>
-          <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+        <Card className="border-green-200">
+          <CardContent className="p-4 sm:p-8 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Button
                 variant="outline"
                 size="lg"
-                className="h-16 sm:h-20 flex-col gap-1.5 sm:gap-2"
+                className="h-16 flex items-center justify-center gap-3 border-2 hover:bg-muted"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
                   onPrint?.();
                 }}
               >
-                <Printer className="h-5 w-5 sm:h-6 sm:w-6" />
-                <span className="text-xs sm:text-sm">Imprimir</span>
+                <Printer className="h-6 w-6" />
+                <div className="text-left">
+                  <p className="font-bold text-sm">Imprimir OS</p>
+                  <p className="text-xs text-muted-foreground">Formato A4</p>
+                </div>
               </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="h-16 sm:h-20 flex-col gap-1.5 sm:gap-2 text-green-600 border-green-600 hover:bg-green-50"
+                className="h-16 flex items-center justify-center gap-3 border-2 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -109,8 +112,11 @@ export function SummaryStep({
                 }}
                 disabled={!selectedClient?.phone}
               >
-                <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
-                <span className="text-xs sm:text-sm">WhatsApp</span>
+                <MessageCircle className="h-6 w-6" />
+                <div className="text-left">
+                  <p className="font-bold text-sm">Enviar WhatsApp</p>
+                  <p className="text-xs text-green-600/70">{selectedClient?.phone || 'Sem telefone'}</p>
+                </div>
               </Button>
             </div>
           </CardContent>
@@ -255,21 +261,26 @@ export function SummaryStep({
       )}
 
       {/* Navigation */}
-      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-4 border-t">
-        <Button variant="ghost" size="sm" onClick={onBack} disabled={isSubmitting}>
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t mt-4">
+        <Button variant="ghost" size="sm" onClick={onBack} disabled={isSubmitting} className="h-11 sm:h-9">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
-        <Button onClick={onSubmit} disabled={isSubmitting} size="sm" className="sm:size-default">
+        <Button
+          onClick={onSubmit}
+          disabled={isSubmitting}
+          size="lg"
+          className="sm:size-default h-12 sm:h-10 font-bold bg-green-600 hover:bg-green-700 text-white"
+        >
           {isSubmitting ? (
             <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Criando...
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              Finalizando...
             </>
           ) : (
             <>
-              <Check className="h-4 w-4 mr-2" />
-              Criar OS
+              <Check className="h-5 w-5 mr-2" />
+              Finalizar e Criar OS
             </>
           )}
         </Button>

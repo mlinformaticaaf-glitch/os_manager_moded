@@ -64,20 +64,20 @@ export function ProblemStep({
         </Label>
         <CapitalizedTextarea
           id="reported_issue"
-          placeholder="Descreva o problema..."
+          placeholder="Descreva aqui o problema relatado pelo cliente..."
           value={reportedIssue}
           onChange={(e) => onChangeReportedIssue(e.target.value)}
-          className="min-h-[80px] sm:min-h-[120px] resize-none text-sm sm:text-base"
+          className="min-h-[120px] sm:min-h-[160px] resize-none text-base"
         />
         {reportedIssue.length > 0 && reportedIssue.length < 5 && (
-          <p className="text-xs sm:text-sm text-destructive">Descreva com mais detalhes</p>
+          <p className="text-xs sm:text-sm text-destructive font-medium animate-pulse">O problema deve ter pelo menos 5 caracteres</p>
         )}
       </div>
 
       {/* Priority Selection */}
-      <div className="space-y-2 sm:space-y-3">
-        <Label className="text-sm">Prioridade</Label>
-        <div className="grid grid-cols-4 gap-1 sm:gap-2">
+      <div className="space-y-2.5 sm:space-y-3">
+        <Label className="text-sm font-medium">Prioridade do Atendimento</Label>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {(Object.entries(PRIORITY_CONFIG) as [OSPriority, { label: string; color: string }][]).map(
             ([key, config]) => (
               <button
@@ -85,14 +85,13 @@ export function ProblemStep({
                 type="button"
                 onClick={() => onChangePriority(key)}
                 className={cn(
-                  "p-2 sm:p-3 rounded-lg border-2 text-center transition-all",
+                  "p-3 sm:p-4 rounded-xl border-2 text-center transition-all flex items-center justify-center min-h-[50px]",
                   priority === key
-                    ? "border-primary ring-2 ring-primary/20"
-                    : PRIORITY_COLORS[key],
-                  "hover:scale-[1.02]"
+                    ? "border-primary bg-primary/10 ring-2 ring-primary/20 scale-[1.02] shadow-sm"
+                    : cn(PRIORITY_COLORS[key], "border-transparent shadow-none"),
                 )}
               >
-                <span className={cn("font-medium text-xs sm:text-sm", config.color)}>{config.label}</span>
+                <span className={cn("font-bold text-xs sm:text-sm", config.color)}>{config.label}</span>
               </button>
             )
           )}
@@ -129,13 +128,18 @@ export function ProblemStep({
       </div>
 
       {/* Navigation */}
-      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-4 border-t">
-        <Button variant="ghost" size="sm" onClick={onBack}>
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t mt-4">
+        <Button variant="ghost" size="sm" onClick={onBack} className="h-11 sm:h-9">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
-        <Button onClick={onNext} disabled={!isValid} size="sm">
-          Continuar
+        <Button
+          onClick={onNext}
+          disabled={!isValid}
+          size="lg"
+          className="sm:size-default h-12 sm:h-10 font-semibold"
+        >
+          Continuar para Itens
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       </div>

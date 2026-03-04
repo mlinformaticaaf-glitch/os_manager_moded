@@ -58,10 +58,10 @@ export function ClientStep({ selectedClientId, createdAt, onSelect, onChangeCrea
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="text-center space-y-1 sm:space-y-2">
-        <h2 className="text-xl sm:text-2xl font-bold">Nova Ordem de Serviço</h2>
-        <p className="text-sm sm:text-base text-muted-foreground">
-          Defina a data de entrada e selecione o cliente
+      <div className="text-center space-y-1.5 px-2">
+        <h2 className="text-2xl font-bold tracking-tight">Nova Ordem de Serviço</h2>
+        <p className="text-sm sm:text-base text-muted-foreground max-w-xs mx-auto">
+          Defina a data de entrada e selecione ou cadastre um cliente.
         </p>
       </div>
 
@@ -121,16 +121,22 @@ export function ClientStep({ selectedClientId, createdAt, onSelect, onChangeCrea
       {/* Search and Actions */}
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             placeholder="Buscar cliente..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 text-sm sm:text-base"
+            className="pl-10 h-11 sm:h-10 text-base"
           />
         </div>
-        <Button variant="outline" size="sm" onClick={() => setClientFormOpen(true)} className="shrink-0">
-          <Plus className="h-4 w-4 sm:mr-2" />
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setClientFormOpen(true)}
+          className="shrink-0 h-11 w-11 sm:h-10 sm:w-auto sm:px-4"
+          title="Novo Cliente"
+        >
+          <Plus className="h-5 w-5 sm:mr-2" />
           <span className="hidden sm:inline">Novo</span>
         </Button>
       </div>
@@ -161,11 +167,11 @@ export function ClientStep({ selectedClientId, createdAt, onSelect, onChangeCrea
       </ScrollArea>
 
       {/* Skip option */}
-      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-4 border-t">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-6 border-t mt-4">
         <Button
           variant="ghost"
           size="sm"
-          className="text-xs sm:text-sm"
+          className="text-muted-foreground hover:text-foreground h-11 sm:h-9"
           onClick={() => {
             onSelect(null);
             onNext();
@@ -173,8 +179,13 @@ export function ClientStep({ selectedClientId, createdAt, onSelect, onChangeCrea
         >
           Pular (sem cliente)
         </Button>
-        <Button onClick={onNext} disabled={!selectedClientId} size="sm" className="sm:size-default">
-          Continuar
+        <Button
+          onClick={onNext}
+          disabled={!selectedClientId}
+          size="lg"
+          className="sm:size-default h-12 sm:h-10 font-semibold"
+        >
+          Continuar para Equipamento
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       </div>

@@ -48,14 +48,14 @@ import { useProducts } from '@/hooks/useProducts';
 import { useServices } from '@/hooks/useServices';
 import { useEquipment } from '@/hooks/useEquipment';
 import { formatEquipmentCode } from '@/types/equipment';
-import { Loader2, Plus, Trash2, Package, Wrench, ChevronsUpDown, Check, UserPlus, Monitor } from 'lucide-react';
+import { Loader2, Plus, PlusCircle, Trash2, Package, Wrench, ChevronsUpDown, Check, UserPlus, Monitor } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { ClientForm } from '@/components/clients/ClientForm';
-import { ServiceForm } from '@/components/services/ServiceForm';
-import { ProductForm } from '@/components/products/ProductForm';
 import { EquipmentForm } from '@/components/equipment/EquipmentForm';
+import { useToast } from '@/hooks/use-toast';
+import { CurrencyInput } from '@/components/ui/currency-input';
 
 
 const osSchema = z.object({
@@ -104,6 +104,7 @@ export function OSForm({
   existingItems = [],
 }: OSFormProps) {
   const { statusConfig, orderedStatuses } = useStatusSettings();
+  const { toast } = useToast();
   const { clients, createClient } = useClients();
   const { products, createProduct } = useProducts();
   const { services, createService } = useServices();
@@ -306,7 +307,7 @@ export function OSForm({
     const cleanedData = {
       ...data,
       estimated_completion: data.estimated_completion?.trim() || null,
-      created_at: data.created_at?.trim() ? new Date(data.created_at + 'T12:00:00').toISOString() : undefined,
+      created_at: data.created_at?.trim() ? new Date(data.created_at + 'T12:00:00').toISOString() : new Date().toISOString(),
       equipment_id: data.equipment_id || null,
       serial_number: data.serial_number?.trim() || null,
       accessories: data.accessories?.trim() || null,
@@ -322,6 +323,15 @@ export function OSForm({
       total_services: totalServices,
       total_products: totalProducts,
       total,
+    });
+  };
+
+  const onInvalid = (errors: any) => {
+    console.error('Validation errors:', errors);
+    toast({
+      title: "Verifique o formulário",
+      description: "Alguns campos obrigatórios estão faltando ou são inválidos.",
+      variant: "destructive",
     });
   };
 
@@ -388,7 +398,7 @@ export function OSForm({
         <DialogContent className="sm:max-w-5xl w-full max-w-full h-[100dvh] sm:h-[95vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(handleSubmit)}
+              onSubmit={form.handleSubmit(handleSubmit, onInvalid)}
               className="flex-1 min-h-0 flex flex-col overflow-hidden"
             >
               <DialogHeader className="shrink-0 py-2.5 px-2.5 sm:px-4 lg:px-6 sm:py-3 border-b">
@@ -970,63 +980,85 @@ export function OSForm({
 
                   <Separator />
 
-                  {/* === ITEM MANUAL === */}
-                  <div className="border rounded-lg p-3 sm:p-4 space-y-4">
-                    <h4 className="font-medium text-sm sm:text-base">Adicionar Item Manual</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                      <Select
-                        value={newItem.type}
-                        onValueChange={(value: 'product' | 'service') =>
-                          setNewItem({ ...newItem, type: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-popover border border-border">
-                          <SelectItem value="service">Serviço</SelectItem>
-                          <SelectItem value="product">Produto</SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      <Input
-                        placeholder="Descrição"
-                        value={newItem.description}
-                        onChange={(e) =>
-                          setNewItem({ ...newItem, description: e.target.value })
-                        }
-                        className="sm:col-span-3"
-                      />
+                  {/* === ITEM MANUAL / AVULSO === */}
+                  <div className="border-2 border-dashed rounded-xl p-4 sm:p-5 bg-muted/10 space-y-4">
+                    <div className="flex items-center gap-2">
+                      <PlusCircle className="h-5 w-5 text-primary shrink-0" />
+                      <div>
+                        <h4 className="font-bold text-xs sm:text-sm uppercase tracking-wider">Item Avulso (Fora do Catálogo)</h4>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Adicione um item personalizado sem precisar cadastrá-lo</p>
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      <Input
-                        type="number"
-                        placeholder="Qtd"
-                        min={0.01}
-                        step={0.01}
-                        value={newItem.quantity}
-                        onChange={(e) =>
-                          setNewItem({ ...newItem, quantity: parseFloat(e.target.value) || 0 })
-                        }
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Valor Unit."
-                        min={0}
-                        step={0.01}
-                        value={newItem.unit_price}
-                        onChange={(e) =>
-                          setNewItem({ ...newItem, unit_price: parseFloat(e.target.value) || 0 })
-                        }
-                      />
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        = {formatCurrency(newItem.quantity * newItem.unit_price)}
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
+                      <div className="sm:col-span-1">
+                        <Select
+                          value={newItem.type}
+                          onValueChange={(value: 'product' | 'service') =>
+                            setNewItem({ ...newItem, type: value })
+                          }
+                        >
+                          <SelectTrigger className="h-10 sm:h-11 border-primary/20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-popover border border-border">
+                            <SelectItem value="service">Serviço</SelectItem>
+                            <SelectItem value="product">Produto</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <Button type="button" onClick={addItem} size="sm" className="w-full">
-                        <Plus className="h-4 w-4 mr-1" />
-                        Adicionar
-                      </Button>
+
+                      <div className="sm:col-span-3">
+                        <Input
+                          placeholder="Nome do serviço ou produto..."
+                          value={newItem.description}
+                          onChange={(e) =>
+                            setNewItem({ ...newItem, description: e.target.value })
+                          }
+                          className="h-10 sm:h-11 border-primary/20"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 border-t pt-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Quantidade</label>
+                        <Input
+                          type="number"
+                          placeholder="Qtd"
+                          min={0.01}
+                          step={0.01}
+                          value={newItem.quantity}
+                          onChange={(e) =>
+                            setNewItem({ ...newItem, quantity: parseFloat(e.target.value) || 0 })
+                          }
+                          className="h-10 border-primary/20"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Valor Unitário</label>
+                        <CurrencyInput
+                          value={newItem.unit_price}
+                          onValueChange={(val) => setNewItem({ ...newItem, unit_price: val })}
+                          className="h-10 border-primary/20"
+                        />
+                      </div>
+                      <div className="flex flex-col justify-end space-y-1.5 min-w-[80px]">
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Subtotal</label>
+                        <div className="h-10 flex items-center px-1 font-mono font-bold text-primary">
+                          {formatCurrency(newItem.quantity * newItem.unit_price)}
+                        </div>
+                      </div>
+                      <div className="flex items-end">
+                        <Button
+                          type="button"
+                          onClick={addItem}
+                          className="w-full h-10 font-bold gap-2"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Adicionar
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
@@ -1084,13 +1116,13 @@ export function OSForm({
                       render={({ field }) => (
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm min-w-0">
                           <span>Desconto:</span>
-                          <Input
-                            type="number"
-                            min={0}
-                            step={0.01}
-                            className="w-full sm:w-24 h-8 text-left sm:text-right"
-                            {...field}
-                          />
+                          <div className="w-full sm:w-32">
+                            <CurrencyInput
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              className="h-8"
+                            />
+                          </div>
                         </div>
                       )}
                     />
@@ -1132,18 +1164,30 @@ export function OSForm({
                 </div>
               </ScrollArea>
 
-              <div className="shrink-0 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-4 sm:p-6 border-t bg-muted/20">
+              <div className="shrink-0 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-4 sm:p-6 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => onOpenChange(false)}
-                  className="w-full sm:w-auto"
+                  className="w-full sm:w-auto h-11 sm:h-10"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {order ? 'Salvar' : 'Criar OS'}
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto h-11 sm:h-10 font-semibold"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {order ? 'Salvando...' : 'Criando...'}
+                    </>
+                  ) : (
+                    <>
+                      {order ? 'Salvar OS' : 'Criar Ordem de Serviço'}
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
