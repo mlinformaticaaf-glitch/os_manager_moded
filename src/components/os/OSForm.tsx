@@ -54,6 +54,8 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { ClientForm } from '@/components/clients/ClientForm';
 import { EquipmentForm } from '@/components/equipment/EquipmentForm';
+import { ServiceForm } from '@/components/services/ServiceForm';
+import { ProductForm } from '@/components/products/ProductForm';
 import { useToast } from '@/hooks/use-toast';
 import { CurrencyInput } from '@/components/ui/currency-input';
 
