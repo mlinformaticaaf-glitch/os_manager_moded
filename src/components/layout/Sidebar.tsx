@@ -13,7 +13,8 @@ import {
   ChevronRight,
   LogOut,
   Menu,
-  Monitor
+  Monitor,
+  LayoutGrid
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
@@ -32,6 +33,7 @@ interface NavItem {
 const baseNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: ClipboardList, label: "Ordens de Serviço", href: "/os" },
+  { icon: LayoutGrid, label: "Kanban", href: "/kanban" },
   { icon: ShoppingBag, label: "Vendas", href: "/vendas" },
   { icon: Users, label: "Clientes", href: "/clientes" },
   { icon: Monitor, label: "Equipamentos", href: "/equipamentos" },
