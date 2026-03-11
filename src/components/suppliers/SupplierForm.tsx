@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Supplier } from '@/types/supplier';
+import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const supplierSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -49,6 +50,8 @@ interface SupplierFormProps {
 }
 
 export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitting }: SupplierFormProps) {
+  useMobileBackButton(open, () => onOpenChange(false));
+
   const form = useForm<SupplierFormData>({
     resolver: zodResolver(supplierSchema),
     defaultValues: {

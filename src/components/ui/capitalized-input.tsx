@@ -9,30 +9,30 @@ export interface CapitalizedInputProps
 }
 
 const CapitalizedInput = React.forwardRef<HTMLInputElement, CapitalizedInputProps>(
-  ({ className, type, onChange, disableCapitalization = false, uppercase = false, ...props }, ref) => {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  ({ className, type, onChange, onBlur, disableCapitalization = false, uppercase = false, ...props }, ref) => {
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
       if (!disableCapitalization && type !== "email" && type !== "password" && type !== "number" && type !== "date" && type !== "time" && type !== "datetime-local") {
-        const cursorPosition = e.target.selectionStart || 0;
         const originalValue = e.target.value;
         const transformedValue = uppercase ? originalValue.toUpperCase() : capitalizeWords(originalValue);
-        
-        // Criar um novo evento com o valor transformado
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-          window.HTMLInputElement.prototype,
-          'value'
-        )?.set;
-        
-        if (nativeInputValueSetter) {
-          nativeInputValueSetter.call(e.target, transformedValue);
+
+        if (originalValue !== transformedValue) {
+          // Criar um novo evento com o valor transformado
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            'value'
+          )?.set;
+
+          if (nativeInputValueSetter) {
+            nativeInputValueSetter.call(e.target, transformedValue);
+          }
+
+          // Dispara o evento change real para sincronizar com formulário (ex: React Hook Form)
+          const ev = new Event('input', { bubbles: true });
+          e.target.dispatchEvent(ev);
         }
-        
-        // Restaurar posição do cursor
-        requestAnimationFrame(() => {
-          e.target.setSelectionRange(cursorPosition, cursorPosition);
-        });
       }
-      
-      onChange?.(e);
+
+      onBlur?.(e);
     };
 
     return (
@@ -43,7 +43,8 @@ const CapitalizedInput = React.forwardRef<HTMLInputElement, CapitalizedInputProp
           className,
         )}
         ref={ref}
-        onChange={handleChange}
+        onChange={onChange}
+        onBlur={handleBlur}
         {...props}
       />
     );

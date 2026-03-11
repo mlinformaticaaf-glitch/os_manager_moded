@@ -29,9 +29,10 @@ export function FinancialReports() {
     switch (period) {
       case 'current-month':
         return { startDate: startOfMonth(now), endDate: endOfMonth(now) };
-      case 'last-month':
+      case 'last-month': {
         const lastMonth = subMonths(now, 1);
         return { startDate: startOfMonth(lastMonth), endDate: endOfMonth(lastMonth) };
+      }
       case 'last-3-months':
         return { startDate: startOfMonth(subMonths(now, 2)), endDate: endOfMonth(now) };
       case 'last-6-months':

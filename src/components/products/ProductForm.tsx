@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Product, UNIT_OPTIONS, formatProductCode } from '@/types/product';
+import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const productSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -62,6 +63,8 @@ export function ProductForm({
   onSubmit,
   isSubmitting,
 }: ProductFormProps) {
+  useMobileBackButton(open, () => onOpenChange(false));
+
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {

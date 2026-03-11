@@ -9,29 +9,30 @@ export interface CapitalizedTextareaProps
 }
 
 const CapitalizedTextarea = React.forwardRef<HTMLTextAreaElement, CapitalizedTextareaProps>(
-  ({ className, onChange, disableCapitalization = false, uppercase = false, ...props }, ref) => {
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  ({ className, onChange, onBlur, disableCapitalization = false, uppercase = false, ...props }, ref) => {
+    const handleBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
       if (!disableCapitalization) {
-        const cursorPosition = e.target.selectionStart || 0;
-        const transformedValue = uppercase ? e.target.value.toUpperCase() : capitalizeWords(e.target.value);
-        
-        // Criar um novo evento com o valor transformado
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-          window.HTMLTextAreaElement.prototype,
-          'value'
-        )?.set;
-        
-        if (nativeInputValueSetter) {
-          nativeInputValueSetter.call(e.target, transformedValue);
+        const originalValue = e.target.value;
+        const transformedValue = uppercase ? originalValue.toUpperCase() : capitalizeWords(originalValue);
+
+        if (originalValue !== transformedValue) {
+          // Criar um novo evento com o valor transformado
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLTextAreaElement.prototype,
+            'value'
+          )?.set;
+
+          if (nativeInputValueSetter) {
+            nativeInputValueSetter.call(e.target, transformedValue);
+          }
+
+          // Dispara o evento change real para sincronizar com formulário (ex: React Hook Form)
+          const ev = new Event('input', { bubbles: true });
+          e.target.dispatchEvent(ev);
         }
-        
-        // Restaurar posição do cursor
-        requestAnimationFrame(() => {
-          e.target.setSelectionRange(cursorPosition, cursorPosition);
-        });
       }
-      
-      onChange?.(e);
+
+      onBlur?.(e);
     };
 
     return (
@@ -41,7 +42,8 @@ const CapitalizedTextarea = React.forwardRef<HTMLTextAreaElement, CapitalizedTex
           className,
         )}
         ref={ref}
-        onChange={handleChange}
+        onChange={onChange}
+        onBlur={handleBlur}
         {...props}
       />
     );

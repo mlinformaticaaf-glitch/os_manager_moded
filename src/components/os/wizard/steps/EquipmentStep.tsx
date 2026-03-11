@@ -164,7 +164,6 @@ export function EquipmentStep({
             value={accessories}
             onChange={(e) => onChangeAccessories(e.target.value)}
             className="text-sm sm:text-base"
-            uppercase
           />
         </div>
 

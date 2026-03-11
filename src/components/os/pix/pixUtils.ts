@@ -93,7 +93,7 @@ export function generatePixPayload({
   const gui = formatTLV('00', 'br.gov.bcb.pix');
   const key = formatTLV('01', formattedKey);
   let merchantInfo = gui + key;
-  
+
   if (description) {
     merchantInfo += formatTLV('02', sanitizeText(description).substring(0, 25));
   }
@@ -108,7 +108,7 @@ export function generatePixPayload({
   const additionalDataField = formatTLV('62', formatTLV('05', txId.substring(0, 25)));
 
   // Build the payload
-  const payload = 
+  const payload =
     formatTLV('00', '01') +                        // Payload Format Indicator
     formatTLV('01', '12') +                        // Point of Initiation Method (12 = dynamic)
     merchantAccountInfo +                           // Merchant Account Information
@@ -133,12 +133,13 @@ export function formatPixKey(key: string, type: string): string {
       return key.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     case 'cnpj':
       return key.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
-    case 'phone':
+    case 'phone': {
       const cleaned = key.replace(/\D/g, '');
       if (cleaned.length === 11) {
         return key.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
       }
       return key;
+    }
     default:
       return key;
   }

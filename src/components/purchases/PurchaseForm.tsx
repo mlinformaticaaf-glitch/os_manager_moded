@@ -36,6 +36,7 @@ import { useSuppliers } from '@/hooks/useSuppliers';
 import { useProducts } from '@/hooks/useProducts';
 import { PurchaseItem, PAYMENT_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from '@/types/purchase';
 import { QuickProductForm, QuickProductFormData } from './QuickProductForm';
+import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const purchaseSchema = z.object({
   supplier_id: z.string().optional(),
@@ -72,6 +73,8 @@ interface PurchaseFormProps {
 }
 
 export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editingPurchase, editingItems }: PurchaseFormProps) {
+  useMobileBackButton(open, () => onOpenChange(false));
+
   const { suppliers } = useSuppliers();
   const { products, createProduct } = useProducts();
   const [items, setItems] = useState<Omit<PurchaseItem, 'id' | 'purchase_id'>[]>([]);

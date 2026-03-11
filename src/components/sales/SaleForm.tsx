@@ -38,6 +38,7 @@ import { SaleItem, SALE_PAYMENT_STATUS_OPTIONS, SALE_PAYMENT_METHOD_OPTIONS } fr
 import { QuickProductForm, QuickProductFormData } from '../purchases/QuickProductForm';
 import { ClientForm } from '../clients/ClientForm';
 import { ClientInsert } from '@/types/client';
+import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const saleSchema = z.object({
     client_id: z.string().optional(),
@@ -72,6 +73,8 @@ interface SaleFormProps {
 }
 
 export function SaleForm({ open, onOpenChange, onSubmit, isSubmitting, editingSale, editingItems }: SaleFormProps) {
+    useMobileBackButton(open, () => onOpenChange(false));
+
     const { clients } = useClients();
     const { products, createProduct } = useProducts();
     const [items, setItems] = useState<Omit<SaleItem, 'id' | 'sale_id'>[]>([]);

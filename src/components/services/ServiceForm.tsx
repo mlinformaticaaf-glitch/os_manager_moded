@@ -25,6 +25,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Service } from '@/types/service';
+import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const serviceSchema = z.object({
   code: z.string().max(20).optional().or(z.literal('')),
@@ -54,6 +55,8 @@ export function ServiceForm({
   onSubmit,
   isSubmitting,
 }: ServiceFormProps) {
+  useMobileBackButton(open, () => onOpenChange(false));
+
   const form = useForm<ServiceFormData>({
     resolver: zodResolver(serviceSchema),
     defaultValues: {

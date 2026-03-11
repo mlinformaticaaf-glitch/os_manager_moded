@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Equipment } from '@/types/equipment';
+import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const formSchema = z.object({
   description: z.string().trim().min(1, 'Descrição é obrigatória').max(500, 'Descrição deve ter no máximo 500 caracteres'),
@@ -45,6 +46,8 @@ export function EquipmentForm({
   onSubmit,
   isSubmitting,
 }: EquipmentFormProps) {
+  useMobileBackButton(open, () => onOpenChange(false));
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {

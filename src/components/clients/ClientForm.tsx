@@ -24,6 +24,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Client } from '@/types/client';
 import { Loader2 } from 'lucide-react';
+import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const clientSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
@@ -53,6 +54,8 @@ export function ClientForm({
   onSubmit,
   isSubmitting,
 }: ClientFormProps) {
+  useMobileBackButton(open, () => onOpenChange(false));
+
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
     defaultValues: {

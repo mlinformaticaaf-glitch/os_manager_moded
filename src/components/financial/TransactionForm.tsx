@@ -35,6 +35,7 @@ import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
 import { FinancialTransaction, TRANSACTION_TYPE_OPTIONS, TRANSACTION_CATEGORY_OPTIONS, TRANSACTION_STATUS_OPTIONS } from "@/types/financial";
 import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
 import { Trash2 } from "lucide-react";
+import { useMobileBackButton } from "@/hooks/useMobileBackButton";
 
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense']),
@@ -60,6 +61,8 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ open, onOpenChange, transaction }: TransactionFormProps) {
+  useMobileBackButton(open, () => onOpenChange(false));
+
   const isEditing = !!transaction;
   const { createTransaction, updateTransaction, deleteTransaction } = useFinancialTransactions();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);

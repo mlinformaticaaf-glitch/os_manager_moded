@@ -213,14 +213,14 @@ export function ServicesStep({
                     key={index}
                     className="flex flex-col sm:flex-row sm:items-center gap-2 p-2.5 rounded-lg bg-background border shadow-sm"
                   >
-                    <div className="flex items-center gap-2 flex-1">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       {item.type === 'service' ? (
                         <Wrench className="h-4 w-4 text-blue-500 shrink-0" />
                       ) : (
                         <Package className="h-4 w-4 text-orange-500 shrink-0" />
                       )}
                       <span className="text-xs sm:text-sm font-medium truncate flex-1">{item.description}</span>
-                      <span className="text-[10px] sm:text-xs font-mono font-bold text-primary">
+                      <span className="text-[10px] sm:text-xs font-mono font-bold text-primary shrink-0 whitespace-nowrap">
                         {formatCurrency(item.quantity * item.unit_price)}
                       </span>
                     </div>
@@ -299,17 +299,17 @@ export function ServicesStep({
       {/* Tabs for Services/Products */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'services' | 'products' | 'manual')}>
         <TabsList className="w-full h-11 sm:h-10">
-          <TabsTrigger value="services" className="flex-1 gap-1.5 sm:gap-2 text-[10px] xs:text-xs sm:text-sm">
-            <Wrench className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            Serviços
+          <TabsTrigger value="services" className="flex-1 gap-1.5 sm:gap-2 text-[10px] sm:text-sm overflow-hidden whitespace-nowrap px-1">
+            <Wrench className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+            <span className="truncate">Serviços</span>
           </TabsTrigger>
-          <TabsTrigger value="products" className="flex-1 gap-1.5 sm:gap-2 text-[10px] xs:text-xs sm:text-sm">
-            <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            Produtos
+          <TabsTrigger value="products" className="flex-1 gap-1.5 sm:gap-2 text-[10px] sm:text-sm overflow-hidden whitespace-nowrap px-1">
+            <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+            <span className="truncate">Produtos</span>
           </TabsTrigger>
-          <TabsTrigger value="manual" className="flex-1 gap-1.5 sm:gap-2 text-[10px] xs:text-xs sm:text-sm">
-            <PlusCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            Avulso
+          <TabsTrigger value="manual" className="flex-1 gap-1.5 sm:gap-2 text-[10px] sm:text-sm overflow-hidden whitespace-nowrap px-1">
+            <PlusCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+            <span className="truncate">Avulso</span>
           </TabsTrigger>
         </TabsList>
 
@@ -356,11 +356,11 @@ export function ServicesStep({
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate text-sm sm:text-base">{service.name}</p>
                       {service.code && (
-                        <p className="text-xs text-muted-foreground">{service.code}</p>
+                        <p className="text-xs text-muted-foreground truncate">{service.code}</p>
                       )}
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="font-semibold text-primary text-sm sm:text-base">
+                      <p className="font-semibold text-primary text-sm sm:text-base whitespace-nowrap">
                         {formatCurrency(service.sale_price)}
                       </p>
                     </div>
@@ -407,26 +407,26 @@ export function ServicesStep({
                     key={product.id}
                     type="button"
                     onClick={() => handleAddProduct(product)}
-                    className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-muted transition-colors"
+                    className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-muted transition-colors overflow-hidden"
                   >
                     <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
                       <Package className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 overflow-hidden">
                       <p className="font-medium truncate text-sm sm:text-base">{product.name}</p>
                       <div className="flex items-center gap-1 sm:gap-2">
                         {product.category && (
-                          <Badge variant="outline" className="text-[10px] sm:text-xs px-1 sm:px-1.5">
+                          <Badge variant="outline" className="text-[10px] sm:text-xs px-1 sm:px-1.5 truncate max-w-[100px] shrink-0">
                             {product.category}
                           </Badge>
                         )}
-                        <span className="text-[10px] sm:text-xs text-muted-foreground">
+                        <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap shrink-0">
                           Est: {product.stock_quantity}
                         </span>
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="font-semibold text-primary text-sm sm:text-base">
+                      <p className="font-semibold text-primary text-sm sm:text-base whitespace-nowrap">
                         {formatCurrency(product.sale_price)}
                       </p>
                     </div>

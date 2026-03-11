@@ -58,7 +58,7 @@ import { ServiceForm } from '@/components/services/ServiceForm';
 import { ProductForm } from '@/components/products/ProductForm';
 import { useToast } from '@/hooks/use-toast';
 import { CurrencyInput } from '@/components/ui/currency-input';
-
+import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const osSchema = z.object({
   client_id: z.string().optional().nullable(),
@@ -111,6 +111,10 @@ export function OSForm({
   const { products, createProduct } = useProducts();
   const { services, createService } = useServices();
   const { equipment: equipmentList, createEquipment } = useEquipment();
+
+  // Previne voltar a página acidentalmente no celular
+  useMobileBackButton(open, () => onOpenChange(false));
+
   const activeProducts = products.filter(p => p.active);
   const activeServices = services.filter(s => s.active);
   const activeEquipment = equipmentList.filter(e => e.active);
