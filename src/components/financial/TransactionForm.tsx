@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -61,7 +61,15 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ open, onOpenChange, transaction }: TransactionFormProps) {
-  useMobileBackButton(open, () => onOpenChange(false));
+  const handleOpenChange = useCallback((newOpen: boolean) => {
+    onOpenChange(newOpen);
+  }, [onOpenChange]);
+
+  const handleClose = useCallback(() => {
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  useMobileBackButton(open, handleClose);
 
   const isEditing = !!transaction;
   const { createTransaction, updateTransaction, deleteTransaction } = useFinancialTransactions();
@@ -195,8 +203,16 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[85vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="sm:max-w-lg w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[85vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg"
+        onPointerDownOutside={(e) => {
+          // Prevent closing when clicking outside on mobile to avoid accidental closures
+          if (window.innerWidth < 640) {
+            e.preventDefault();
+          }
+        }}
+      >
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}

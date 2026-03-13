@@ -29,13 +29,15 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Plus, BookOpen, Image as ImageIcon, Trash2, Loader2, Play, ChevronRight, ChevronLeft, CheckCircle2, Search } from 'lucide-react';
+import { Plus, BookOpen, Image as ImageIcon, Trash2, Loader2, Play, ChevronRight, ChevronLeft, CheckCircle2, Search, FileDown } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { useManuals, useManualSteps } from '@/hooks/useManuals';
 import { uploadToCloudinary } from '@/lib/cloudinary';
 import { CreateManualStepInput, Manual } from '@/types/manual';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils'; // Added cn import
 import { useMobileBackButton } from '@/hooks/useMobileBackButton';
+import { exportManualToPDF } from '@/lib/manualPdfUtils';
 
 function ManualViewModal({ manual, open, onOpenChange }: { manual: Manual | null, open: boolean, onOpenChange: (open: boolean) => void }) {
     useMobileBackButton(open, () => onOpenChange(false));
@@ -59,7 +61,22 @@ function ManualViewModal({ manual, open, onOpenChange }: { manual: Manual | null
                             <div className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">
                                 Passo {steps.length > 0 ? currentStepIdx + 1 : 0} de {steps.length}
                             </div>
-                            <Button variant="outline" size="sm" onClick={() => window.print()}>Exportar PDF</Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                    try {
+                                        const btn = document.activeElement as HTMLButtonElement;
+                                        if (btn) btn.disabled = true;
+                                        await exportManualToPDF(manual, steps);
+                                    } finally {
+                                        const btn = document.activeElement as HTMLButtonElement;
+                                        if (btn) btn.disabled = false;
+                                    }
+                                }}
+                            >
+                                Exportar PDF
+                            </Button>
                         </div>
                     </div>
                 </DialogHeader>
@@ -160,6 +177,31 @@ export default function Manuals() {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [viewingManual, setViewingManual] = useState<Manual | null>(null);
+    const [exportingId, setExportingId] = useState<string | null>(null);
+
+    const handleExportPDF = async (manual: Manual) => {
+        try {
+            setExportingId(manual.id);
+            const { data: steps, error } = await supabase
+                .from('manual_steps')
+                .select('*')
+                .eq('manual_id', manual.id)
+                .order('step_order', { ascending: true });
+
+            if (error) throw error;
+            await exportManualToPDF(manual, steps as any[]);
+            toast({ title: "Sucesso", description: "PDF gerado com sucesso!" });
+        } catch (error: any) {
+            console.error(error);
+            toast({
+                title: "Erro ao exportar",
+                description: "Não foi possível gerar o PDF do manual.",
+                variant: "destructive"
+            });
+        } finally {
+            setExportingId(null);
+        }
+    };
 
     useMobileBackButton(isDialogOpen, () => setIsDialogOpen(false));
 
@@ -414,9 +456,29 @@ export default function Manuals() {
                                     <CardDescription className="line-clamp-2">{manual.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent className="mt-auto pt-4 border-t flex justify-between gap-2">
-                                    <Button variant="ghost" className="text-destructive h-8 px-2" onClick={() => deleteManual.mutate(manual.id)}>
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
+                                    <div className="flex gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-destructive h-8 px-2"
+                                            onClick={() => deleteManual.mutate(manual.id)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-primary h-8 px-2"
+                                            disabled={exportingId === manual.id}
+                                            onClick={() => handleExportPDF(manual)}
+                                        >
+                                            {exportingId === manual.id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <FileDown className="h-4 w-4" />
+                                            )}
+                                        </Button>
+                                    </div>
                                     <Button variant="outline" size="sm" className="gap-2" onClick={() => setViewingManual(manual)}>
                                         <Play className="h-4 w-4" /> Visualizar
                                     </Button>

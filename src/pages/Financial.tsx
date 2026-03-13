@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -49,15 +49,15 @@ export default function Financial() {
     }
   }, [location.state, transactions]);
 
-  const handleEdit = (transaction: FinancialTransactionWithClient) => {
+  const handleEdit = useCallback((transaction: FinancialTransactionWithClient) => {
     setSelectedTransaction(transaction);
     setIsFormOpen(true);
-  };
+  }, []);
 
-  const handleNewTransaction = () => {
+  const handleNewTransaction = useCallback(() => {
     setSelectedTransaction(null);
     setIsFormOpen(true);
-  };
+  }, []);
 
   return (
     <MainLayout title="Financeiro" subtitle="Gerencie o fluxo de caixa, contas a pagar e receber">

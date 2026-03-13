@@ -1,11 +1,17 @@
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * Hook para interceptar o botão "Voltar" do celular (Android/iOS).
  * Em vez de voltar para a página anterior, ele fecha o modal/formulário ativo.
  */
 export function useMobileBackButton(isOpen: boolean, onClose: () => void) {
+    const onCloseRef = useRef(onClose);
+
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    }, [onClose]);
+
     useEffect(() => {
         // Se não estiver aberto, não faz nada
         if (!isOpen) return;
@@ -20,7 +26,7 @@ export function useMobileBackButton(isOpen: boolean, onClose: () => void) {
             // Quando o botão voltar do celular é pressionado, este evento é disparado
             // e o "estado falso" é consumido pelo navegador.
             // Então apenas fechamos o modal.
-            onClose();
+            onCloseRef.current();
         };
 
         window.addEventListener('popstate', handlePopState);
@@ -35,5 +41,5 @@ export function useMobileBackButton(isOpen: boolean, onClose: () => void) {
                 window.history.back();
             }
         };
-    }, [isOpen, onClose]);
+    }, [isOpen]);
 }
