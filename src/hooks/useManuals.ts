@@ -72,6 +72,62 @@ export function useManuals() {
         },
     });
 
+    const updateManual = useMutation({
+        mutationFn: async (manual: { id: string } & Partial<CreateManualInput> & { steps: CreateManualStepInput[] }) => {
+            if (!user) throw new Error('Usuário não autenticado');
+
+            const { id, steps, ...manualData } = manual;
+
+            // Atualizar o manual
+            const { error: manualError } = await supabase
+                .from('manuals')
+                .update(manualData)
+                .eq('id', id);
+
+            if (manualError) throw manualError;
+
+            // Atualizar os passos: Para simplificar, removemos os antigos e inserimos os novos
+            // Em uma app de produção, seria melhor fazer um diff real
+            const { error: deleteStepsError } = await supabase
+                .from('manual_steps')
+                .delete()
+                .eq('manual_id', id);
+
+            if (deleteStepsError) throw deleteStepsError;
+
+            if (steps.length > 0) {
+                const stepsWithManualId = steps.map((step, index) => ({
+                    ...step,
+                    manual_id: id,
+                    step_order: index + 1
+                }));
+
+                const { error: stepsError } = await supabase
+                    .from('manual_steps')
+                    .insert(stepsWithManualId);
+
+                if (stepsError) throw stepsError;
+            }
+
+            return { id };
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['manuals'] });
+            queryClient.invalidateQueries({ queryKey: ['manual-steps'] });
+            toast({
+                title: 'Manual atualizado',
+                description: 'As alterações foram salvas com sucesso.',
+            });
+        },
+        onError: (error) => {
+            toast({
+                title: 'Erro ao atualizar manual',
+                description: error.message,
+                variant: 'destructive',
+            });
+        },
+    });
+
     const deleteManual = useMutation({
         mutationFn: async (id: string) => {
             const { error } = await supabase
@@ -101,6 +157,7 @@ export function useManuals() {
         manuals: manualsQuery.data ?? [],
         isLoading: manualsQuery.isLoading,
         createManual,
+        updateManual,
         deleteManual,
     };
 }

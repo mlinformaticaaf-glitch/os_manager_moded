@@ -107,7 +107,7 @@ export function QuickProductForm({
             </div>
 
             <ScrollArea className="flex-1 min-h-0">
-              <div className="p-4 sm:p-6 pb-0 space-y-4">
+              <div className="p-4 sm:p-6 pb-0 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
                 <FormField
                   control={form.control}
                   name="name"
@@ -276,3 +276,6 @@ export function QuickProductForm({
     </Dialog>
   );
 }
+
+
+

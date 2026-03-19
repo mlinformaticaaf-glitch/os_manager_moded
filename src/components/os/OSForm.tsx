@@ -85,6 +85,7 @@ interface ItemFormData {
   description: string;
   quantity: number;
   unit_price: number;
+  total: number;
   product_id?: string;
 }
 
@@ -125,6 +126,7 @@ export function OSForm({
     description: '',
     quantity: 1,
     unit_price: 0,
+    total: 0,
     product_id: undefined,
   });
 
@@ -229,6 +231,7 @@ export function OSForm({
         description: item.description,
         quantity: item.quantity,
         unit_price: item.unit_price,
+        total: item.total,
         product_id: item.product_id,
       })));
       setClientSearch('');
@@ -240,8 +243,9 @@ export function OSForm({
 
   const addItem = () => {
     if (newItem.description.trim() && newItem.quantity > 0) {
-      setItems([...items, { ...newItem }]);
-      setNewItem({ type: 'service', description: '', quantity: 1, unit_price: 0, product_id: undefined });
+      const total = newItem.quantity * newItem.unit_price;
+      setItems([...items, { ...newItem, total }]);
+      setNewItem({ type: 'service', description: '', quantity: 1, unit_price: 0, total: 0, product_id: undefined });
     }
   };
 
@@ -266,6 +270,7 @@ export function OSForm({
           description: product.name,
           quantity: productQuantity,
           unit_price: product.sale_price,
+          total: productQuantity * product.sale_price,
           product_id: product.id,
         }]);
         setSelectedProduct(null);
@@ -283,6 +288,7 @@ export function OSForm({
           description: service.name,
           quantity: serviceQuantity,
           unit_price: service.sale_price,
+          total: serviceQuantity * service.sale_price,
         }]);
         setSelectedService(null);
         setServiceQuantity(1);
@@ -363,11 +369,12 @@ export function OSForm({
   const handleCreateService = (data: any) => {
     createService.mutate(data, {
       onSuccess: (newService) => {
-        setItems([...items, {
+        setItems(prev => [...prev, {
           type: 'service',
           description: newService.name,
           quantity: 1,
           unit_price: newService.sale_price,
+          total: newService.sale_price,
         }]);
         setServiceFormOpen(false);
       },
@@ -377,11 +384,12 @@ export function OSForm({
   const handleCreateProduct = (data: any) => {
     createProduct.mutate(data, {
       onSuccess: (newProduct) => {
-        setItems([...items, {
+        setItems(prev => [...prev, {
           type: 'product',
           description: newProduct.name,
           quantity: 1,
           unit_price: newProduct.sale_price,
+          total: newProduct.sale_price,
           product_id: newProduct.id,
         }]);
         setProductFormOpen(false);
@@ -401,7 +409,7 @@ export function OSForm({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-5xl w-full max-w-full h-[100dvh] sm:h-[95vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+        <DialogContent className="sm:max-w-4xl w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit, onInvalid)}
@@ -414,8 +422,8 @@ export function OSForm({
                 <DialogDescription className="sr-only">Formulário de edição da ordem de serviço.</DialogDescription>
               </DialogHeader>
 
-              <ScrollArea className="flex-1 min-h-0">
-                <div className="py-4 px-2 sm:px-4 lg:px-6 space-y-3 sm:space-y-4 text-sm sm:text-base w-full max-w-full mx-auto min-w-0 overflow-x-hidden [&_input]:h-9 sm:[&_input]:h-10 [&_[role=combobox]]:h-9 sm:[&_[role=combobox]]:h-10 [&_textarea]:min-h-[72px] sm:[&_textarea]:min-h-[96px]">
+              <ScrollArea className="flex-1 min-h-0 w-full overflow-hidden">
+                <div className="py-4 px-4 sm:px-6 space-y-4 text-sm sm:text-base w-full max-w-[100vw] overflow-hidden mix-w-0 [&_input]:h-9 sm:[&_input]:h-10 [&_[role=combobox]]:h-9 sm:[&_[role=combobox]]:h-10 [&_textarea]:min-h-[72px] sm:[&_textarea]:min-h-[96px]">
 
 
 
@@ -440,14 +448,16 @@ export function OSForm({
                                     variant="outline"
                                     role="combobox"
                                     aria-expanded={clientOpen}
-                                    className="flex-1 min-w-0 justify-between font-normal"
+                                    className="flex-1 w-full justify-between font-normal h-11 sm:h-10 min-w-0"
                                   >
-                                    <span className="truncate">{selectedClient ? selectedClient.name : "Buscar cliente..."}</span>
+                                    <span className="block truncate text-left w-[calc(100%-24px)]">
+                                      {selectedClient ? selectedClient.name : "Buscar cliente..."}
+                                    </span>
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                   </Button>
                                 </FormControl>
                               </PopoverTrigger>
-                              <PopoverContent className="w-[min(400px,calc(100vw-32px))] p-0" align="start">
+                              <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[400px] p-0" align="start">
                                 <Command shouldFilter={false}>
                                   <CommandInput
                                     placeholder="Buscar por nome, telefone ou email..."
@@ -516,12 +526,12 @@ export function OSForm({
                   <Separator />
 
                   {/* === SEÇÃO: STATUS E PRIORIDADE === */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4 w-full">
                     <FormField
                       control={form.control}
                       name="status"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex-1 w-full min-w-0">
                           <FormLabel>Status</FormLabel>
                           <Select value={field.value} onValueChange={field.onChange}>
                             <FormControl>
@@ -546,7 +556,7 @@ export function OSForm({
                       control={form.control}
                       name="priority"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex-1 w-full min-w-0">
                           <FormLabel>Prioridade</FormLabel>
                           <Select value={field.value} onValueChange={field.onChange}>
                             <FormControl>
@@ -608,9 +618,9 @@ export function OSForm({
                                       variant="outline"
                                       role="combobox"
                                       aria-expanded={equipmentOpen}
-                                      className="flex-1 min-w-0 justify-between font-normal"
+                                      className="flex-1 w-full justify-between font-normal h-11 sm:h-10 min-w-0"
                                     >
-                                      <span className="truncate">
+                                      <span className="block truncate text-left w-[calc(100%-24px)]">
                                         {selectedEquipment
                                           ? `${formatEquipmentCode(selectedEquipment.code)} - ${selectedEquipment.description}`
                                           : "Buscar equipamento..."}
@@ -619,7 +629,7 @@ export function OSForm({
                                     </Button>
                                   </FormControl>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[min(400px,calc(100vw-32px))] p-0" align="start">
+                                <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[400px] p-0" align="start">
                                   <Command shouldFilter={false}>
                                     <CommandInput
                                       placeholder="Buscar por código ou descrição..."
@@ -682,12 +692,12 @@ export function OSForm({
                       }}
                     />
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4 w-full">
                       <FormField
                         control={form.control}
                         name="serial_number"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="flex-1 w-full min-w-0">
                             <FormLabel>Número de Série</FormLabel>
                             <FormControl>
                               <Input placeholder="S/N" {...field} />
@@ -701,7 +711,7 @@ export function OSForm({
                         control={form.control}
                         name="accessories"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="flex-1 w-full min-w-0">
                             <FormLabel>Acessórios</FormLabel>
                             <FormControl>
                               <Input placeholder="Ex: Carregador, mouse" {...field} />
@@ -795,9 +805,9 @@ export function OSForm({
                             <Button
                               variant="outline"
                               role="combobox"
-                              className="flex-1 min-w-0 justify-between font-normal"
+                              className="w-full flex-1 justify-between font-normal h-11 sm:h-10 min-w-0"
                             >
-                              <span className="truncate">
+                              <span className="block truncate text-left w-[calc(100%-24px)]">
                                 {selectedService
                                   ? activeServices.find(s => s.id === selectedService)?.name
                                   : "Buscar serviço cadastrado..."}
@@ -805,7 +815,7 @@ export function OSForm({
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-[min(500px,calc(100vw-32px))] p-0" align="start">
+                          <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[500px] p-0 max-w-full" align="start">
                             <Command shouldFilter={false}>
                               <CommandInput
                                 placeholder="Buscar por nome ou código..."
@@ -828,13 +838,13 @@ export function OSForm({
                                         )}
                                       />
                                       <div className="flex items-center justify-between w-full gap-2 min-w-0">
-                                        <div className="flex flex-col min-w-0">
+                                        <div className="flex flex-col min-w-0 flex-1 overflow-hidden pr-2">
                                           <span className="truncate">{service.name}</span>
                                           {service.code && (
                                             <span className="text-xs text-muted-foreground truncate">{service.code}</span>
                                           )}
                                         </div>
-                                        <span className="text-sm font-medium shrink-0">{formatCurrency(service.sale_price)}</span>
+                                        <span className="text-sm font-medium shrink-0 pt-0.5">{formatCurrency(service.sale_price)}</span>
                                       </div>
                                     </CommandItem>
                                   ))}
@@ -844,24 +854,24 @@ export function OSForm({
                           </PopoverContent>
                         </Popover>
 
-                        <div className="flex w-full sm:w-auto gap-2 min-w-0">
+                        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 min-w-0 mt-2 sm:mt-0">
                           <Input
                             type="number"
                             min={1}
                             step={1}
                             value={serviceQuantity}
                             onChange={(e) => setServiceQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            className="w-16 sm:w-20 shrink-0"
-                            placeholder="Qtd"
+                            className="w-full sm:w-24 shrink-0 h-11 sm:h-10 text-center sm:text-left"
+                            placeholder="Quantidade"
                           />
                           <Button
                             type="button"
                             onClick={addSelectedService}
                             disabled={!selectedService}
-                            className="flex-1 min-w-0 sm:flex-none"
+                            className="w-full sm:w-auto h-11 sm:h-10"
                           >
                             <Plus className="h-4 w-4 mr-1 shrink-0" />
-                            <span className="truncate">Adicionar</span>
+                            <span className="truncate">Adicionar Serviço</span>
                           </Button>
                         </div>
                       </div>
@@ -902,9 +912,9 @@ export function OSForm({
                             <Button
                               variant="outline"
                               role="combobox"
-                              className="flex-1 min-w-0 justify-between font-normal"
+                              className="w-full flex-1 justify-between font-normal h-11 sm:h-10 min-w-0"
                             >
-                              <span className="truncate">
+                              <span className="block truncate text-left w-[calc(100%-24px)]">
                                 {selectedProduct
                                   ? activeProducts.find(p => p.id === selectedProduct)?.name
                                   : "Buscar produto cadastrado..."}
@@ -912,7 +922,7 @@ export function OSForm({
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-[min(500px,calc(100vw-32px))] p-0" align="start">
+                          <PopoverContent className="w-[calc(100vw-2rem)] sm:w-[500px] p-0 max-w-full" align="start">
                             <Command shouldFilter={false}>
                               <CommandInput
                                 placeholder="Buscar por nome ou SKU..."
@@ -935,15 +945,15 @@ export function OSForm({
                                         )}
                                       />
                                       <div className="flex items-center justify-between w-full gap-2 min-w-0">
-                                        <div className="flex flex-col min-w-0">
+                                        <div className="flex flex-col min-w-0 flex-1 overflow-hidden pr-2">
                                           <span className="truncate">{product.name}</span>
                                           {product.category && (
                                             <span className="text-xs text-muted-foreground truncate">{product.category}</span>
                                           )}
                                         </div>
-                                        <div className="text-right shrink-0">
+                                        <div className="text-right shrink-0 pl-1">
                                           <span className="text-sm font-medium">{formatCurrency(product.sale_price)}</span>
-                                          <span className="text-xs text-muted-foreground ml-2">Est: {product.stock_quantity}</span>
+                                          <span className="text-[10px] sm:text-xs text-muted-foreground ml-1.5 whitespace-nowrap">Est: {product.stock_quantity}</span>
                                         </div>
                                       </div>
                                     </CommandItem>
@@ -954,24 +964,24 @@ export function OSForm({
                           </PopoverContent>
                         </Popover>
 
-                        <div className="flex w-full sm:w-auto gap-2 min-w-0">
+                        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 min-w-0 mt-2 sm:mt-0">
                           <Input
                             type="number"
                             min={1}
                             step={1}
                             value={productQuantity}
                             onChange={(e) => setProductQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            className="w-16 sm:w-20 shrink-0"
-                            placeholder="Qtd"
+                            className="w-full sm:w-24 shrink-0 h-11 sm:h-10 text-center sm:text-left"
+                            placeholder="Quantidade"
                           />
                           <Button
                             type="button"
                             onClick={addSelectedProduct}
                             disabled={!selectedProduct}
-                            className="flex-1 min-w-0 sm:flex-none"
+                            className="w-full sm:w-auto h-11 sm:h-10"
                           >
                             <Plus className="h-4 w-4 mr-1 shrink-0" />
-                            <span className="truncate">Adicionar</span>
+                            <span className="truncate">Adicionar Produto</span>
                           </Button>
                         </div>
                       </div>
@@ -996,8 +1006,8 @@ export function OSForm({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
-                      <div className="sm:col-span-1">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full">
+                      <div className="w-full sm:w-1/4 min-w-0">
                         <Select
                           value={newItem.type}
                           onValueChange={(value: 'product' | 'service') =>
@@ -1014,7 +1024,8 @@ export function OSForm({
                         </Select>
                       </div>
 
-                      <div className="sm:col-span-3">
+                      <div className="flex-1 w-full space-y-1.5 min-w-0">
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Descrição do Item Manual</label>
                         <Input
                           placeholder="Nome do serviço ou produto..."
                           value={newItem.description}
@@ -1026,43 +1037,45 @@ export function OSForm({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 border-t pt-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Quantidade</label>
-                        <Input
-                          type="number"
-                          placeholder="Qtd"
-                          min={0.01}
-                          step={0.01}
-                          value={newItem.quantity}
-                          onChange={(e) =>
-                            setNewItem({ ...newItem, quantity: parseFloat(e.target.value) || 0 })
-                          }
-                          className="h-10 border-primary/20"
-                        />
+                    <div className="flex flex-col sm:flex-row gap-4 border-t pt-4 w-full">
+                      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-1/2">
+                        <div className="flex-1 space-y-1.5 min-w-0">
+                          <label className="text-xs uppercase font-bold text-muted-foreground ml-1">Qtd</label>
+                          <Input
+                            type="number"
+                            placeholder="Qtd"
+                            min={0.01}
+                            step={0.01}
+                            value={newItem.quantity}
+                            onChange={(e) =>
+                              setNewItem({ ...newItem, quantity: parseFloat(e.target.value) || 0 })
+                            }
+                            className="h-11 sm:h-10 border-primary/20"
+                          />
+                        </div>
+                        <div className="flex-1 space-y-1.5 min-w-0">
+                          <label className="text-xs uppercase font-bold text-muted-foreground ml-1">Valor Unit.</label>
+                          <CurrencyInput
+                            value={newItem.unit_price}
+                            onValueChange={(val) => setNewItem({ ...newItem, unit_price: val })}
+                            className="h-11 sm:h-10 border-primary/20"
+                          />
+                        </div>
                       </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Valor Unitário</label>
-                        <CurrencyInput
-                          value={newItem.unit_price}
-                          onValueChange={(val) => setNewItem({ ...newItem, unit_price: val })}
-                          className="h-10 border-primary/20"
-                        />
-                      </div>
-                      <div className="flex flex-col justify-end space-y-1.5 min-w-[80px]">
-                        <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Subtotal</label>
-                        <div className="h-10 flex items-center px-1 font-mono font-bold text-primary">
+                      <div className="flex flex-col justify-center space-y-1.5 flex-1 min-w-0">
+                        <label className="text-xs uppercase font-bold text-muted-foreground ml-1">Subtotal</label>
+                        <div className="h-11 sm:h-10 flex items-center px-1 font-mono font-bold text-primary truncate text-base">
                           {formatCurrency(newItem.quantity * newItem.unit_price)}
                         </div>
                       </div>
-                      <div className="flex items-end">
+                      <div className="flex items-end flex-1 min-w-0">
                         <Button
                           type="button"
                           onClick={addItem}
-                          className="w-full h-10 font-bold gap-2"
+                          className="w-full h-11 sm:h-10 font-bold gap-2 text-sm max-w-full"
                         >
-                          <Plus className="h-4 w-4" />
-                          Adicionar
+                          <Plus className="h-4 w-4 shrink-0" />
+                          <span className="truncate">Adicionar Item</span>
                         </Button>
                       </div>
                     </div>
@@ -1075,19 +1088,19 @@ export function OSForm({
                         Itens da OS ({items.length})
                       </div>
                       {items.map((item, index) => (
-                        <div key={index} className="p-3 flex items-center justify-between gap-2 min-w-0">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 min-w-0">
+                        <div key={index} className="p-3 flex items-start sm:items-center justify-between gap-3 min-w-0 flex-wrap sm:flex-nowrap">
+                          <div className="flex-1 min-w-0 w-full sm:w-auto">
+                            <div className="flex items-start sm:items-center gap-2 min-w-0 flex-col sm:flex-row">
                               <span className={cn(
-                                "text-xs px-2 py-0.5 rounded",
+                                "text-[10px] font-bold uppercase tracking-tight px-1.5 py-0.5 rounded leading-none shrink-0",
                                 item.type === 'service' ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300" : "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"
                               )}>
-                                {item.type === 'service' ? 'Serviço' : 'Produto'}
+                                {item.type === 'service' ? 'Serv' : 'Prod'}
                               </span>
-                              <span className="font-medium truncate">{item.description}</span>
+                              <span className="font-medium text-sm sm:text-base truncate w-full">{item.description}</span>
                             </div>
-                            <p className="text-sm text-muted-foreground break-words">
-                              {item.quantity} x {formatCurrency(item.unit_price)} = {formatCurrency(item.quantity * item.unit_price)}
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                              {item.quantity} x {formatCurrency(item.unit_price)} = <span className="font-semibold text-foreground">{formatCurrency(item.quantity * item.unit_price)}</span>
                             </p>
                           </div>
                           <Button
@@ -1095,7 +1108,7 @@ export function OSForm({
                             variant="ghost"
                             size="icon"
                             onClick={() => removeItem(index)}
-                            className="text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive h-8 w-8 shrink-0"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -1107,34 +1120,34 @@ export function OSForm({
                   <Separator />
 
                   {/* === SEÇÃO: TOTAIS === */}
-                  <div className="border rounded-lg p-4 space-y-2 bg-muted/30">
-                    <div className="flex justify-between text-sm">
-                      <span>Serviços:</span>
-                      <span>{formatCurrency(totalServices)}</span>
+                  <div className="border rounded-lg p-4 space-y-3 bg-muted/30 w-full max-w-full overflow-hidden">
+                    <div className="flex justify-between items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">Serviços:</span>
+                      <span className="font-medium">{formatCurrency(totalServices)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span>Produtos:</span>
-                      <span>{formatCurrency(totalProducts)}</span>
+                    <div className="flex justify-between items-center gap-2 text-sm">
+                      <span className="text-muted-foreground">Produtos:</span>
+                      <span className="font-medium">{formatCurrency(totalProducts)}</span>
                     </div>
                     <FormField
                       control={form.control}
                       name="discount"
                       render={({ field }) => (
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm min-w-0">
-                          <span>Desconto:</span>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-sm">
+                          <span className="text-muted-foreground">Desconto:</span>
                           <div className="w-full sm:w-32">
                             <CurrencyInput
                               value={field.value}
                               onValueChange={field.onChange}
-                              className="h-8"
+                              className="h-8 w-full"
                             />
                           </div>
                         </div>
                       )}
                     />
-                    <div className="flex justify-between font-bold text-lg border-t pt-2">
+                    <div className="flex justify-between items-center gap-2 font-bold text-lg border-t pt-3 mt-1">
                       <span>Total:</span>
-                      <span>{formatCurrency(total)}</span>
+                      <span className="text-primary">{formatCurrency(total)}</span>
                     </div>
                   </div>
 
@@ -1229,3 +1242,6 @@ export function OSForm({
     </>
   );
 }
+
+
+

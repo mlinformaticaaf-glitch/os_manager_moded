@@ -58,133 +58,137 @@ export function SaleViewDialog({ open, onOpenChange, sale, onEdit }: SaleViewDia
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[600px] w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[85vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
-                <div className="shrink-0 p-4 sm:p-6 pb-0">
-                    <DialogHeader>
-                        <div className="flex items-center justify-between pr-8">
-                            <DialogTitle className="flex items-center gap-3">
-                                <span>Venda #{formatSaleNumber(sale.sale_number, sale.created_at)}</span>
-                                {getStatusBadge(sale.payment_status)}
-                            </DialogTitle>
-                            {onEdit && (
-                                <Button variant="outline" size="sm" onClick={handleEdit}>
-                                    <Pencil className="h-4 w-4 mr-2" />
-                                    Editar
-                                </Button>
-                            )}
-                        </div>
-                    </DialogHeader>
-                </div>
+                <div className="w-full sm:w-full mr-auto flex flex-col flex-1 h-full min-h-0 overflow-hidden">
+                    <div className="shrink-0 p-4 sm:p-6 pb-0">
+                        <DialogHeader>
+                            <div className="flex items-center justify-between pr-8 min-w-0 gap-2">
+                                <DialogTitle className="flex items-center gap-3 min-w-0">
+                                    <span className="truncate">Venda #{formatSaleNumber(sale.sale_number, sale.created_at)}</span>
+                                    {getStatusBadge(sale.payment_status)}
+                                </DialogTitle>
+                                {onEdit && (
+                                    <Button variant="outline" size="sm" onClick={handleEdit}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Editar
+                                    </Button>
+                                )}
+                            </div>
+                        </DialogHeader>
+                    </div>
 
-                <ScrollArea className="flex-1 min-h-0">
-                    <div className="p-4 sm:p-6 space-y-6">
-                        {/* Informações Gerais */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <p className="text-sm text-muted-foreground">Cliente</p>
-                                <p className="font-medium">{sale.client?.name || 'Venda Avulsa'}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Data da Venda</p>
-                                <p className="font-medium">
-                                    {format(new Date(sale.sale_date), 'dd/MM/yyyy', { locale: ptBR })}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-muted-foreground">Vencimento</p>
-                                <p className="font-medium">
-                                    {sale.due_date
-                                        ? format(new Date(sale.due_date), 'dd/MM/yyyy', { locale: ptBR })
-                                        : '-'}
-                                </p>
-                            </div>
-                            {sale.payment_method && (
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Forma de Pagamento</p>
-                                    <p className="font-medium">{paymentMethod?.label || sale.payment_method}</p>
+                    <ScrollArea className="flex-1 min-h-0">
+                        <div className="p-4 sm:p-6 space-y-6 w-full max-w-full min-w-0 overflow-hidden box-border">
+                            {/* Informações Gerais */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="min-w-0">
+                                    <p className="text-sm text-muted-foreground">Cliente</p>
+                                    <p className="font-medium truncate">{sale.client?.name || 'Venda Avulsa'}</p>
                                 </div>
-                            )}
-                            {sale.paid_at && (
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Data do Pagamento</p>
-                                    <p className="font-medium">
-                                        {format(new Date(sale.paid_at), 'dd/MM/yyyy', { locale: ptBR })}
+                                <div className="min-w-0">
+                                    <p className="text-sm text-muted-foreground truncate">Data da Venda</p>
+                                    <p className="font-medium truncate">
+                                        {format(new Date(sale.sale_date), 'dd/MM/yyyy', { locale: ptBR })}
                                     </p>
                                 </div>
-                            )}
-                        </div>
-
-                        {/* Itens */}
-                        {sale.items && sale.items.length > 0 && (
-                            <>
-                                <Separator />
-                                <div>
-                                    <h4 className="font-medium mb-3">Itens da Venda</h4>
-                                    <div className="space-y-2">
-                                        {sale.items.map((item, index) => (
-                                            <div
-                                                key={item.id || index}
-                                                className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-md"
-                                            >
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-medium truncate">{item.product_name}</p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {item.quantity} x {formatCurrency(item.unit_price)}
-                                                    </p>
-                                                </div>
-                                                <p className="font-medium ml-4">{formatCurrency(item.total)}</p>
-                                            </div>
-                                        ))}
+                                <div className="min-w-0">
+                                    <p className="text-sm text-muted-foreground truncate">Vencimento</p>
+                                    <p className="font-medium truncate">
+                                        {sale.due_date
+                                            ? format(new Date(sale.due_date), 'dd/MM/yyyy', { locale: ptBR })
+                                            : '-'}
+                                    </p>
+                                </div>
+                                {sale.payment_method && (
+                                    <div className="min-w-0">
+                                        <p className="text-sm text-muted-foreground">Forma de Pagamento</p>
+                                        <p className="font-medium truncate">{paymentMethod?.label || sale.payment_method}</p>
                                     </div>
-                                </div>
-                            </>
-                        )}
-
-                        {/* Totais */}
-                        <Separator />
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Subtotal</span>
-                                <span>{formatCurrency(sale.subtotal)}</span>
+                                )}
+                                {sale.paid_at && (
+                                    <div className="min-w-0">
+                                        <p className="text-sm text-muted-foreground truncate">Data do Pagamento</p>
+                                        <p className="font-medium truncate">
+                                            {format(new Date(sale.paid_at), 'dd/MM/yyyy', { locale: ptBR })}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
-                            {sale.discount > 0 && (
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Desconto</span>
-                                    <span className="text-destructive">-{formatCurrency(sale.discount)}</span>
-                                </div>
+
+                            {/* Itens */}
+                            {sale.items && sale.items.length > 0 && (
+                                <>
+                                    <Separator />
+                                    <div>
+                                        <h4 className="font-medium mb-3">Itens da Venda</h4>
+                                        <div className="space-y-2">
+                                            {sale.items.map((item, index) => (
+                                                <div
+                                                    key={item.id || index}
+                                                    className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-md min-w-0 gap-2 overflow-hidden"
+                                                >
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-medium break-words whitespace-pre-wrap leading-tight text-sm">
+                                                            {item.product_name}
+                                                        </p>
+                                                        <p className="text-sm text-muted-foreground break-words whitespace-pre-wrap mt-0.5">
+                                                            {item.quantity} x {formatCurrency(item.unit_price)}
+                                                        </p>
+                                                    </div>
+                                                    <p className="font-medium shrink-0">{formatCurrency(item.total)}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
                             )}
-                            {sale.shipping > 0 && (
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Frete/Outros</span>
-                                    <span>{formatCurrency(sale.shipping)}</span>
-                                </div>
-                            )}
+
+                            {/* Totais */}
                             <Separator />
-                            <div className="flex justify-between font-medium text-lg">
-                                <span>Total</span>
-                                <span>{formatCurrency(sale.total)}</span>
-                            </div>
-                        </div>
-
-                        {/* Observações */}
-                        {sale.notes && (
-                            <>
-                                <Separator />
-                                <div>
-                                    <p className="text-sm text-muted-foreground mb-1">Observações</p>
-                                    <p className="text-sm whitespace-pre-wrap">{sale.notes}</p>
+                            <div className="space-y-2 w-full max-w-[250px] ml-auto min-w-0">
+                                <div className="flex justify-between text-sm gap-2">
+                                    <span className="text-muted-foreground truncate">Subtotal</span>
+                                    <span className="shrink-0">{formatCurrency(sale.subtotal)}</span>
                                 </div>
-                            </>
-                        )}
+                                {sale.discount > 0 && (
+                                    <div className="flex justify-between text-sm gap-2">
+                                        <span className="text-muted-foreground truncate">Desconto</span>
+                                        <span className="text-destructive shrink-0">-{formatCurrency(sale.discount)}</span>
+                                    </div>
+                                )}
+                                {sale.shipping > 0 && (
+                                    <div className="flex justify-between text-sm gap-2">
+                                        <span className="text-muted-foreground truncate">Frete/Outros</span>
+                                        <span className="shrink-0">{formatCurrency(sale.shipping)}</span>
+                                    </div>
+                                )}
+                                <Separator />
+                                <div className="flex justify-between font-medium text-lg gap-2">
+                                    <span className="truncate">Total</span>
+                                    <span className="shrink-0 text-primary">{formatCurrency(sale.total)}</span>
+                                </div>
+                            </div>
+
+                            {/* Observações */}
+                            {sale.notes && (
+                                <>
+                                    <Separator />
+                                    <div className="w-full min-w-0">
+                                        <p className="text-sm text-muted-foreground mb-1">Observações</p>
+                                        <p className="text-sm whitespace-pre-wrap break-words">{sale.notes}</p>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </ScrollArea>
+                    <div className="shrink-0 p-4 sm:p-6 pt-2 border-t flex flex-col sm:flex-row gap-2">
+                        <div className="flex flex-1 gap-2">
+                            <SalePrintButton sale={sale} items={sale.items || []} variant="outline" className="flex-1" />
+                            <SaleWhatsAppButton sale={sale} items={sale.items || []} variant="outline" className="flex-1" />
+                        </div>
+                        <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
+                            Fechar
+                        </Button>
                     </div>
-                </ScrollArea>
-                <div className="shrink-0 p-4 sm:p-6 pt-2 border-t flex flex-col sm:flex-row gap-2">
-                    <div className="flex flex-1 gap-2">
-                        <SalePrintButton sale={sale} items={sale.items || []} variant="outline" className="flex-1" />
-                        <SaleWhatsAppButton sale={sale} items={sale.items || []} variant="outline" className="flex-1" />
-                    </div>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
-                        Fechar
-                    </Button>
                 </div>
             </DialogContent>
         </Dialog>

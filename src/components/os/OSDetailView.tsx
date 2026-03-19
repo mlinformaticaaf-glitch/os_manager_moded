@@ -202,11 +202,14 @@ export function OSDetailView({
                     </h3>
                     <div className="space-y-2">
                       {services.map((item) => (
-                        <div key={item.id} className="flex justify-between text-sm">
-                          <span>
-                            {item.quantity}x {item.description}
-                          </span>
-                          <span className="font-medium">{formatCurrency(item.total)}</span>
+                        <div key={item.id} className="flex justify-between items-start text-sm border-b border-border/50 pb-2 last:border-0">
+                          <div className="flex flex-col">
+                            <span className="font-medium">{item.description}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {item.quantity}x {formatCurrency(item.unit_price || (item.total / (item.quantity || 1)))}
+                            </span>
+                          </div>
+                          <span className="font-semibold">{formatCurrency(item.total)}</span>
                         </div>
                       ))}
                     </div>
@@ -221,11 +224,14 @@ export function OSDetailView({
                     </h3>
                     <div className="space-y-2">
                       {products.map((item) => (
-                        <div key={item.id} className="flex justify-between text-sm">
-                          <span>
-                            {item.quantity}x {item.description}
-                          </span>
-                          <span className="font-medium">{formatCurrency(item.total)}</span>
+                        <div key={item.id} className="flex justify-between items-start text-sm border-b border-border/50 pb-2 last:border-0">
+                          <div className="flex flex-col">
+                            <span className="font-medium">{item.description}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {item.quantity}x {formatCurrency(item.unit_price || (item.total / (item.quantity || 1)))}
+                            </span>
+                          </div>
+                          <span className="font-semibold">{formatCurrency(item.total)}</span>
                         </div>
                       ))}
                     </div>

@@ -50,15 +50,20 @@ function ManualViewModal({ manual, open, onOpenChange }: { manual: Manual | null
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 overflow-hidden bg-background border-border">
-                <DialogHeader className="p-6 border-b bg-muted/20">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <DialogTitle className="text-2xl">{manual.title}</DialogTitle>
-                            <DialogDescription>{manual.category || 'Procedimento Operacional'}</DialogDescription>
+            <DialogContent className="max-w-5xl w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[90vh] flex flex-col p-0 overflow-hidden bg-background border-border rounded-none sm:rounded-lg">
+                <DialogHeader className="p-4 sm:p-6 border-b bg-muted/20 shrink-0">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="min-w-0 w-full">
+                            <DialogTitle className="text-xl sm:text-2xl whitespace-normal break-words">{manual.title}</DialogTitle>
+                            <DialogDescription className="whitespace-normal break-words">{manual.category || 'Procedimento Operacional'}</DialogDescription>
+                            {manual.description && (
+                                <p className="mt-2 text-sm text-muted-foreground whitespace-normal break-words text-left">
+                                    {manual.description}
+                                </p>
+                            )}
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full">
+                        <div className="flex items-center gap-4 shrink-0">
+                            <div className="text-sm font-medium bg-primary/10 text-primary px-3 py-1 rounded-full whitespace-nowrap">
                                 Passo {steps.length > 0 ? currentStepIdx + 1 : 0} de {steps.length}
                             </div>
                             <Button
@@ -91,12 +96,14 @@ function ManualViewModal({ manual, open, onOpenChange }: { manual: Manual | null
                             {/* Lado Esquerdo: Instruções */}
                             <div className="space-y-6">
                                 <div className="space-y-4">
-                                    <h3 className="text-xl font-bold flex items-center gap-3">
-                                        <span className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm">
+                                    <div className="flex flex-col gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shrink-0">
                                             {currentStepIdx + 1}
-                                        </span>
-                                        {currentStep?.title || 'Instruções'}
-                                    </h3>
+                                        </div>
+                                        <h3 className="text-xl font-bold">
+                                            {currentStep?.title || 'Instruções'}
+                                        </h3>
+                                    </div>
                                     <p className="text-muted-foreground text-lg leading-relaxed whitespace-pre-wrap">
                                         {currentStep?.description}
                                     </p>
@@ -143,27 +150,28 @@ function ManualViewModal({ manual, open, onOpenChange }: { manual: Manual | null
                     )}
                 </div>
 
-                <div className="p-6 border-t bg-muted/10 flex justify-between items-center">
+                <div className="p-4 sm:p-6 border-t bg-muted/10 flex justify-between items-center shrink-0">
                     <Button
                         variant="outline"
                         onClick={() => setCurrentStepIdx(prev => Math.max(0, prev - 1))}
                         disabled={currentStepIdx === 0}
-                        className="gap-2"
+                        className="gap-1 sm:gap-2 px-2 sm:px-4"
                     >
-                        <ChevronLeft className="h-4 w-4" /> Anterior
+                        <ChevronLeft className="h-4 w-4" /> <span className="hidden sm:inline">Anterior</span>
                     </Button>
 
                     {currentStepIdx === steps.length - 1 ? (
-                        <Button onClick={() => onOpenChange(false)} className="gap-2 bg-green-600 hover:bg-green-700">
-                            <CheckCircle2 className="h-4 w-4" /> Concluir Procedimento
+                        <Button onClick={() => onOpenChange(false)} className="gap-1 sm:gap-2 bg-green-600 hover:bg-green-700 px-2 sm:px-4">
+                            <CheckCircle2 className="h-4 w-4" /> <span className="hidden sm:inline">Concluir Procedimento</span>
+                            <span className="sm:hidden">Concluir</span>
                         </Button>
                     ) : (
                         <Button
                             onClick={() => setCurrentStepIdx(prev => Math.min(steps.length - 1, prev + 1))}
                             disabled={steps.length === 0}
-                            className="gap-2"
+                            className="gap-1 sm:gap-2 px-2 sm:px-4"
                         >
-                            Próximo <ChevronRight className="h-4 w-4" />
+                            <span className="hidden sm:inline">Próximo</span> <ChevronRight className="h-4 w-4" />
                         </Button>
                     )}
                 </div>
@@ -173,9 +181,10 @@ function ManualViewModal({ manual, open, onOpenChange }: { manual: Manual | null
 }
 
 export default function Manuals() {
-    const { manuals, isLoading, createManual, deleteManual } = useManuals();
+    const { manuals, isLoading, createManual, updateManual, deleteManual } = useManuals();
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [editingManual, setEditingManual] = useState<Manual | null>(null);
     const [viewingManual, setViewingManual] = useState<Manual | null>(null);
     const [exportingId, setExportingId] = useState<string | null>(null);
 
@@ -260,23 +269,61 @@ export default function Manuals() {
         }
     };
 
+    const handleEdit = async (manual: Manual) => {
+        setTitle(manual.title);
+        setDescription(manual.description || '');
+        setCategory(manual.category || '');
+        setEditingManual(manual);
+        setIsDialogOpen(true);
+
+        // Buscar passos
+        try {
+            const { data: stepsData, error } = await supabase
+                .from('manual_steps')
+                .select('*')
+                .eq('manual_id', manual.id)
+                .order('step_order', { ascending: true });
+
+            if (error) throw error;
+            setSteps(stepsData || []);
+        } catch (error) {
+            console.error(error);
+            toast({ title: "Erro ao carregar passos", variant: "destructive" });
+        }
+    };
+
     const handleSubmit = async () => {
         if (!title) {
             toast({ title: "Título obrigatório", variant: "destructive" });
             return;
         }
 
-        createManual.mutate({
+        const payload = {
             title,
             description,
             category,
             steps: steps as CreateManualStepInput[]
-        }, {
-            onSuccess: () => {
-                setIsDialogOpen(false);
-                resetForm();
-            }
-        });
+        };
+
+        if (editingManual) {
+            updateManual.mutate({
+                id: editingManual.id,
+                ...payload
+            }, {
+                onSuccess: () => {
+                    setIsDialogOpen(false);
+                    resetForm();
+                    setEditingManual(null);
+                }
+            });
+        } else {
+            createManual.mutate(payload, {
+                onSuccess: () => {
+                    setIsDialogOpen(false);
+                    resetForm();
+                }
+            });
+        }
     };
 
     const resetForm = () => {
@@ -284,6 +331,7 @@ export default function Manuals() {
         setDescription('');
         setCategory('');
         setSteps([]);
+        setEditingManual(null);
     };
 
     return (
@@ -315,44 +363,67 @@ export default function Manuals() {
                             </SelectContent>
                         </Select>
 
-                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+                            setIsDialogOpen(open);
+                            if (!open) resetForm();
+                        }}>
                             <DialogTrigger asChild>
                                 <Button className="gap-2 h-10 w-full sm:w-auto shrink-0">
                                     <Plus className="h-4 w-4" />
                                     Novo Manual
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background border-border">
-                                <DialogHeader>
-                                    <DialogTitle>Criar Novo Manual Operacional</DialogTitle>
-                                </DialogHeader>
+                            <DialogContent className="max-w-4xl w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden bg-background border-border rounded-none sm:rounded-lg">
+                                <div className="shrink-0 p-4 sm:p-6 pb-0 min-w-0">
+                                    <DialogHeader className="min-w-0">
+                                        <DialogTitle className="whitespace-normal break-words">{editingManual ? 'Editar Manual Operacional' : 'Criar Novo Manual Operacional'}</DialogTitle>
+                                    </DialogHeader>
+                                </div>
 
-                                <div className="space-y-4 py-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
+                                <div className="flex-1 overflow-y-auto w-full min-w-0 box-border p-4 sm:p-6 space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-2 min-w-0">
                                             <Label>Título do Manual</Label>
-                                            <CapitalizedInput
+                                            <CapitalizedTextarea
                                                 placeholder="Ex: Troca de Tela iPhone 11"
                                                 value={title}
                                                 onChange={(e) => setTitle(e.target.value)}
+                                                className="min-h-[40px] resize-none overflow-hidden"
+                                                onInput={(e) => {
+                                                    const target = e.target as HTMLTextAreaElement;
+                                                    target.style.height = 'auto';
+                                                    target.style.height = `${target.scrollHeight}px`;
+                                                }}
                                             />
                                         </div>
-                                        <div className="space-y-2">
+                                        <div className="space-y-2 min-w-0">
                                             <Label>Categoria</Label>
-                                            <CapitalizedInput
+                                            <CapitalizedTextarea
                                                 placeholder="Ex: Smartphones, Notebooks"
                                                 value={category}
                                                 onChange={(e) => setCategory(e.target.value)}
+                                                className="min-h-[40px] resize-none overflow-hidden"
+                                                onInput={(e) => {
+                                                    const target = e.target as HTMLTextAreaElement;
+                                                    target.style.height = 'auto';
+                                                    target.style.height = `${target.scrollHeight}px`;
+                                                }}
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 min-w-0 flex flex-col w-full">
                                         <Label>Descrição Geral</Label>
                                         <CapitalizedTextarea
                                             placeholder="Breve resumo do procedimento..."
                                             value={description}
                                             onChange={(e) => setDescription(e.target.value)}
+                                            className="w-full min-w-0 break-words resize-none overflow-hidden"
+                                            onInput={(e) => {
+                                                const target = e.target as HTMLTextAreaElement;
+                                                target.style.height = 'auto';
+                                                target.style.height = `${target.scrollHeight}px`;
+                                            }}
                                         />
                                     </div>
 
@@ -364,9 +435,9 @@ export default function Manuals() {
                                             </Button>
                                         </div>
 
-                                        <div className="space-y-6">
+                                        <div className="space-y-6 w-full min-w-0">
                                             {steps.map((step, index) => (
-                                                <div key={index} className="p-4 border rounded-lg bg-muted/30 relative">
+                                                <div key={index} className="p-4 border rounded-lg bg-muted/30 relative min-w-0 w-full">
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
@@ -376,28 +447,40 @@ export default function Manuals() {
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
 
-                                                    <div className="flex gap-4">
+                                                    <div className="flex flex-col gap-3 min-w-0 w-full mt-2 sm:mt-0">
                                                         <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 font-bold">
                                                             {index + 1}
                                                         </div>
 
-                                                        <div className="flex-1 space-y-4">
-                                                            <CapitalizedInput
+                                                        <div className="flex-1 space-y-4 min-w-0 w-full">
+                                                            <CapitalizedTextarea
                                                                 placeholder="Título do passo..."
                                                                 value={step.title || ''}
                                                                 onChange={(e) => updateStep(index, 'title', e.target.value)}
+                                                                className="w-full min-w-0 min-h-[40px] resize-none overflow-hidden"
+                                                                onInput={(e) => {
+                                                                    const target = e.target as HTMLTextAreaElement;
+                                                                    target.style.height = 'auto';
+                                                                    target.style.height = `${target.scrollHeight}px`;
+                                                                }}
                                                             />
                                                             <CapitalizedTextarea
                                                                 placeholder="Instruções detalhadas..."
                                                                 value={step.description || ''}
                                                                 onChange={(e) => updateStep(index, 'description', e.target.value)}
+                                                                className="w-full min-w-0 break-words whitespace-pre-wrap resize-none overflow-hidden"
+                                                                onInput={(e) => {
+                                                                    const target = e.target as HTMLTextAreaElement;
+                                                                    target.style.height = 'auto';
+                                                                    target.style.height = `${target.scrollHeight}px`;
+                                                                }}
                                                             />
 
-                                                            <div className="space-y-2">
+                                                            <div className="space-y-2 w-full min-w-0">
                                                                 <Label className="flex items-center gap-2">
                                                                     <ImageIcon className="h-4 w-4" /> Foto do Passo
                                                                 </Label>
-                                                                <div className="flex items-start gap-4">
+                                                                <div className="flex flex-col sm:flex-row items-start gap-4">
                                                                     <Input
                                                                         type="file"
                                                                         accept="image/*"
@@ -405,7 +488,7 @@ export default function Manuals() {
                                                                             const file = e.target.files?.[0];
                                                                             if (file) handleImageUpload(index, file);
                                                                         }}
-                                                                        className="cursor-pointer"
+                                                                        className="cursor-pointer w-full sm:w-auto"
                                                                     />
                                                                     {step.image_url && (
                                                                         <div className="w-24 h-24 rounded border overflow-hidden bg-white">
@@ -421,11 +504,31 @@ export default function Manuals() {
                                         </div>
                                     </div>
 
-                                    <div className="flex justify-end gap-3 pt-6">
-                                        <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
-                                        <Button onClick={handleSubmit} disabled={createManual.isPending || isUploading}>
-                                            {createManual.isPending ? "Salvando..." : "Salvar Manual"}
-                                        </Button>
+                                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
+                                        <div className="w-full sm:w-auto">
+                                            {editingManual && (
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-full sm:w-auto text-destructive hover:bg-destructive/10"
+                                                    onClick={() => {
+                                                        if (confirm('Tem certeza que deseja excluir este manual?')) {
+                                                            deleteManual.mutate(editingManual.id, {
+                                                                onSuccess: () => setIsDialogOpen(false)
+                                                            });
+                                                        }
+                                                    }}
+                                                >
+                                                    <Trash2 className="h-4 w-4 mr-2" />
+                                                    Excluir Manual
+                                                </Button>
+                                            )}
+                                        </div>
+                                        <div className="flex w-full sm:w-auto gap-3">
+                                            <Button variant="ghost" className="flex-1 sm:flex-none" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                                            <Button className="flex-1 sm:flex-none" onClick={handleSubmit} disabled={createManual.isPending || updateManual.isPending || isUploading}>
+                                                {(createManual.isPending || updateManual.isPending) ? "Salvando..." : "Salvar Manual"}
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </DialogContent>
@@ -440,11 +543,15 @@ export default function Manuals() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredManuals.map((manual) => (
-                            <Card key={manual.id} className="hover:shadow-md transition-shadow h-full flex flex-col">
+                            <Card
+                                key={manual.id}
+                                className="group hover:shadow-lg transition-all border-border/50 hover:border-primary/50 flex flex-col cursor-pointer relative"
+                                onClick={() => handleEdit(manual)}
+                            >
                                 <CardHeader>
                                     <div className="flex justify-between items-start">
-                                        <div className="p-2 bg-primary/10 rounded-lg">
-                                            <BookOpen className="h-5 w-5 text-primary" />
+                                        <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                                            <BookOpen className="h-5 w-5" />
                                         </div>
                                         {manual.category && (
                                             <span className="text-[10px] bg-muted px-2 py-1 rounded-full uppercase font-bold text-muted-foreground tracking-wider">
@@ -453,24 +560,17 @@ export default function Manuals() {
                                         )}
                                     </div>
                                     <CardTitle className="mt-4">{manual.title}</CardTitle>
-                                    <CardDescription className="line-clamp-2">{manual.description}</CardDescription>
+                                    <CardDescription className="whitespace-normal break-words">{manual.description}</CardDescription>
                                 </CardHeader>
-                                <CardContent className="mt-auto pt-4 border-t flex justify-between gap-2">
-                                    <div className="flex gap-1">
+                                <CardContent className="mt-auto pt-4 border-t flex justify-between items-center gap-2">
+                                    <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                                         <Button
                                             variant="ghost"
-                                            size="sm"
-                                            className="text-destructive h-8 px-2"
-                                            onClick={() => deleteManual.mutate(manual.id)}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="text-primary h-8 px-2"
+                                            size="icon"
+                                            className="text-muted-foreground hover:text-primary h-8 w-8"
                                             disabled={exportingId === manual.id}
                                             onClick={() => handleExportPDF(manual)}
+                                            title="Exportar PDF"
                                         >
                                             {exportingId === manual.id ? (
                                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -479,8 +579,16 @@ export default function Manuals() {
                                             )}
                                         </Button>
                                     </div>
-                                    <Button variant="outline" size="sm" className="gap-2" onClick={() => setViewingManual(manual)}>
-                                        <Play className="h-4 w-4" /> Visualizar
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="gap-2 h-8"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setViewingManual(manual);
+                                        }}
+                                    >
+                                        <Play className="h-4 w-4 text-green-500" /> Visualizar
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -512,3 +620,6 @@ export default function Manuals() {
         </MainLayout>
     );
 }
+
+
+

@@ -29,6 +29,7 @@ export type Database = {
           state: string | null
           updated_at: string
           user_id: string
+          company_id: string | null
           zip_code: string | null
         }
         Insert: {
@@ -174,6 +175,7 @@ export type Database = {
           type: string
           updated_at: string
           user_id: string
+          company_id: string | null
         }
         Insert: {
           amount: number
@@ -226,6 +228,7 @@ export type Database = {
           unit: string | null
           updated_at: string
           user_id: string
+          company_id: string | null
         }
         Insert: {
           active?: boolean
@@ -330,6 +333,7 @@ export type Database = {
           total: number
           updated_at: string
           user_id: string
+          company_id: string | null
         }
         Insert: {
           created_at?: string
@@ -445,6 +449,7 @@ export type Database = {
           total: number
           updated_at: string
           user_id: string
+          company_id: string | null
         }
         Insert: {
           client_id?: string | null
@@ -574,6 +579,7 @@ export type Database = {
           total_services: number
           updated_at: string
           user_id: string
+          company_id: string | null
           warranty_until: string | null
         }
         Insert: {
@@ -710,6 +716,7 @@ export type Database = {
           sequential_code: number | null
           updated_at: string
           user_id: string
+          company_id: string | null
         }
         Insert: {
           active?: boolean
@@ -801,6 +808,7 @@ export type Database = {
           state: string | null
           updated_at: string
           user_id: string
+          company_id: string | null
           zip_code: string | null
         }
         Insert: {
@@ -848,6 +856,7 @@ export type Database = {
           created_at: string
           updated_at: string
           created_by: string | null
+          company_id: string | null
         }
         Insert: {
           id?: string
@@ -908,6 +917,121 @@ export type Database = {
             referencedRelation: "manuals"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      companies: {
+        Row: {
+          id: string
+          name: string
+          cnpj: string | null
+          logo_url: string | null
+          owner_id: string
+          subscription_status: string | null
+          stripe_customer_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          cnpj?: string | null
+          logo_url?: string | null
+          owner_id: string
+          subscription_status?: string | null
+          stripe_customer_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          cnpj?: string | null
+          logo_url?: string | null
+          owner_id?: string
+          subscription_status?: string | null
+          stripe_customer_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          id: string
+          company_id: string | null
+          full_name: string | null
+          role: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          company_id?: string | null
+          full_name?: string | null
+          role?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string | null
+          full_name?: string | null
+          role?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      subscriptions: {
+        Row: {
+          id: string
+          company_id: string
+          status: string
+          plan_type: string | null
+          current_period_start: string | null
+          current_period_end: string | null
+          stripe_subscription_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          status: string
+          plan_type?: string | null
+          current_period_start?: string | null
+          current_period_end?: string | null
+          stripe_subscription_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          company_id?: string
+          status?: string
+          plan_type?: string | null
+          current_period_start?: string | null
+          current_period_end?: string | null
+          stripe_subscription_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          }
         ]
       }
     }

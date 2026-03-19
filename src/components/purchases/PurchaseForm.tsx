@@ -232,7 +232,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[95vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+      <DialogContent className="sm:max-w-2xl w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
         <Form {...form}>
           <form
             id="purchase-form"
@@ -248,8 +248,8 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
               </DialogHeader>
             </div>
 
-            <ScrollArea className="flex-1 min-h-0">
-              <div className="p-4 sm:p-6 pb-0 space-y-6">
+            <ScrollArea className="flex-1 min-h-0 w-full overflow-hidden">
+              <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
                 {/* Supplier and Invoice */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
@@ -365,13 +365,20 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                   ) : (
                     <div className="space-y-3">
                       {items.map((item, index) => (
-                        <div key={index} className="flex gap-2 items-start p-3 rounded-lg border bg-muted/30">
-                          <div className="flex-1 grid grid-cols-1 sm:grid-cols-4 gap-2">
+                        <div key={index} className="flex gap-2 items-start p-3 rounded-lg border bg-muted/30 flex-wrap sm:flex-nowrap">
+                          <div className="flex-1 grid grid-cols-1 sm:grid-cols-4 gap-2 w-full sm:w-auto">
                             <div className="sm:col-span-2">
-                              <CapitalizedInput
+                              <CapitalizedTextarea
                                 placeholder="Produto"
                                 value={item.product_name}
                                 onChange={(e) => updateItem(index, 'product_name', e.target.value)}
+                                disabled={item.product_id !== null}
+                                className="min-h-[40px] resize-none overflow-hidden py-2"
+                                onInput={(e) => {
+                                  const target = e.target as HTMLTextAreaElement;
+                                  target.style.height = 'auto';
+                                  target.style.height = `${target.scrollHeight}px`;
+                                }}
                               />
                             </div>
                             <div>
@@ -554,3 +561,6 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
     </Dialog>
   );
 }
+
+
+

@@ -43,6 +43,7 @@ const baseNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Wrench, label: "Serviços", href: "/servicos" },
   { icon: DollarSign, label: "Financeiro", href: "/financeiro" },
   { icon: ShoppingCart, label: "Compras", href: "/compras" },
+  { icon: Building2, label: "Empresa", href: "/empresa" },
   { icon: Building2, label: "Fornecedores", href: "/fornecedores" },
 ];
 
