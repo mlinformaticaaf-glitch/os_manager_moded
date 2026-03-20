@@ -78,8 +78,8 @@ function SidebarContent({
       <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
         {!collapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+              <img src="/favicon.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="font-bold text-foreground text-lg tracking-tight">OS Manager</h1>
@@ -88,8 +88,8 @@ function SidebarContent({
           </div>
         )}
         {collapsed && (
-          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center mx-auto">
-            <ClipboardList className="w-5 h-5 text-primary-foreground" />
+          <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center mx-auto">
+            <img src="/favicon.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
         )}
       </div>

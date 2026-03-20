@@ -357,8 +357,8 @@ export default function Auth() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10 justify-center">
-            <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center">
-              <ClipboardList className="w-6 h-6 text-primary-foreground" />
+            <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center">
+              <img src="/favicon.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">OS Manager</h1>
@@ -445,8 +445,8 @@ export default function Auth() {
 
         <div className="relative z-10 flex flex-col justify-center px-16">
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center">
-              <ClipboardList className="w-7 h-7 text-primary-foreground" />
+            <div className="w-16 h-16 rounded-xl overflow-hidden flex items-center justify-center">
+              <img src="/favicon.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-foreground">OS Manager</h1>
@@ -482,8 +482,8 @@ export default function Auth() {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10 justify-center">
-            <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center">
-              <ClipboardList className="w-6 h-6 text-primary-foreground" />
+            <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center">
+              <img src="/favicon.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">OS Manager</h1>
