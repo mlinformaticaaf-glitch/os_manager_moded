@@ -42,14 +42,21 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
 
   let message = `*${companyName}*\n`;
   message += `------------------------\n\n`;
-  
+
   message += `*OS #${formatOSNumber(order.order_number, order.created_at)}*\n`;
   message += `Data: ${format(new Date(order.created_at), "dd/MM/yyyy", { locale: ptBR })}\n`;
   message += `Status: ${statusLabel}\n\n`;
 
-  if (order.equipment) {
+  if (order.client) {
+    message += `*Cliente:*\n`;
+    message += `${order.client.name}\n`;
+    if (order.client.phone) message += `Tel: ${order.client.phone}\n`;
+    message += `\n`;
+  }
+
+  if (order.equipment || order.equipment_ref) {
     message += `*Equipamento:*\n`;
-    message += `${order.equipment}`;
+    message += `${order.equipment_ref?.description || order.equipment}`;
     if (order.brand) message += ` - ${order.brand}`;
     if (order.model) message += ` ${order.model}`;
     message += '\n';
@@ -95,7 +102,7 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
     message += `Desconto: -${formatCurrency(order.discount)}\n`;
   }
   message += `\n*TOTAL: ${formatCurrency(order.total)}*\n`;
-  
+
   if (order.payment_method) {
     message += `Pagamento: ${getPaymentMethodLabel(order.payment_method)}\n`;
   }
@@ -150,7 +157,7 @@ export function formatWhatsAppPaymentReminder({ order, companyName = 'Assistênc
   let message = `*${companyName}*\n\n`;
   message += `Olá! Este é um lembrete sobre o pagamento pendente da sua OS #${formatOSNumber(order.order_number, order.created_at)}.\n\n`;
   message += `*Valor:* ${formatCurrency(order.total)}\n`;
-  
+
   if (order.payment_method) {
     message += `*Forma de pagamento:* ${getPaymentMethodLabel(order.payment_method)}\n`;
   }
@@ -163,12 +170,12 @@ export function formatWhatsAppPaymentReminder({ order, companyName = 'Assistênc
 export function cleanPhoneNumber(phone: string): string {
   // Remove all non-numeric characters
   let cleaned = phone.replace(/\D/g, '');
-  
+
   // Add Brazil country code if not present
   if (cleaned.length === 10 || cleaned.length === 11) {
     cleaned = '55' + cleaned;
   }
-  
+
   return cleaned;
 }
 

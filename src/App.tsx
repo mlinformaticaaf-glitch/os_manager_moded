@@ -20,7 +20,7 @@ import Financial from "./pages/Financial";
 import Settings from "./pages/Settings";
 import Kanban from "./pages/Kanban";
 import Manuals from "./pages/Manuals";
-import CompanySettings from "./pages/CompanySettings";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -132,14 +132,7 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/empresa"
-              element={
-                <ProtectedRoute>
-                  <CompanySettings />
-                </ProtectedRoute>
-              }
-            />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route
               path="/kanban"

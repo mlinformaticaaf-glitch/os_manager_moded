@@ -43,7 +43,7 @@ const baseNavItems: Omit<NavItem, 'badge'>[] = [
   { icon: Wrench, label: "Serviços", href: "/servicos" },
   { icon: DollarSign, label: "Financeiro", href: "/financeiro" },
   { icon: ShoppingCart, label: "Compras", href: "/compras" },
-  { icon: Building2, label: "Empresa", href: "/empresa" },
+
   { icon: Building2, label: "Fornecedores", href: "/fornecedores" },
 ];
 
@@ -181,27 +181,70 @@ export function Sidebar({ currentPath, onNavigate, onLogout }: SidebarProps) {
   }, [serviceOrders]);
 
   if (isMobile) {
+    const bottomHrefs = ['/os', '/kanban', '/financeiro'];
+    const bottomNavItems = bottomHrefs
+      .map(href => navItems.find((item) => item.href === href))
+      .filter(Boolean) as typeof navItems;
+
+    const menuNavItems = navItems.filter(item => !bottomHrefs.includes(item.href));
+
     return (
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="fixed top-3 left-3 z-50 md:hidden bg-background/80 backdrop-blur-sm border border-border"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-[280px] p-0 bg-sidebar border-sidebar-border">
-          <SidebarContent
-            currentPath={currentPath}
-            onNavigate={onNavigate}
-            onLogout={onLogout}
-            onItemClick={() => setMobileOpen(false)}
-            navItems={navItems}
-          />
-        </SheetContent>
-      </Sheet>
+      <div className="md:hidden">
+        <div className="fixed bottom-0 left-0 right-0 z-[60] bg-background border-t border-border flex items-center justify-around px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+          {bottomNavItems.map(item => {
+            const isActive = currentPath === item.href;
+            return (
+              <button
+                key={item.href}
+                onClick={() => onNavigate(item.href)}
+                className={cn(
+                  "flex flex-col items-center justify-center p-2 rounded-xl transition-colors min-w-[64px]",
+                  isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                )}
+              >
+                <div className="relative">
+                  <item.icon className="w-6 h-6 mb-1" />
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-sm">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-medium truncate max-w-[64px] text-center">
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <button
+                className={cn(
+                  "flex flex-col items-center justify-center p-2 rounded-xl transition-colors min-w-[64px]",
+                  mobileOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                )}
+              >
+                <div className="relative">
+                  <Menu className="w-6 h-6 mb-1" />
+                </div>
+                <span className="text-[10px] font-medium truncate max-w-[64px] text-center">
+                  Menu
+                </span>
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[280px] p-0 bg-sidebar border-sidebar-border h-full flex flex-col pt-10 pb-20">
+              <SidebarContent
+                currentPath={currentPath}
+                onNavigate={onNavigate}
+                onLogout={onLogout}
+                onItemClick={() => setMobileOpen(false)}
+                navItems={menuNavItems}
+              />
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
     );
   }
 

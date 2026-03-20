@@ -22,7 +22,7 @@ export function Header({ title, subtitle, userEmail, onLogout }: HeaderProps) {
 
   return (
     <header className="h-14 md:h-16 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 md:px-6">
-      <div className={isMobile ? "ml-12" : ""}>
+      <div>
         <h1 className="text-lg md:text-xl font-semibold text-foreground truncate max-w-[180px] md:max-w-none">{title}</h1>
         {subtitle && !isMobile && (
           <p className="text-sm text-muted-foreground">{subtitle}</p>

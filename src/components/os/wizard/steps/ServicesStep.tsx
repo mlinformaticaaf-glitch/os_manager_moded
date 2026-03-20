@@ -270,7 +270,7 @@ export function ServicesStep({
                   <CurrencyInput
                     value={discount}
                     onValueChange={onChangeDiscount}
-                    className="w-32 h-8"
+                    className="w-24 sm:w-32 h-8"
                   />
                 </div>
               </div>
@@ -299,7 +299,7 @@ export function ServicesStep({
 
       {/* Tabs for Services/Products */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'services' | 'products' | 'manual')}>
-        <TabsList className="w-full h-11 sm:h-10">
+        <TabsList className="w-full flex h-auto p-1 overflow-x-auto gap-1">
           <TabsTrigger value="services" className="flex-1 gap-1.5 sm:gap-2 text-[10px] sm:text-sm overflow-hidden whitespace-nowrap px-1">
             <Wrench className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
             <span className="truncate">Serviços</span>
@@ -349,23 +349,23 @@ export function ServicesStep({
                     key={service.id}
                     type="button"
                     onClick={() => handleAddService(service)}
-                    className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-muted transition-colors"
+                    className="w-full flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-muted transition-colors overflow-hidden"
                   >
-                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 mt-0.5 sm:mt-0 rounded-full bg-blue-100 flex items-center justify-center">
                       <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                     </div>
-                    <div className="flex-1 min-w-0 py-0.5">
-                      <p className="font-medium whitespace-normal break-words text-sm sm:text-base leading-tight mb-0.5">{service.name}</p>
+                    <div className="flex-1 min-w-0 pr-1 sm:pr-2">
+                      <p className="font-medium whitespace-pre-wrap break-words text-sm sm:text-base leading-tight mb-1">{service.name}</p>
                       {service.code && (
-                        <p className="text-xs text-muted-foreground whitespace-normal break-words">{service.code}</p>
+                        <p className="text-xs text-muted-foreground whitespace-pre-wrap break-words">{service.code}</p>
                       )}
                     </div>
-                    <div className="text-right shrink-0 ml-auto">
+                    <div className="shrink-0 flex items-center gap-2 sm:gap-3 ml-1 sm:ml-auto">
                       <p className="font-semibold text-primary text-sm sm:text-base whitespace-nowrap">
                         {formatCurrency(service.sale_price)}
                       </p>
+                      <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0" />
                     </div>
-                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0" />
                   </button>
                 ))
               )}
@@ -408,13 +408,13 @@ export function ServicesStep({
                     key={product.id}
                     type="button"
                     onClick={() => handleAddProduct(product)}
-                    className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-muted transition-colors overflow-hidden"
+                    className="w-full flex items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg text-left hover:bg-muted transition-colors overflow-hidden"
                   >
-                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 shrink-0 mt-0.5 sm:mt-0 rounded-full bg-orange-100 flex items-center justify-center">
                       <Package className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
                     </div>
-                    <div className="flex-1 min-w-0 py-0.5">
-                      <p className="font-medium whitespace-normal break-words text-sm sm:text-base leading-tight mb-0.5">{product.name}</p>
+                    <div className="flex-1 min-w-0 pr-1 sm:pr-2">
+                      <p className="font-medium whitespace-pre-wrap break-words text-sm sm:text-base leading-tight mb-1">{product.name}</p>
                       <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                         {product.category && (
                           <Badge variant="outline" className="text-[10px] sm:text-xs px-1 sm:px-1.5 whitespace-normal break-words">
@@ -426,12 +426,12 @@ export function ServicesStep({
                         </span>
                       </div>
                     </div>
-                    <div className="text-right shrink-0 ml-auto">
+                    <div className="shrink-0 flex items-center gap-2 sm:gap-3 ml-1 sm:ml-auto">
                       <p className="font-semibold text-primary text-sm sm:text-base whitespace-nowrap">
                         {formatCurrency(product.sale_price)}
                       </p>
+                      <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0" />
                     </div>
-                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground shrink-0" />
                   </button>
                 ))
               )}
@@ -467,7 +467,7 @@ export function ServicesStep({
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Quantidade</label>
                     <Input
