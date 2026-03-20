@@ -33,97 +33,34 @@ export function printFinancialReceipt({
   const transactionDate = transaction.paid_date || transaction.due_date || transaction.created_at;
   const formattedTransactionDate = format(new Date(transactionDate), "dd/MM/yyyy", { locale: ptBR });
 
-  const content = `
-    <!DOCTYPE html>
+  const content = `<!DOCTYPE html>
     <html lang="pt-BR">
     <head>
       <meta charset="UTF-8">
       <title>Recibo de Pagamento - ${transaction.description}</title>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-          font-family: Arial, sans-serif;
-          padding: 20mm;
-          color: #333;
-          line-height: 1.6;
-        }
-        .receipt-container {
-          border: 2px solid #333;
-          padding: 30px;
-          max-width: 800px;
-          margin: 0 auto;
-          position: relative;
-        }
-        .header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 2px solid #333;
-          padding-bottom: 20px;
-          margin-bottom: 30px;
-        }
+        body { font-family: Arial, sans-serif; padding: 20mm; color: #333; line-height: 1.6; }
+        .receipt-container { border: 2px solid #333; padding: 30px; max-width: 800px; margin: 0 auto; position: relative; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
         .company-info h1 { font-size: 24px; margin-bottom: 5px; }
         .company-info p { font-size: 14px; color: #666; }
-        .receipt-title {
-          text-align: right;
-        }
+        .receipt-title { text-align: right; }
         .receipt-title h2 { font-size: 28px; text-transform: uppercase; color: #2563eb; }
-        .receipt-number { font-size: 16px; font-weight: bold; margin-top: 5px; }
-
+        .value-box { background: #f1f5f9; padding: 15px; border-radius: 8px; display: inline-block; font-size: 20px; font-weight: bold; margin-bottom: 30px; }
         .content { margin-bottom: 40px; }
-        .receipt-text {
-          font-size: 18px;
-          text-align: justify;
-          margin-bottom: 30px;
-        }
-        .value-box {
-          background: #f1f5f9;
-          padding: 15px;
-          border-radius: 8px;
-          display: inline-block;
-          font-size: 20px;
-          font-weight: bold;
-          margin-bottom: 30px;
-        }
-
-        .details-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-          margin-bottom: 40px;
-          padding: 20px;
-          background: #f8fafc;
-          border-radius: 8px;
-        }
-        .detail-item label {
-          display: block;
-          font-size: 12px;
-          color: #666;
-          text-transform: uppercase;
-          margin-bottom: 4px;
-        }
+        .receipt-text { font-size: 18px; text-align: justify; margin-bottom: 30px; }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; padding: 20px; background: #f8fafc; border-radius: 8px; }
+        .detail-item label { display: block; font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
         .detail-item span { font-size: 16px; font-weight: 500; }
-
-        .footer {
-          margin-top: 60px;
-          text-align: center;
-        }
-        .signature-area {
-          margin: 0 auto;
-          width: 300px;
-          border-top: 1px solid #333;
-          padding-top: 10px;
-        }
+        .footer { margin-top: 60px; text-align: center; }
+        .signature-area { margin: 0 auto; width: 300px; border-top: 1px solid #333; padding-top: 10px; }
         .signature-area p { font-size: 14px; font-weight: bold; }
         .date { margin-top: 20px; font-style: italic; color: #666; }
-
-        @media print {
-          body { padding: 0; }
-          .receipt-container { border: 2px solid #000; }
-        }
+        @media print { body { padding: 0; } .receipt-container { border: 2px solid #000; } .no-print { display: none; } }
       </style>
     </head>
-    <body>
+    <body onload="window.print()">
       <div class="receipt-container">
         <div class="header">
           <div class="company-info" style="display: flex; align-items: center; gap: 20px;">
@@ -141,14 +78,12 @@ export function printFinancialReceipt({
             <div class="value-box">VALOR: ${formatCurrency(transaction.amount)}</div>
           </div>
         </div>
-
         <div class="content">
           <p class="receipt-text">
             Recebemos de <strong>${transaction.client_name || '__________________________________________'}</strong> 
             a importância de <strong>${formatCurrency(transaction.amount)}</strong> referente a 
             <strong>${transaction.description}</strong>.
           </p>
-
           <div class="details-grid">
             <div class="detail-item">
               <label>Data da Transação</label>
@@ -164,7 +99,6 @@ export function printFinancialReceipt({
             </div>
           </div>
         </div>
-
         <div class="footer">
           <div class="date">${companyAddress?.split(',')[0] || ''}, ${dateStr}</div>
           <div style="margin-top: 40px;">
@@ -174,23 +108,12 @@ export function printFinancialReceipt({
           </div>
         </div>
       </div>
-      <script>
-        window.onload = () => {
-          // window.print();
-          // window.onafterprint = () => window.close();
-        };
-      </script>
     </body>
-    </html>
-  `;
+    </html>`;
 
   const printWindow = window.open('', '_blank');
   if (printWindow) {
     printWindow.document.write(content);
     printWindow.document.close();
-    // Give a tiny bit of time for styles to apply before printing
-    setTimeout(() => {
-      printWindow.print();
-    }, 500);
   }
 }
