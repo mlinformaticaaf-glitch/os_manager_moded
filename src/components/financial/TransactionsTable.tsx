@@ -11,7 +11,8 @@ import {
   Filter,
   CalendarIcon,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Printer
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,8 @@ import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
 import { format, parseISO, startOfMonth, endOfMonth, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { printFinancialReceipt } from "./printReceipt";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 interface TransactionsTableProps {
   filterType?: 'income' | 'expense';
@@ -63,6 +66,7 @@ function TransactionCard({
   onEdit: (transaction: FinancialTransactionWithClient) => void;
   onDelete: (transaction: FinancialTransactionWithClient) => void;
   onMarkAsPaid: (transaction: FinancialTransactionWithClient) => void;
+  onPrint: (transaction: FinancialTransactionWithClient) => void;
 }) {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -127,6 +131,10 @@ function TransactionCard({
                   Marcar como Pago
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem onClick={() => onPrint(transaction)}>
+                <Printer className="h-4 w-4 mr-2" />
+                Imprimir Recibo
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(transaction)}>
                 <Pencil className="h-4 w-4 mr-2" />
                 Editar
@@ -161,6 +169,7 @@ function TransactionCard({
 
 export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: TransactionsTableProps) {
   const { transactions, isLoading, updateTransaction, deleteTransaction } = useFinancialTransactions();
+  const { settings: companySettings } = useCompanySettings();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [deleteTransaction_, setDeleteTransaction] = useState<FinancialTransactionWithClient | null>(null);
@@ -217,6 +226,20 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
         status: 'paid',
         paid_date: new Date().toISOString().split('T')[0],
       }
+    });
+  };
+
+  const handlePrint = (transaction: FinancialTransactionWithClient) => {
+    printFinancialReceipt({
+      transaction,
+      companyName: companySettings?.name,
+      companyPhone: companySettings?.phone || undefined,
+      companyEmail: companySettings?.email || undefined,
+      companyAddress: companySettings?.address
+        ? `${companySettings.address}${companySettings.city ? `, ${companySettings.city}` : ''}${companySettings.state ? ` - ${companySettings.state}` : ''}`
+        : undefined,
+      companyDocument: companySettings?.document || undefined,
+      logoUrl: companySettings?.logo_url || undefined,
     });
   };
 
@@ -319,6 +342,7 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
                 onEdit={onEdit}
                 onDelete={setDeleteTransaction}
                 onMarkAsPaid={handleMarkAsPaid}
+                onPrint={handlePrint}
               />
             ))}
           </div>
@@ -384,6 +408,10 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
                               Marcar como Pago
                             </DropdownMenuItem>
                           )}
+                          <DropdownMenuItem onClick={() => handlePrint(transaction)}>
+                            <Printer className="h-4 w-4 mr-2" />
+                            Imprimir Recibo
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onEdit(transaction)}>
                             <Pencil className="h-4 w-4 mr-2" />
                             Editar
