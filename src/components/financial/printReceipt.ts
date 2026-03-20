@@ -3,37 +3,37 @@ import { ptBR } from 'date-fns/locale';
 import { FinancialTransactionWithClient } from '@/hooks/useFinancialTransactions';
 
 interface ReceiptData {
-    transaction: FinancialTransactionWithClient;
-    companyName?: string;
-    companyPhone?: string;
-    companyAddress?: string;
-    companyEmail?: string;
-    companyDocument?: string;
-    logoUrl?: string;
+  transaction: FinancialTransactionWithClient;
+  companyName?: string;
+  companyPhone?: string;
+  companyAddress?: string;
+  companyEmail?: string;
+  companyDocument?: string;
+  logoUrl?: string;
 }
 
 const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(value);
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
 };
 
 export function printFinancialReceipt({
-    transaction,
-    companyName = 'Minha Empresa',
-    companyPhone,
-    companyAddress,
-    companyEmail,
-    companyDocument,
-    logoUrl,
+  transaction,
+  companyName = 'Minha Empresa',
+  companyPhone,
+  companyAddress,
+  companyEmail,
+  companyDocument,
+  logoUrl,
 }: ReceiptData) {
-    const today = new Date();
-    const dateStr = format(today, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-    const transactionDate = transaction.paid_date || transaction.due_date || transaction.created_at;
-    const formattedTransactionDate = format(new Date(transactionDate), "dd/MM/yyyy", { locale: ptBR });
+  const today = new Date();
+  const dateStr = format(today, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+  const transactionDate = transaction.paid_date || transaction.due_date || transaction.created_at;
+  const formattedTransactionDate = format(new Date(transactionDate), "dd/MM/yyyy", { locale: ptBR });
 
-    const content = `
+  const content = `
     <!DOCTYPE html>
     <html lang="pt-BR">
     <head>
@@ -184,12 +184,13 @@ export function printFinancialReceipt({
     </html>
   `;
 
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-        printWindow.document.write(content);
-        printWindow.document.close();
-        printWindow.onload = () => {
-            printWindow.print();
-        };
-    }
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.write(content);
+    printWindow.document.close();
+    // Give a tiny bit of time for styles to apply before printing
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  }
 }
