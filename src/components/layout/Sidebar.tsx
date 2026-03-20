@@ -190,7 +190,7 @@ export function Sidebar({ currentPath, onNavigate, onLogout }: SidebarProps) {
 
     return (
       <div className="md:hidden">
-        <div className="fixed bottom-0 left-0 right-0 z-[60] bg-background border-t border-border flex items-center justify-around px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border flex items-center justify-around px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
           {bottomNavItems.map(item => {
             const isActive = currentPath === item.href;
             return (
