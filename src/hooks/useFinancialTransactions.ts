@@ -36,6 +36,10 @@ export function useFinancialTransactions() {
         .filter(t => t.category === 'sales' && t.reference_id)
         .map(t => t.reference_id as string);
 
+      const directClientIds = transactions
+        .filter(t => t.client_id)
+        .map(t => t.client_id as string);
+
       const clientMap = new Map<string, string>();
 
       if (soRefIds.length > 0) {
@@ -68,10 +72,32 @@ export function useFinancialTransactions() {
         }
       }
 
-      return transactions.map(t => ({
-        ...t,
-        client_name: t.reference_id ? clientMap.get(t.reference_id) || null : null,
-      }));
+      if (directClientIds.length > 0) {
+        const { data: directClients } = await supabase
+          .from('clients')
+          .select('id, name')
+          .in('id', directClientIds);
+
+        if (directClients) {
+          for (const c of directClients) {
+            clientMap.set(c.id, c.name);
+          }
+        }
+      }
+
+      return transactions.map(t => {
+        let client_name = null;
+        if (t.reference_id) {
+          client_name = clientMap.get(t.reference_id) || null;
+        }
+        if (!client_name && t.client_id) {
+          client_name = clientMap.get(t.client_id) || null;
+        }
+        return {
+          ...t,
+          client_name,
+        };
+      });
     },
     enabled: !!user?.id,
   });

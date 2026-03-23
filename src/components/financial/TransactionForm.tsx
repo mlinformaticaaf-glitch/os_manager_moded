@@ -34,12 +34,30 @@ import { CurrencyInput } from "@/components/ui/currency-input";
 import { DeleteTransactionDialog } from "./DeleteTransactionDialog";
 import { FinancialTransaction, TRANSACTION_TYPE_OPTIONS, TRANSACTION_CATEGORY_OPTIONS, TRANSACTION_STATUS_OPTIONS } from "@/types/financial";
 import { useFinancialTransactions } from "@/hooks/useFinancialTransactions";
-import { Trash2 } from "lucide-react";
+import { Trash2, Check, ChevronsUpDown, UserPlus, Plus } from "lucide-react";
 import { useMobileBackButton } from "@/hooks/useMobileBackButton";
+import { useClients } from "@/hooks/useClients";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { ClientForm } from "@/components/clients/ClientForm";
+import { useMemo } from "react";
 
 const transactionSchema = z.object({
   type: z.enum(['income', 'expense']),
   category: z.string().min(1, "Selecione uma categoria"),
+  client_id: z.string().optional().nullable(),
   description: z.string().min(1, "Informe uma descrição"),
   amount: z.coerce.number().min(0.01, "O valor deve ser maior que zero"),
   due_date: z.string().optional().nullable(),
@@ -73,13 +91,18 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
 
   const isEditing = !!transaction;
   const { createTransaction, updateTransaction, deleteTransaction } = useFinancialTransactions();
+  const { clients, createClient } = useClients();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [clientOpen, setClientOpen] = useState(false);
+  const [clientSearch, setClientSearch] = useState('');
+  const [clientFormOpen, setClientFormOpen] = useState(false);
 
   const form = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type: 'income',
       category: '',
+      client_id: null,
       description: '',
       amount: 0,
       due_date: '',
@@ -101,6 +124,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
       form.reset({
         type: transaction.type,
         category: transaction.category,
+        client_id: transaction.client_id || null,
         description: transaction.description,
         amount: Number(transaction.amount),
         due_date: transaction.due_date || '',
@@ -116,6 +140,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
       form.reset({
         type: 'income',
         category: '',
+        client_id: null,
         description: '',
         amount: 0,
         due_date: '',
@@ -139,6 +164,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
           data: {
             type: data.type,
             category: data.category,
+            client_id: data.client_id || null,
             description: data.description,
             amount: data.amount,
             status: data.status,
@@ -182,6 +208,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
           await createTransaction.mutateAsync({
             type: data.type,
             category: data.category,
+            client_id: data.client_id || null,
             description,
             amount: data.amount,
             status: installmentStatus,
@@ -202,94 +229,196 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
     }
   };
 
+  const filteredClients = useMemo(() => {
+    if (!clientSearch) return clients;
+    return clients.filter(c =>
+      c.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+      c.phone?.includes(clientSearch) ||
+      c.email?.toLowerCase().includes(clientSearch.toLowerCase())
+    );
+  }, [clients, clientSearch]);
+
+  const selectedClient = clients.find(c => c.id === form.watch('client_id'));
+
+  const handleCreateClient = (data: any) => {
+    createClient.mutate(data, {
+      onSuccess: (newClient) => {
+        form.setValue('client_id', newClient.id);
+        setClientFormOpen(false);
+      },
+    });
+  };
+
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent
-        className="sm:max-w-lg w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg"
-      >
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="h-full flex-1 min-h-0 flex flex-col overflow-hidden"
-          >
-            <div className="shrink-0 p-4 sm:p-6 pb-0">
-              <DialogHeader>
-                <DialogTitle>{isEditing ? 'Editar Transação' : 'Nova Transação'}</DialogTitle>
-                <DialogDescription>
-                  {isEditing ? 'Atualize os dados da transação' : 'Cadastre uma nova transação financeira'}
-                </DialogDescription>
-              </DialogHeader>
-            </div>
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent
+          className="sm:max-w-lg w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg"
+        >
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="h-full flex-1 min-h-0 flex flex-col overflow-hidden"
+            >
+              <div className="shrink-0 p-4 sm:p-6 pb-0">
+                <DialogHeader>
+                  <DialogTitle>{isEditing ? 'Editar Transação' : 'Nova Transação'}</DialogTitle>
+                  <DialogDescription>
+                    {isEditing ? 'Atualize os dados da transação' : 'Cadastre uma nova transação financeira'}
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
 
-            <ScrollArea className="flex-1 min-h-0 w-full overflow-hidden">
-              <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tipo *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {TRANSACTION_TYPE_OPTIONS.map(option => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Categoria *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {TRANSACTION_CATEGORY_OPTIONS
-                              .filter(option => option.type === selectedType || option.type === 'both')
-                              .map(option => (
+              <ScrollArea className="flex-1 min-h-0 w-full overflow-hidden">
+                <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tipo *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {TRANSACTION_TYPE_OPTIONS.map(option => (
                                 <SelectItem key={option.value} value={option.value}>
                                   {option.label}
                                 </SelectItem>
                               ))}
-                          </SelectContent>
-                        </Select>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Categoria *</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {TRANSACTION_CATEGORY_OPTIONS
+                                .filter(option => option.type === selectedType || option.type === 'both')
+                                .map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="client_id"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Cliente</FormLabel>
+                        <div className="flex gap-2">
+                          <Popover open={clientOpen} onOpenChange={setClientOpen}>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  aria-expanded={clientOpen}
+                                  className="flex-1 w-full justify-between font-normal h-10"
+                                >
+                                  {selectedClient ? selectedClient.name : "Selecionar cliente..."}
+                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[300px] p-0" align="start">
+                              <Command shouldFilter={false}>
+                                <CommandInput
+                                  placeholder="Buscar cliente..."
+                                  value={clientSearch}
+                                  onValueChange={setClientSearch}
+                                />
+                                <CommandList>
+                                  <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
+                                  <CommandGroup>
+                                    {filteredClients.map((client) => (
+                                      <CommandItem
+                                        key={client.id}
+                                        value={client.id}
+                                        onSelect={() => {
+                                          field.onChange(client.id);
+                                          setClientOpen(false);
+                                          setClientSearch('');
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            field.value === client.id ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        {client.name}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => setClientFormOpen(true)}
+                            title="Novo cliente"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                          {field.value && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => field.onChange(null)}
+                              title="Remover cliente"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Descrição *</FormLabel>
-                      <FormControl>
-                        <CapitalizedInput placeholder="Ex: Pagamento de fornecedor" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Descrição *</FormLabel>
+                        <FormControl>
+                          <CapitalizedInput placeholder="Ex: Pagamento de fornecedor" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
@@ -495,6 +624,13 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
         transaction={transaction}
       />
     </Dialog >
+
+      <ClientForm
+        open={clientFormOpen}
+        onOpenChange={setClientFormOpen}
+        onSubmit={handleCreateClient}
+      />
+    </>
   );
 }
 

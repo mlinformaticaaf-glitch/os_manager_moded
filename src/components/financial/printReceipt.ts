@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { FinancialTransactionWithClient } from '@/hooks/useFinancialTransactions';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface ReceiptData {
   transaction: FinancialTransactionWithClient;
@@ -19,7 +21,17 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-export function printFinancialReceipt({
+const loadImage = (url: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = (e) => reject(e);
+    img.src = url;
+  });
+};
+
+export async function printFinancialReceipt({
   transaction,
   companyName = 'Minha Empresa',
   companyPhone,
@@ -28,92 +40,125 @@ export function printFinancialReceipt({
   companyDocument,
   logoUrl,
 }: ReceiptData) {
+  const doc = new jsPDF();
   const today = new Date();
   const dateStr = format(today, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
   const transactionDate = transaction.paid_date || transaction.due_date || transaction.created_at;
   const formattedTransactionDate = format(new Date(transactionDate), "dd/MM/yyyy", { locale: ptBR });
 
-  const content = `<!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-      <meta charset="UTF-8">
-      <title>Recibo de Pagamento - ${transaction.description}</title>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; padding: 20mm; color: #333; line-height: 1.6; }
-        .receipt-container { border: 2px solid #333; padding: 30px; max-width: 800px; margin: 0 auto; position: relative; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
-        .company-info h1 { font-size: 24px; margin-bottom: 5px; }
-        .company-info p { font-size: 14px; color: #666; }
-        .receipt-title { text-align: right; }
-        .receipt-title h2 { font-size: 28px; text-transform: uppercase; color: #2563eb; }
-        .value-box { background: #f1f5f9; padding: 15px; border-radius: 8px; display: inline-block; font-size: 20px; font-weight: bold; margin-bottom: 30px; }
-        .content { margin-bottom: 40px; }
-        .receipt-text { font-size: 18px; text-align: justify; margin-bottom: 30px; }
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; padding: 20px; background: #f8fafc; border-radius: 8px; }
-        .detail-item label { display: block; font-size: 12px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
-        .detail-item span { font-size: 16px; font-weight: 500; }
-        .footer { margin-top: 60px; text-align: center; }
-        .signature-area { margin: 0 auto; width: 300px; border-top: 1px solid #333; padding-top: 10px; }
-        .signature-area p { font-size: 14px; font-weight: bold; }
-        .date { margin-top: 20px; font-style: italic; color: #666; }
-        @media print { body { padding: 0; } .receipt-container { border: 2px solid #000; } .no-print { display: none; } }
-      </style>
-    </head>
-    <body onload="window.print()">
-      <div class="receipt-container">
-        <div class="header">
-          <div class="company-info" style="display: flex; align-items: center; gap: 20px;">
-            ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-height: 80px; max-width: 150px; object-fit: contain;" />` : ''}
-            <div>
-              <h1>${companyName}</h1>
-              ${companyDocument ? `<p>${companyDocument}</p>` : ''}
-              ${companyPhone ? `<p>Tel: ${companyPhone}</p>` : ''}
-              ${companyEmail ? `<p>${companyEmail}</p>` : ''}
-              ${companyAddress ? `<p>${companyAddress}</p>` : ''}
-            </div>
-          </div>
-          <div class="receipt-title">
-            <h2>RECIBO</h2>
-            <div class="value-box">VALOR: ${formatCurrency(transaction.amount)}</div>
-          </div>
-        </div>
-        <div class="content">
-          <p class="receipt-text">
-            Recebemos de <strong>${transaction.client_name || '__________________________________________'}</strong> 
-            a importância de <strong>${formatCurrency(transaction.amount)}</strong> referente a 
-            <strong>${transaction.description}</strong>.
-          </p>
-          <div class="details-grid">
-            <div class="detail-item">
-              <label>Data da Transação</label>
-              <span>${formattedTransactionDate}</span>
-            </div>
-            <div class="detail-item">
-              <label>Forma de Pagamento</label>
-              <span>${transaction.payment_method || '-'}</span>
-            </div>
-            <div class="detail-item" style="grid-column: span 2;">
-              <label>Categoria</label>
-              <span>${transaction.category}</span>
-            </div>
-          </div>
-        </div>
-        <div class="footer">
-          <div class="date">${companyAddress?.split(',')[0] || ''}, ${dateStr}</div>
-          <div style="margin-top: 40px;">
-            <div class="signature-area">
-              <p>${companyName}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </body>
-    </html>`;
+  // Configurações de cores
+  const primaryColor = [37, 99, 235]; // #2563eb
 
-  const printWindow = window.open('', '_blank');
-  if (printWindow) {
-    printWindow.document.write(content);
-    printWindow.document.close();
+  let yPos = 30;
+  const leftMargin = 20;
+
+  // Título e logo
+  if (logoUrl) {
+    try {
+      const img = await loadImage(logoUrl);
+      // Mantém proporção da imagem
+      const maxWidth = 40;
+      const maxHeight = 30;
+      let imgWidth = img.width;
+      let imgHeight = img.height;
+      
+      const ratio = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
+      imgWidth *= ratio;
+      imgHeight *= ratio;
+
+      doc.addImage(img, 'PNG', leftMargin, 15, imgWidth, imgHeight);
+      yPos = 15 + imgHeight + 10;
+    } catch (error) {
+      console.error('Error loading logo:', error);
+      yPos = 30;
+    }
   }
+
+  // Cabeçalho da Empresa
+  doc.setFontSize(22);
+  doc.setTextColor(33, 33, 33);
+  doc.text(companyName, 20, yPos);
+  
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  yPos += 8;
+  if (companyDocument) {
+    doc.text(companyDocument, 20, yPos);
+    yPos += 5;
+  }
+  if (companyPhone) {
+    doc.text(`Tel: ${companyPhone}`, 20, yPos);
+    yPos += 5;
+  }
+  if (companyEmail) {
+    doc.text(companyEmail, 20, yPos);
+    yPos += 5;
+  }
+  if (companyAddress) {
+    doc.text(companyAddress, 20, yPos);
+  }
+
+  // Bloco de Título "RECIBO"
+  doc.setFontSize(28);
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.text('RECIBO', 140, 35);
+
+  // Valor
+  doc.setFillColor(241, 245, 249);
+  doc.roundedRect(140, 42, 50, 15, 2, 2, 'F');
+  doc.setFontSize(14);
+  doc.setTextColor(33, 33, 33);
+  doc.text(`VALOR: ${formatCurrency(transaction.amount)}`, 145, 52);
+
+  // Linha divisória
+  doc.setDrawColor(200, 200, 200);
+  doc.line(20, yPos + 10, 190, yPos + 10);
+  
+  const contentY = yPos + 25;
+
+  // Conteúdo do Recibo
+  doc.setFontSize(14);
+  doc.setTextColor(33, 33, 33);
+  const clientName = transaction.client_name || '__________________________________________';
+  const receiptText = `Recebemos de ${clientName} a importância de ${formatCurrency(transaction.amount)} referente a ${transaction.description}.`;
+  
+  const splitText = doc.splitTextToSize(receiptText, 170);
+  doc.text(splitText, 20, contentY);
+
+  // Detalhes em tabela
+  autoTable(doc, {
+    startY: contentY + 20,
+    head: [['Detalhes da Transação', '']],
+    body: [
+      ['Data da Transação', formattedTransactionDate],
+      ['Forma de Pagamento', transaction.payment_method || '-'],
+      ['Categoria', transaction.category],
+    ],
+    theme: 'striped',
+    headStyles: { fillColor: [37, 99, 235], textColor: 255 },
+    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } },
+    margin: { left: 20, right: 20 }
+  });
+
+  // Rodapé
+  const footerY = 220; // Ajustado para baixo
+  doc.setFontSize(11);
+  doc.setTextColor(100, 100, 100);
+  const city = companyAddress?.split(',')[0] || '';
+  doc.text(`${city}, ${dateStr}`, 105, footerY, { align: 'center' });
+
+  // Área de Assinatura
+  doc.setDrawColor(33, 33, 33);
+  doc.line(70, footerY + 30, 140, footerY + 30);
+  doc.setFontSize(10);
+  doc.setTextColor(33, 33, 33);
+  doc.text(companyName, 105, footerY + 38, { align: 'center' });
+
+  // Salvar/Abrir PDF
+  const blob = doc.output('blob');
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+  
+  // Opcional: Limpar o URL após um tempo para liberar memória
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 }

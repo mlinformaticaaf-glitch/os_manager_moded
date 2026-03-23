@@ -11,9 +11,10 @@ export interface FinancialTransaction {
   status: 'pending' | 'paid' | 'cancelled';
   payment_method: string | null;
   notes: string | null;
-  recurring: boolean;
-  recurring_period: 'daily' | 'weekly' | 'monthly' | 'yearly';
-  installments: number;
+  recurring?: boolean;
+  recurring_period?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  client_id?: string | null;
+  installments?: number;
   created_at: string;
   updated_at: string;
 }

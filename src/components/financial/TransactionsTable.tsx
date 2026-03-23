@@ -60,7 +60,8 @@ function TransactionCard({
   transaction,
   onEdit,
   onDelete,
-  onMarkAsPaid
+  onMarkAsPaid,
+  onPrint
 }: {
   transaction: FinancialTransactionWithClient;
   onEdit: (transaction: FinancialTransactionWithClient) => void;
@@ -229,8 +230,8 @@ export function TransactionsTable({ filterType, filterStatus, onEdit, onNew }: T
     });
   };
 
-  const handlePrint = (transaction: FinancialTransactionWithClient) => {
-    printFinancialReceipt({
+  const handlePrint = async (transaction: FinancialTransactionWithClient) => {
+    await printFinancialReceipt({
       transaction,
       companyName: companySettings?.name,
       companyPhone: companySettings?.phone || undefined,
