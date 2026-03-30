@@ -35,6 +35,42 @@ const getPaymentMethodLabel = (method: string | null) => {
   return methods[method] || method;
 };
 
+const isNonEmpty = (value: string | null | undefined): value is string => {
+  return typeof value === 'string' && value.trim().length > 0;
+};
+
+function getEquipmentSummary(order: ServiceOrder): string | null {
+  const primaryEquipment = [order.equipment, order.equipment_ref?.description].find(isNonEmpty);
+  const identityParts = [primaryEquipment, order.brand, order.model].filter(isNonEmpty);
+
+  if (identityParts.length === 0) {
+    return null;
+  }
+
+  const [base, ...rest] = identityParts;
+  return rest.length > 0 ? `${base} - ${rest.join(' ')}` : base;
+}
+
+function appendEquipmentBlock(message: string, order: ServiceOrder): string {
+  const equipmentSummary = getEquipmentSummary(order);
+
+  if (!equipmentSummary) {
+    return message;
+  }
+
+  let nextMessage = `${message}*Equipamento:*\n${equipmentSummary}\n`;
+
+  if (isNonEmpty(order.serial_number)) {
+    nextMessage += `S/N: ${order.serial_number}\n`;
+  }
+
+  if (isNonEmpty(order.accessories)) {
+    nextMessage += `Acessórios: ${order.accessories}\n`;
+  }
+
+  return `${nextMessage}\n`;
+}
+
 export function formatWhatsAppMessage({ order, items, companyName = 'Assistência Técnica', footerMessage = 'Obrigado pela preferência!', warrantyTerms }: WhatsAppMessageData): string {
   const services = items.filter(i => i.type === 'service');
   const products = items.filter(i => i.type === 'product');
@@ -54,15 +90,7 @@ export function formatWhatsAppMessage({ order, items, companyName = 'Assistênci
     message += `\n`;
   }
 
-  if (order.equipment || order.equipment_ref) {
-    message += `*Equipamento:*\n`;
-    message += `${order.equipment_ref?.description || order.equipment}`;
-    if (order.brand) message += ` - ${order.brand}`;
-    if (order.model) message += ` ${order.model}`;
-    message += '\n';
-    if (order.serial_number) message += `S/N: ${order.serial_number}\n`;
-    message += '\n';
-  }
+  message = appendEquipmentBlock(message, order);
 
   message += `*Problema Relatado:*\n`;
   message += `${order.reported_issue}\n\n`;
@@ -130,6 +158,7 @@ export function formatWhatsAppStatusUpdate({ order, companyName = 'Assistência 
 
   let message = `*${companyName}*\n\n`;
   message += `Olá! Informamos que sua OS #${formatOSNumber(order.order_number, order.created_at)} teve uma atualização de status:\n\n`;
+  message = appendEquipmentBlock(message, order);
   message += `*Novo Status:* ${statusLabel}\n`;
 
   if (order.status === 'completed') {
@@ -156,6 +185,7 @@ export function formatWhatsAppStatusUpdate({ order, companyName = 'Assistência 
 export function formatWhatsAppPaymentReminder({ order, companyName = 'Assistência Técnica' }: { order: ServiceOrder; companyName?: string }): string {
   let message = `*${companyName}*\n\n`;
   message += `Olá! Este é um lembrete sobre o pagamento pendente da sua OS #${formatOSNumber(order.order_number, order.created_at)}.\n\n`;
+  message = appendEquipmentBlock(message, order);
   message += `*Valor:* ${formatCurrency(order.total)}\n`;
 
   if (order.payment_method) {
