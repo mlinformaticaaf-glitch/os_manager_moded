@@ -21,7 +21,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Client } from '@/types/client';
 import { Loader2 } from 'lucide-react';
 import { useMobileBackButton } from '@/hooks/useMobileBackButton';
@@ -114,7 +113,7 @@ export function ClientForm({
               </DialogHeader>
             </div>
 
-            <ScrollArea className="flex-1 min-h-0 w-full overflow-hidden">
+            <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
               <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
                 <FormField
                   control={form.control}
@@ -237,7 +236,7 @@ export function ClientForm({
                   )}
                 />
               </div>
-            </ScrollArea>
+            </div>
 
             <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
               <Button

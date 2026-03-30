@@ -29,7 +29,6 @@ import { Input } from '@/components/ui/input';
 import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Separator } from '@/components/ui/separator';
 import { useSuppliers } from '@/hooks/useSuppliers';
@@ -248,7 +247,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
               </DialogHeader>
             </div>
 
-            <ScrollArea className="flex-1 min-h-0 w-full overflow-hidden">
+            <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
               <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
                 {/* Supplier and Invoice */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -537,7 +536,7 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
                   )}
                 />
               </div>
-            </ScrollArea>
+            </div>
           </form>
         </Form>
 

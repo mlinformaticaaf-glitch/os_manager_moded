@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/form';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Equipment } from '@/types/equipment';
 import { useMobileBackButton } from '@/hooks/useMobileBackButton';
@@ -94,7 +93,7 @@ export function EquipmentForm({
               </DialogHeader>
             </div>
 
-            <ScrollArea className="flex-1 min-h-0 w-full overflow-hidden">
+            <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
               <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
                 <FormField
                   control={form.control}
@@ -136,7 +135,7 @@ export function EquipmentForm({
                   )}
                 />
               </div>
-            </ScrollArea>
+            </div>
 
             <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
               <Button

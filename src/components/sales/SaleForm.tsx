@@ -43,7 +43,6 @@ import { Input } from '@/components/ui/input';
 import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Separator } from '@/components/ui/separator';
 import { useClients } from '@/hooks/useClients';
@@ -268,7 +267,7 @@ export function SaleForm({ open, onOpenChange, onSubmit, isSubmitting, editingSa
                                 </DialogHeader>
                             </div>
 
-                            <ScrollArea className="flex-1 min-h-0 w-full overflow-hidden">
+                            <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
                                 <div className="p-4 sm:p-6 pb-0 space-y-6 w-full max-w-[100vw] min-w-0 overflow-hidden box-border">
                                     {/* Client selection */}
                                     <div className="grid grid-cols-1 gap-4">
@@ -631,7 +630,7 @@ export function SaleForm({ open, onOpenChange, onSubmit, isSubmitting, editingSa
                                         )}
                                     />
                                 </div>
-                            </ScrollArea>
+                            </div>
                         </form>
                     </Form>
 
