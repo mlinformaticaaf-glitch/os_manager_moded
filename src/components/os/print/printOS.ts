@@ -2,6 +2,7 @@ import { ServiceOrder, ServiceOrderItem, STATUS_CONFIG, PRIORITY_CONFIG } from '
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatOSNumber } from '@/lib/osUtils';
+import jsPDF from 'jspdf';
 
 interface PrintData {
   order: ServiceOrder;
@@ -488,10 +489,10 @@ function generateA4Styles() {
   `;
 }
 
-export function printOSA4(data: PrintData) {
+const buildA4DocumentContent = (data: PrintData) => {
   const body = generateA4Body(data);
 
-  const content = `
+  return `
     <!DOCTYPE html>
     <html lang="pt-BR">
     <head>
@@ -504,6 +505,82 @@ export function printOSA4(data: PrintData) {
     </body>
     </html>
   `;
+};
+
+const sanitizeFileName = (value: string) => value.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+async function generateOSA4PdfBlob(data: PrintData): Promise<Blob> {
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.left = '-99999px';
+  container.style.top = '0';
+  container.style.width = '210mm';
+  container.style.background = '#fff';
+  container.innerHTML = buildA4DocumentContent(data);
+  document.body.appendChild(container);
+
+  try {
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    await doc.html(container, {
+      margin: [5, 5, 5, 5],
+      autoPaging: 'text',
+      html2canvas: {
+        scale: 0.55,
+        useCORS: true,
+      },
+      width: 200,
+      windowWidth: container.scrollWidth,
+    });
+
+    return doc.output('blob');
+  } finally {
+    document.body.removeChild(container);
+  }
+}
+
+export async function shareOSA4PDF(data: PrintData) {
+  const pdfBlob = await generateOSA4PdfBlob(data);
+  const orderId = sanitizeFileName(formatOSNumber(data.order.order_number, data.order.created_at));
+  const fileName = `OS_${orderId}.pdf`;
+
+  const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+  if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+    await navigator.share({
+      title: `Ordem de Servico ${formatOSNumber(data.order.order_number, data.order.created_at)}`,
+      text: `OS ${formatOSNumber(data.order.order_number, data.order.created_at)}`,
+      files: [file],
+    });
+    return;
+  }
+
+  const url = URL.createObjectURL(pdfBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+export async function promptShareBeforePrintOSA4(data: PrintData) {
+  const wantsToShare = window.confirm('Deseja compartilhar o PDF da OS antes de imprimir?');
+
+  if (wantsToShare) {
+    try {
+      await shareOSA4PDF(data);
+    } catch (error) {
+      console.error('Erro ao compartilhar PDF da OS:', error);
+      window.alert('Nao foi possivel compartilhar o PDF. A impressao continuara normalmente.');
+    }
+  }
+
+  printOSA4(data);
+}
+
+export function printOSA4(data: PrintData) {
+  const content = buildA4DocumentContent(data);
 
   const printWindow = window.open('', '_blank');
   if (printWindow) {

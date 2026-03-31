@@ -57,6 +57,7 @@ import { ServiceForm } from '@/components/services/ServiceForm';
 import { ProductForm } from '@/components/products/ProductForm';
 import { useToast } from '@/hooks/use-toast';
 import { CurrencyInput } from '@/components/ui/currency-input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useMobileBackButton } from '@/hooks/useMobileBackButton';
 
 const osSchema = z.object({
@@ -412,7 +413,7 @@ export function OSForm({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit, onInvalid)}
-              className="flex-1 min-h-0 flex flex-col overflow-hidden"
+              className="flex-1 min-h-0 flex flex-col"
             >
               <DialogHeader className="shrink-0 py-2.5 px-2.5 sm:px-4 lg:px-6 sm:py-3 border-b">
                 <DialogTitle className="text-center text-base sm:text-lg">
@@ -421,8 +422,8 @@ export function OSForm({
                 <DialogDescription className="sr-only">Formulário de edição da ordem de serviço.</DialogDescription>
               </DialogHeader>
 
-              <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
-                <div className="py-4 px-4 sm:px-6 space-y-4 text-sm sm:text-base w-full max-w-[100vw] overflow-hidden mix-w-0 [&_input]:h-9 sm:[&_input]:h-10 [&_[role=combobox]]:h-9 sm:[&_[role=combobox]]:h-10 [&_textarea]:min-h-[72px] sm:[&_textarea]:min-h-[96px]">
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="py-4 px-4 sm:px-6 space-y-4 text-sm sm:text-base w-full max-w-[100vw] min-w-0 [&_input]:h-9 sm:[&_input]:h-10 [&_[role=combobox]]:h-9 sm:[&_[role=combobox]]:h-10 [&_textarea]:min-h-[72px] sm:[&_textarea]:min-h-[96px]">
 
 
 
@@ -1180,7 +1181,7 @@ export function OSForm({
 
 
                 </div>
-              </div>
+              </ScrollArea>
 
               <div className="shrink-0 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-4 sm:p-6 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <Button

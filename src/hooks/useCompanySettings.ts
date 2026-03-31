@@ -4,6 +4,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { CompanySettings, CompanySettingsUpdate } from '@/types/companySettings';
 
+function getStorageErrorMessage(error: { message?: string }): string {
+  const message = error?.message ?? 'Erro inesperado no upload de arquivo.';
+
+  if (/bucket not found/i.test(message)) {
+    return 'Bucket de logos nao encontrado no Supabase. Execute as migrations para criar o bucket company-logos.';
+  }
+
+  return message;
+}
+
 export function useCompanySettings() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -114,7 +124,7 @@ export function useCompanySettings() {
     onError: (error) => {
       toast({
         title: 'Erro ao enviar logo',
-        description: error.message,
+        description: getStorageErrorMessage(error),
         variant: 'destructive',
       });
     },
@@ -150,7 +160,7 @@ export function useCompanySettings() {
     onError: (error) => {
       toast({
         title: 'Erro ao remover logo',
-        description: error.message,
+        description: getStorageErrorMessage(error),
         variant: 'destructive',
       });
     },

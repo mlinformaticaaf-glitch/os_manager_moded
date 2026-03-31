@@ -42,6 +42,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { Separator } from '@/components/ui/separator';
@@ -251,12 +252,12 @@ export function SaleForm({ open, onOpenChange, onSubmit, isSubmitting, editingSa
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-2xl w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
-                <div className="w-full sm:w-full mr-auto flex flex-col flex-1 h-full min-h-0 overflow-hidden">
+                <div className="w-full sm:w-full mr-auto flex flex-col flex-1 h-full min-h-0">
                     <Form {...form}>
                         <form
                             id="sale-form"
                             onSubmit={form.handleSubmit(handleSubmit)}
-                            className="flex-1 min-h-0 flex flex-col overflow-hidden"
+                            className="flex-1 min-h-0 flex flex-col"
                         >
                             <div className="shrink-0 p-4 sm:p-6 pb-0 min-w-0">
                                 <DialogHeader className="min-w-0">
@@ -267,8 +268,8 @@ export function SaleForm({ open, onOpenChange, onSubmit, isSubmitting, editingSa
                                 </DialogHeader>
                             </div>
 
-                            <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
-                                <div className="p-4 sm:p-6 pb-0 space-y-6 w-full max-w-[100vw] min-w-0 overflow-hidden box-border">
+                            <ScrollArea className="flex-1 min-h-0">
+                                <div className="p-4 sm:p-6 pb-0 space-y-6 w-full max-w-[100vw] min-w-0 box-border">
                                     {/* Client selection */}
                                     <div className="grid grid-cols-1 gap-4">
                                         <FormField
@@ -630,7 +631,7 @@ export function SaleForm({ open, onOpenChange, onSubmit, isSubmitting, editingSa
                                         )}
                                     />
                                 </div>
-                            </div>
+                            </ScrollArea>
                         </form>
                     </Form>
 

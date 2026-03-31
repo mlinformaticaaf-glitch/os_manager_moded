@@ -20,6 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { CapitalizedInput } from '@/components/ui/capitalized-input';
 import { CapitalizedTextarea } from '@/components/ui/capitalized-textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { CurrencyInput } from '@/components/ui/currency-input';
@@ -117,7 +118,7 @@ export function ServiceForm({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="flex-1 min-h-0 flex flex-col overflow-hidden">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="flex-1 min-h-0 flex flex-col">
             <div className="shrink-0 p-4 sm:p-6 pb-0">
               <DialogHeader>
                 <DialogTitle>
@@ -129,7 +130,7 @@ export function ServiceForm({
               </DialogHeader>
             </div>
 
-            <div className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain">
+            <ScrollArea className="flex-1 min-h-0">
               <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
                 <FormField
                   control={form.control}
@@ -260,7 +261,7 @@ export function ServiceForm({
                   )}
                 />
               </div>
-            </div>
+            </ScrollArea>
 
             <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
               <Button

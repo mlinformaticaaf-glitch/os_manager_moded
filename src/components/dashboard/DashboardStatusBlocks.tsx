@@ -88,7 +88,7 @@ export function DashboardStatusBlocks() {
                                         </div>
 
                                         <h4 className="font-semibold text-foreground text-sm mb-1 truncate pr-6">
-                                            {order.equipment || 'Equipamento não informado'}
+                                            {order.equipment || order.equipment_ref?.description || 'Equipamento não informado'}
                                         </h4>
 
                                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3">

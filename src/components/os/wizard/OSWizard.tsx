@@ -12,9 +12,10 @@ import { SummaryStep } from './steps/SummaryStep';
 import { WizardStep, WizardFormData, WizardItemData, WIZARD_STEPS } from './types';
 import { useServiceOrders, useServiceOrderItems } from '@/hooks/useServiceOrders';
 import { ServiceOrder, ServiceOrderItem } from '@/types/serviceOrder';
-import { printOSA4 } from '@/components/os/print/printOS';
+import { promptShareBeforePrintOSA4 } from '@/components/os/print/printOS';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { useClients } from '@/hooks/useClients';
+import { useEquipment } from '@/hooks/useEquipment';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { WizardWhatsAppDialog } from './steps/WizardWhatsAppDialog';
 
@@ -46,6 +47,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
   const { createOrder, orders } = useServiceOrders();
   const { settings } = useCompanySettings();
   const { clients } = useClients();
+  const { equipment: equipmentList } = useEquipment();
   const [currentStep, setCurrentStep] = useState<WizardStep>('client');
   const [completedSteps, setCompletedSteps] = useState<WizardStep[]>([]);
   const [formData, setFormData] = useState<WizardFormData>(initialFormData);
@@ -133,7 +135,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
         warranty_until: null,
         completed_at: null,
         delivered_at: null,
-        equipment: null,
+        equipment: equipmentList.find((e) => e.id === formData.equipment_id)?.description ?? null,
         brand: null,
         model: null,
         items: formData.items.map((item) => ({
@@ -153,7 +155,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
     );
   }, [formData, createOrder, markStepCompleted]);
 
-  const handlePrint = useCallback(() => {
+  const handlePrint = useCallback(async () => {
     if (!createdOrder) return;
 
     const items: ServiceOrderItem[] = formData.items.map((item, index) => ({
@@ -175,7 +177,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
         : null,
     };
 
-    printOSA4({
+    await promptShareBeforePrintOSA4({
       order: orderWithClient,
       items,
       companyName: settings?.name || 'Assistência Técnica',

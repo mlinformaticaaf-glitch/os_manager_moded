@@ -58,7 +58,7 @@ export function DashboardOSList() {
                     {order.client?.name || 'Cliente não informado'}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
-                    {order.equipment || 'Equipamento não informado'}
+                    {order.equipment || order.equipment_ref?.description || 'Equipamento não informado'}
                   </p>
                 </div>
               </div>
