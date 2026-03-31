@@ -509,33 +509,197 @@ const buildA4DocumentContent = (data: PrintData) => {
 
 const sanitizeFileName = (value: string) => value.replace(/[^a-zA-Z0-9_-]/g, '_');
 
-async function generateOSA4PdfBlob(data: PrintData): Promise<Blob> {
-  const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.left = '-99999px';
-  container.style.top = '0';
-  container.style.width = '210mm';
-  container.style.background = '#fff';
-  container.innerHTML = buildA4DocumentContent(data);
-  document.body.appendChild(container);
-
-  try {
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    await doc.html(container, {
-      margin: [5, 5, 5, 5],
-      autoPaging: 'text',
-      html2canvas: {
-        scale: 0.55,
-        useCORS: true,
-      },
-      width: 200,
-      windowWidth: container.scrollWidth,
-    });
-
-    return doc.output('blob');
-  } finally {
-    document.body.removeChild(container);
+const cleanPhoneNumber = (phone: string) => {
+  let cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 10 || cleaned.length === 11) {
+    cleaned = `55${cleaned}`;
   }
+  return cleaned;
+};
+
+const triggerBlobDownload = (blob: Blob, fileName: string) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+async function generateOSA4PdfBlob(data: PrintData): Promise<Blob> {
+  const { order, items, companyName = 'Assistência Técnica', companyPhone, companyAddress, companyEmail, companyDocument, warrantyTerms, footerMessage = 'Obrigado pela preferência!' } = data;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 12;
+  const contentWidth = pageWidth - margin * 2;
+  let y = 14;
+
+  const ensureSpace = (needed = 8) => {
+    if (y + needed > pageHeight - 14) {
+      doc.addPage();
+      y = 14;
+    }
+  };
+
+  const lineText = (text: string, size = 10, color: [number, number, number] = [32, 32, 32]) => {
+    ensureSpace(size * 0.6 + 2);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(size);
+    doc.setTextColor(color[0], color[1], color[2]);
+    doc.text(text, margin, y);
+    y += size * 0.45 + 2;
+  };
+
+  const sectionTitle = (text: string) => {
+    ensureSpace(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(37, 99, 235);
+    doc.text(text, margin, y);
+    y += 4;
+    doc.setDrawColor(220, 220, 220);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 4;
+  };
+
+  const multiline = (text: string, size = 10) => {
+    const safeText = text && text.trim().length > 0 ? text : '-';
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(size);
+    doc.setTextColor(40, 40, 40);
+    const lines = doc.splitTextToSize(safeText, contentWidth);
+    const lineHeight = size * 0.5 + 1;
+    ensureSpace(lines.length * lineHeight + 2);
+    doc.text(lines, margin, y);
+    y += lines.length * lineHeight + 2;
+  };
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(20, 20, 20);
+  doc.text(companyName, margin, y);
+  y += 6;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(90, 90, 90);
+  if (companyDocument) {
+    doc.text(companyDocument, margin, y);
+    y += 4;
+  }
+  if (companyPhone) {
+    doc.text(`Telefone: ${companyPhone}`, margin, y);
+    y += 4;
+  }
+  if (companyEmail) {
+    doc.text(`E-mail: ${companyEmail}`, margin, y);
+    y += 4;
+  }
+  if (companyAddress) {
+    doc.text(companyAddress, margin, y);
+    y += 4;
+  }
+
+  y += 2;
+  doc.setDrawColor(210, 210, 210);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 6;
+
+  sectionTitle(`OS ${formatOSNumber(order.order_number, order.created_at)}`);
+  lineText(`Data: ${format(new Date(order.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, 10);
+  lineText(`Status: ${(STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] || { label: order.status }).label}`, 10);
+  lineText(`Pagamento: ${getPaymentMethodLabel(order.payment_method)}`, 10);
+
+  if (order.client) {
+    sectionTitle('Cliente');
+    lineText(`Nome: ${order.client.name || '-'}`, 10);
+    lineText(`Telefone: ${order.client.phone || '-'}`, 10);
+    lineText(`E-mail: ${order.client.email || '-'}`, 10);
+  }
+
+  sectionTitle('Equipamento');
+  lineText(`Descrição: ${order.equipment || order.equipment_ref?.description || '-'}`, 10);
+  lineText(`Marca/Modelo: ${[order.brand, order.model].filter(Boolean).join(' / ') || '-'}`, 10);
+  lineText(`S/N: ${order.serial_number || '-'}`, 10);
+  lineText(`Acessórios: ${order.accessories || '-'}`, 10);
+
+  sectionTitle('Descrição do Serviço');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(30, 30, 30);
+  doc.text('Problema Relatado:', margin, y);
+  y += 4;
+  multiline(order.reported_issue || '-');
+
+  if (order.diagnosis) {
+    doc.setFont('helvetica', 'bold');
+    doc.text('Diagnóstico:', margin, y);
+    y += 4;
+    multiline(order.diagnosis);
+  }
+
+  if (order.solution) {
+    doc.setFont('helvetica', 'bold');
+    doc.text('Solução Aplicada:', margin, y);
+    y += 4;
+    multiline(order.solution);
+  }
+
+  const services = items.filter((item) => item.type === 'service');
+  const products = items.filter((item) => item.type === 'product');
+
+  if (services.length > 0) {
+    sectionTitle('Serviços');
+    services.forEach((item) => {
+      ensureSpace(10);
+      lineText(`${item.quantity}x ${item.description}`, 10);
+      lineText(`Unit.: ${formatCurrency(item.unit_price)} | Total: ${formatCurrency(item.quantity * item.unit_price)}`, 9, [90, 90, 90]);
+      y += 1;
+    });
+  }
+
+  if (products.length > 0) {
+    sectionTitle('Produtos / Peças');
+    products.forEach((item) => {
+      ensureSpace(10);
+      lineText(`${item.quantity}x ${item.description}`, 10);
+      lineText(`Unit.: ${formatCurrency(item.unit_price)} | Total: ${formatCurrency(item.quantity * item.unit_price)}`, 9, [90, 90, 90]);
+      y += 1;
+    });
+  }
+
+  sectionTitle('Totais');
+  lineText(`Serviços: ${formatCurrency(order.total_services)}`, 10);
+  lineText(`Produtos: ${formatCurrency(order.total_products)}`, 10);
+  if (order.discount > 0) {
+    lineText(`Desconto: -${formatCurrency(order.discount)}`, 10);
+  }
+  doc.setFont('helvetica', 'bold');
+  lineText(`TOTAL: ${formatCurrency(order.total)}`, 12, [37, 99, 235]);
+
+  if (order.warranty_until || warrantyTerms) {
+    sectionTitle('Garantia');
+    if (order.warranty_until) {
+      lineText(`Garantia até: ${format(new Date(order.warranty_until), 'dd/MM/yyyy', { locale: ptBR })}`, 10);
+    }
+    if (warrantyTerms) {
+      multiline(warrantyTerms, 9);
+    }
+  }
+
+  if (footerMessage) {
+    ensureSpace(10);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(9);
+    doc.setTextColor(110, 110, 110);
+    doc.text(footerMessage, margin, pageHeight - 10);
+  }
+
+  return doc.output('blob');
 }
 
 export async function shareOSA4PDF(data: PrintData) {
@@ -554,29 +718,32 @@ export async function shareOSA4PDF(data: PrintData) {
     return;
   }
 
-  const url = URL.createObjectURL(pdfBlob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  triggerBlobDownload(pdfBlob, fileName);
 }
 
-export async function promptShareBeforePrintOSA4(data: PrintData) {
-  const wantsToShare = window.confirm('Deseja compartilhar o PDF da OS antes de imprimir?');
+export async function sendOSA4PDFToWhatsApp(data: PrintData, phone: string) {
+  const pdfBlob = await generateOSA4PdfBlob(data);
+  const orderId = sanitizeFileName(formatOSNumber(data.order.order_number, data.order.created_at));
+  const fileName = `OS_${orderId}.pdf`;
+  const file = new File([pdfBlob], fileName, { type: 'application/pdf' });
 
-  if (wantsToShare) {
-    try {
-      await shareOSA4PDF(data);
-    } catch (error) {
-      console.error('Erro ao compartilhar PDF da OS:', error);
-      window.alert('Nao foi possivel compartilhar o PDF. A impressao continuara normalmente.');
-    }
+  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+    await navigator.share({
+      title: `OS ${formatOSNumber(data.order.order_number, data.order.created_at)}`,
+      text: 'Segue o PDF da ordem de serviço.',
+      files: [file],
+    });
+    return;
   }
 
-  printOSA4(data);
+  triggerBlobDownload(pdfBlob, fileName);
+
+  const cleanedPhone = cleanPhoneNumber(phone);
+  const fallbackMessage = encodeURIComponent(
+    `PDF da OS ${formatOSNumber(data.order.order_number, data.order.created_at)} gerado. ` +
+      `Anexe o arquivo ${fileName} no WhatsApp para concluir o envio.`,
+  );
+  window.open(`https://wa.me/${cleanedPhone}?text=${fallbackMessage}`, '_blank');
 }
 
 export function printOSA4(data: PrintData) {

@@ -6,9 +6,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Printer, FileText, Receipt, Copy } from "lucide-react";
-import { printOSA4Dual, printOSThermal, promptShareBeforePrintOSA4 } from "./printOS";
+import { Printer, FileText, Receipt, Copy, MessageCircle } from "lucide-react";
+import { printOSA4, printOSA4Dual, printOSThermal, sendOSA4PDFToWhatsApp } from "./printOS";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
+import { useToast } from "@/hooks/use-toast";
 
 interface OSPrintButtonProps {
   order: ServiceOrder;
@@ -19,8 +20,9 @@ interface OSPrintButtonProps {
 
 export function OSPrintButton({ order, items, variant = "outline", size = "sm" }: OSPrintButtonProps) {
   const { settings } = useCompanySettings();
+  const { toast } = useToast();
 
-  const handlePrint = async (type: 'a4' | 'a4-dual' | 'thermal') => {
+  const handlePrint = async (type: 'a4' | 'a4-dual' | 'thermal' | 'whatsapp') => {
     const printData = {
       order,
       items,
@@ -37,9 +39,37 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
     };
 
     if (type === 'a4') {
-      await promptShareBeforePrintOSA4(printData);
+      printOSA4(printData);
     } else if (type === 'a4-dual') {
       printOSA4Dual(printData);
+    } else if (type === 'whatsapp') {
+      if (!order.client?.phone) {
+        toast({
+          title: 'Telefone não encontrado',
+          description: 'Cadastre o telefone do cliente para enviar via WhatsApp.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      try {
+        await sendOSA4PDFToWhatsApp(printData, order.client.phone);
+        toast({
+          title: 'Envio iniciado',
+          description: 'PDF preparado para envio no WhatsApp.',
+        });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+
+        console.error('Erro ao enviar PDF no WhatsApp:', error);
+        toast({
+          title: 'Falha ao enviar PDF',
+          description: 'Não foi possível preparar o envio via WhatsApp.',
+          variant: 'destructive',
+        });
+      }
     } else {
       printOSThermal(printData);
     }
@@ -56,7 +86,7 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => void handlePrint('a4')}>
           <FileText className="h-4 w-4 mr-2" />
-          A4 - Via Única
+          A4 - Gerar PDF
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => void handlePrint('a4-dual')}>
           <Copy className="h-4 w-4 mr-2" />
@@ -65,6 +95,10 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
         <DropdownMenuItem onClick={() => void handlePrint('thermal')}>
           <Receipt className="h-4 w-4 mr-2" />
           Térmica (58mm)
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => void handlePrint('whatsapp')}>
+          <MessageCircle className="h-4 w-4 mr-2" />
+          Enviar PDF no WhatsApp
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
