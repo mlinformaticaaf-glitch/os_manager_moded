@@ -86,7 +86,7 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => void handlePrint('a4')}>
           <FileText className="h-4 w-4 mr-2" />
-          A4 - Gerar PDF
+          A4 - Uma via
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => void handlePrint('a4-dual')}>
           <Copy className="h-4 w-4 mr-2" />
