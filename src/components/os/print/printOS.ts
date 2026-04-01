@@ -721,6 +721,36 @@ export async function shareOSA4PDF(data: PrintData) {
   triggerBlobDownload(pdfBlob, fileName);
 }
 
+export async function promptShareBeforePrintOSA4(data: PrintData) {
+  const supportsFileShare =
+    typeof navigator !== 'undefined' &&
+    typeof navigator.share === 'function' &&
+    typeof File !== 'undefined' &&
+    (typeof navigator.canShare !== 'function' ||
+      navigator.canShare({
+        files: [
+          new File([''], 'test.pdf', {
+            type: 'application/pdf',
+          }),
+        ],
+      }));
+
+  if (supportsFileShare) {
+    const shouldShare = window.confirm('Deseja compartilhar o PDF antes de imprimir?');
+    if (shouldShare) {
+      try {
+        await shareOSA4PDF(data);
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          console.error('Nao foi possivel compartilhar o PDF antes da impressao:', error);
+        }
+      }
+    }
+  }
+
+  printOSA4(data);
+}
+
 export async function sendOSA4PDFToWhatsApp(data: PrintData, phone: string) {
   const pdfBlob = await generateOSA4PdfBlob(data);
   const orderId = sanitizeFileName(formatOSNumber(data.order.order_number, data.order.created_at));
