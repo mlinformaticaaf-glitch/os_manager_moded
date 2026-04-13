@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -12,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building2, Upload, Trash2, Save, Phone, Mail, MapPin, FileText, QrCode } from "lucide-react";
+import { Building2, Upload, Trash2, Save, Phone, Mail, MapPin, FileText, QrCode, Hash, Settings as SettingsIcon } from "lucide-react";
 import { PIX_KEY_TYPES } from "@/components/os/pix/pixUtils";
 import { ChangePasswordCard } from "@/components/settings/ChangePasswordCard";
 import { DataImportCard } from "@/components/settings/DataImportCard";
@@ -38,6 +39,7 @@ const settingsSchema = z.object({
 type SettingsFormData = z.infer<typeof settingsSchema>;
 
 export default function Settings() {
+  const navigate = useNavigate();
   const { settings, isLoading, updateSettings, uploadLogo, removeLogo } = useCompanySettings();
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -389,6 +391,68 @@ export default function Settings() {
                     </FormItem>
                   )}
                 />
+              </CardContent>
+            </Card>
+
+            {/* OS Numbering Display */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Hash className="h-5 w-5" />
+                  Numeração de Ordens de Serviço
+                </CardTitle>
+                <CardDescription>
+                  Informações sobre a numeração das suas ordens de serviço
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                      Numeração Inicial
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {settings?.os_initial_number || 1}
+                    </p>
+                  </div>
+                  <div className="p-4 bg-muted rounded-lg">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
+                      Próximo Número a Usar
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {settings?.os_next_number || 1}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  A próxima ordem de serviço criada utilizará o número <span className="font-semibold">{String(settings?.os_next_number || 1).padStart(4, '0')}</span>
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Onboarding Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <SettingsIcon className="h-5 w-5" />
+                  Configuração da Empresa
+                </CardTitle>
+                <CardDescription>
+                  Configure ou reconfigure as informações iniciais da sua empresa
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Acesse o formulário de configuração para editar o nome da empresa, número inicial de ordens de serviço e outras informações.
+                </p>
+                <Button 
+                  type="button"
+                  onClick={() => navigate('/onboarding')}
+                  variant="outline"
+                >
+                  <SettingsIcon className="h-4 w-4 mr-2" />
+                  Acessar Configurações
+                </Button>
               </CardContent>
             </Card>
 

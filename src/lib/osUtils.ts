@@ -1,11 +1,10 @@
 /**
- * Formata o número da OS no padrão XXXX/AAAA
+ * Formata o número da OS com padding de 4 dígitos (muda para 5+ quando necessário)
  * @param orderNumber - Número sequencial da OS
- * @param createdAt - Data de criação da OS
- * @returns Número formatado (ex: 0001/2026)
+ * @param createdAt - Data de criação da OS (não usado mais, mantido para compatibilidade)
+ * @returns Número formatado (ex: 0001, 1696, 10000)
  */
 export function formatOSNumber(orderNumber: number, createdAt: string): string {
-  const year = new Date(createdAt).getFullYear();
   const paddedNumber = orderNumber.toString().padStart(4, '0');
-  return `${paddedNumber}/${year}`;
+  return paddedNumber;
 }

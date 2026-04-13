@@ -30,6 +30,9 @@ import { DeleteOSDialog } from '@/components/os/DeleteOSDialog';
 import { OSWizard } from '@/components/os/wizard';
 import { ServiceOrder, OSStatus } from '@/types/serviceOrder';
 import { useStatusSettings } from '@/hooks/useStatusSettings';
+import { useCompanySettings } from '@/hooks/useCompanySettings';
+import { useToast } from '@/hooks/use-toast';
+import { formatWhatsAppStatusTemplateMessage, openWhatsApp } from '@/components/os/whatsapp/whatsappUtils';
 import { ExportButton } from '@/components/common/ExportButton';
 import { FileText } from 'lucide-react';
 import { exportOSReportPDF } from '@/components/os/reports/OSReportGenerator';
@@ -49,6 +52,8 @@ function getStoredViewMode(): ViewMode {
 export default function ServiceOrders() {
   const { orders, isLoading, createOrder, updateOrder, updateStatus, deleteOrder } = useServiceOrders();
   const { statusConfig, orderedStatuses, getStatusConfig } = useStatusSettings();
+  const { settings } = useCompanySettings();
+  const { toast } = useToast();
   const location = useLocation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OSStatus | 'all'>('all');
@@ -128,7 +133,35 @@ export default function ServiceOrders() {
   };
 
   const handleStatusChange = (orderId: string, status: OSStatus) => {
-    updateStatus.mutate({ id: orderId, status });
+    const order = orders.find(o => o.id === orderId);
+    if (!order || order.status === status) return;
+
+    const nextStatusLabel = getStatusConfig(status).label;
+    const shouldSendWhatsApp = !!order.client?.phone && window.confirm(
+      `Status alterado para "${nextStatusLabel}". Deseja enviar mensagem no WhatsApp para o cliente?`
+    );
+
+    updateStatus.mutate(
+      { id: orderId, status },
+      {
+        onSuccess: () => {
+          if (!shouldSendWhatsApp || !order.client?.phone) return;
+
+          const companyName = settings?.name || 'Assistência Técnica';
+          const message = formatWhatsAppStatusTemplateMessage({
+            order: { ...order, status },
+            statusLabel: nextStatusLabel,
+            companyName,
+          });
+
+          openWhatsApp(order.client.phone, message);
+          toast({
+            title: 'WhatsApp aberto',
+            description: 'A mensagem foi preparada. Clique em enviar no WhatsApp.',
+          });
+        },
+      }
+    );
   };
 
   const handleDelete = () => {

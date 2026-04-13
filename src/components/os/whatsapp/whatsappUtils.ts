@@ -16,6 +16,22 @@ interface WhatsAppStatusData {
   companyName?: string;
 }
 
+interface WhatsAppStatusTemplateData {
+  order: ServiceOrder;
+  statusLabel: string;
+  companyName?: string;
+}
+
+const STATUS_WHATSAPP_TEMPLATES_BY_LABEL: Record<string, string> = {
+  '📋 EM ORÇAMENTO': '📋 EM ORÇAMENTO\n\nSua ordem de serviço está em análise. Entraremos em contato em breve com um orçamento detalhado.',
+  '🔧 EM ANDAMENTO': '🔧 EM ANDAMENTO\n\nSeu equipamento está sendo analisado e reparado. Atualizaremos você em breve!',
+  '⏳ AGUARD. PEÇAS': '⏳ AGUARDANDO PEÇAS\n\nEstamos aguardando a chegada das peças necessárias para prosseguir com o reparo.',
+  '⏸️ AGUARD. APROVAÇÃO': '⏸️ AGUARDANDO APROVAÇÃO\n\nAnalisamos seu equipamento. Por favor, revise o diagnóstico e aprove para prosseguirmos com o reparo.',
+  '✅ CONCLUÍDA': '✅ CONCLUÍDA\n\nSeu equipamento está pronto! Por favor, agende a retirada na sua conveniência.',
+  '📦 FATURADO E ENTREGUE': '📦 ENTREGUE\n\nSeu equipamento foi entregue com sucesso! Agradecemos a confiança em nossos serviços.',
+  '❌ CANCELADA': '❌ CANCELADA\n\nSua ordem de serviço foi cancelada. Se tiver dúvidas, entre em contato conosco.',
+};
+
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -180,6 +196,23 @@ export function formatWhatsAppStatusUpdate({ order, companyName = 'Assistência 
   }
 
   return message;
+}
+
+export function formatWhatsAppStatusTemplateMessage({
+  order,
+  statusLabel,
+  companyName = 'Assistência Técnica',
+}: WhatsAppStatusTemplateData): string {
+  const templateMessage = STATUS_WHATSAPP_TEMPLATES_BY_LABEL[statusLabel.trim().toUpperCase()];
+
+  if (templateMessage) {
+    let message = `*${companyName}*\n\n`;
+    message += `Olá! A sua OS #${formatOSNumber(order.order_number, order.created_at)} teve atualização de status:\n\n`;
+    message += `${templateMessage}`;
+    return message;
+  }
+
+  return formatWhatsAppStatusUpdate({ order, companyName });
 }
 
 export function formatWhatsAppPaymentReminder({ order, companyName = 'Assistência Técnica' }: { order: ServiceOrder; companyName?: string }): string {

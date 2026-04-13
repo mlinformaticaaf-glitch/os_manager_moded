@@ -15,6 +15,9 @@ export interface CompanySettings {
   pix_key: string | null;
   pix_key_type: string | null;
   pix_beneficiary: string | null;
+  onboarding_completed: boolean;
+  os_initial_number: number;
+  os_next_number: number;
   created_at: string;
   updated_at: string;
 }

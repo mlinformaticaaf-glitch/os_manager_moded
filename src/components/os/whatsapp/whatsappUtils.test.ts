@@ -3,6 +3,7 @@ import {
   formatWhatsAppMessage,
   formatWhatsAppPaymentReminder,
   formatWhatsAppStatusUpdate,
+  formatWhatsAppStatusTemplateMessage,
 } from './whatsappUtils';
 import { ServiceOrder, ServiceOrderItem } from '@/types/serviceOrder';
 
@@ -93,5 +94,84 @@ describe('whatsappUtils', () => {
 
     expect(message).toContain('*Equipamento:*');
     expect(message).toContain('Notebook Dell - Dell Inspiron 15');
+  });
+
+  it('uses custom status template message when status label is configured', () => {
+    const message = formatWhatsAppStatusTemplateMessage({
+      order: createOrder({ status: 'custom_quote' }),
+      statusLabel: '📋 EM ORÇAMENTO',
+    });
+
+    expect(message).toContain('📋 EM ORÇAMENTO');
+    expect(message).toContain('OS #0001');
+  });
+
+  it('falls back to generic status message when template does not exist', () => {
+    const message = formatWhatsAppStatusTemplateMessage({
+      order: createOrder({ status: 'in_progress' }),
+      statusLabel: 'EM REPARO',
+    });
+
+    expect(message).toContain('*Novo Status:* Em Andamento');
+  });
+
+  it('handles in_progress status template correctly', () => {
+    const message = formatWhatsAppStatusTemplateMessage({
+      order: createOrder({ status: 'in_progress' }),
+      statusLabel: '🔧 EM ANDAMENTO',
+    });
+
+    expect(message).toContain('🔧 EM ANDAMENTO');
+    expect(message).toContain('equipamento está sendo analisado e reparado');
+  });
+
+  it('handles waiting_parts status template correctly', () => {
+    const message = formatWhatsAppStatusTemplateMessage({
+      order: createOrder({ status: 'waiting_parts' }),
+      statusLabel: '⏳ AGUARD. PEÇAS',
+    });
+
+    expect(message).toContain('⏳ AGUARDANDO PEÇAS');
+    expect(message).toContain('aguardando a chegada das peças');
+  });
+
+  it('handles waiting_approval status template correctly', () => {
+    const message = formatWhatsAppStatusTemplateMessage({
+      order: createOrder({ status: 'waiting_approval' }),
+      statusLabel: '⏸️ AGUARD. APROVAÇÃO',
+    });
+
+    expect(message).toContain('⏸️ AGUARDANDO APROVAÇÃO');
+    expect(message).toContain('revise o diagnóstico e aprove');
+  });
+
+  it('handles completed status template correctly', () => {
+    const message = formatWhatsAppStatusTemplateMessage({
+      order: createOrder({ status: 'completed' }),
+      statusLabel: '✅ CONCLUÍDA',
+    });
+
+    expect(message).toContain('✅ CONCLUÍDA');
+    expect(message).toContain('agende a retirada');
+  });
+
+  it('handles delivered status template correctly', () => {
+    const message = formatWhatsAppStatusTemplateMessage({
+      order: createOrder({ status: 'delivered' }),
+      statusLabel: '📦 FATURADO E ENTREGUE',
+    });
+
+    expect(message).toContain('📦 ENTREGUE');
+    expect(message).toContain('entregue com sucesso');
+  });
+
+  it('handles cancelled status template correctly', () => {
+    const message = formatWhatsAppStatusTemplateMessage({
+      order: createOrder({ status: 'cancelled' }),
+      statusLabel: '❌ CANCELADA',
+    });
+
+    expect(message).toContain('❌ CANCELADA');
+    expect(message).toContain('foi cancelada');
   });
 });

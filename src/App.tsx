@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
+import Onboarding from "./pages/Onboarding";
 import Clients from "./pages/Clients";
 import ServiceOrders from "./pages/ServiceOrders";
 import Equipment from "./pages/Equipment";
@@ -44,6 +45,14 @@ const App = () => (
             <Route path="/auth" element={<AuthRedirect />} />
             <Route path="/auth/callback" element={<Navigate to="/" replace />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route
+              path="/onboarding"
+              element={
+                <ProtectedRoute requireOnboarding={true}>
+                  <Onboarding />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/"
               element={
