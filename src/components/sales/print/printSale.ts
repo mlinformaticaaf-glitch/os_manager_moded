@@ -313,8 +313,13 @@ export function printSaleA4(data: PrintData) {
       <title>Venda ${formatSaleNumber(data.sale.sale_number, data.sale.created_at)}</title>
       <style>${generateA4Styles()}</style>
     </head>
-    <body onload="window.print(); window.close();">
+    <body onload="window.print();">
       ${body}
+      <script>
+        window.onafterprint = function() {
+          window.close();
+        };
+      </script>
     </body>
     </html>
   `;
@@ -380,7 +385,7 @@ export function printSaleThermal({ sale, items, companyName = 'Sistema de Vendas
         .footer { text-align: center; margin-top: 15px; font-size: 9px; }
       </style>
     </head>
-    <body onload="window.print(); window.close();">
+    <body onload="window.print();">
       <div class="header">
         <h1>${companyName}</h1>
         ${companyPhone ? `<p>${companyPhone}</p>` : ''}
@@ -454,6 +459,11 @@ export function printSaleThermal({ sale, items, companyName = 'Sistema de Vendas
       </div>
       
       <div style="margin-top: 20px;">.</div>
+      <script>
+        window.onafterprint = function() {
+          window.close();
+        };
+      </script>
     </body>
     </html>
   `;
