@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Printer, FileText, Receipt, Copy, MessageCircle } from "lucide-react";
-import { printOSA4, printOSA4Dual, printOSThermal, sendOSA4PDFToWhatsApp } from "./printOS";
+import { printOSA4, printOSA4Dual, printOSThermal, sendOSA4PDFToWhatsApp, printOSGabarito } from "./printOS";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,7 +22,7 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
   const { settings } = useCompanySettings();
   const { toast } = useToast();
 
-  const handlePrint = async (type: 'a4' | 'a4-dual' | 'thermal' | 'whatsapp') => {
+  const handlePrint = async (type: 'a4' | 'a4-dual' | 'thermal' | 'whatsapp' | 'gabarito') => {
     const printData = {
       order,
       items,
@@ -37,6 +37,11 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
       warrantyTerms: settings?.warranty_terms || undefined,
       footerMessage: settings?.footer_message || 'Obrigado pela preferência!',
     };
+
+    if (type === 'gabarito') {
+      printOSGabarito();
+      return;
+    }
 
     if (type === 'a4') {
       printOSA4(printData);
@@ -91,6 +96,10 @@ export function OSPrintButton({ order, items, variant = "outline", size = "sm" }
         <DropdownMenuItem onClick={() => void handlePrint('a4-dual')}>
           <Copy className="h-4 w-4 mr-2" />
           A4 - Duas Vias
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => void handlePrint('gabarito')}>
+          <Printer className="h-4 w-4 mr-2" />
+          A4 - Gabarito de Etiquetas
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => void handlePrint('thermal')}>
           <Receipt className="h-4 w-4 mr-2" />

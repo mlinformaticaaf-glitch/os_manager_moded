@@ -69,18 +69,23 @@ export default function ServiceOrders() {
   const { data: viewingOrderItems = [] } = useServiceOrderItems(viewingOrder?.id ?? null);
   const { data: editingOrderItems = [] } = useServiceOrderItems(editingOrder?.id ?? null);
 
-  // Handle navigation state to open a specific order
+  // Handle navigation state or query param to open a specific order
   useEffect(() => {
     const state = location.state as { viewOrderId?: string } | null;
-    if (state?.viewOrderId && orders.length > 0) {
-      const orderToView = orders.find(o => o.id === state.viewOrderId);
+    const searchParams = new URLSearchParams(location.search);
+    const urlOrderId = searchParams.get('id');
+    
+    const targetId = state?.viewOrderId || urlOrderId;
+
+    if (targetId && orders.length > 0) {
+      const orderToView = orders.find(o => o.id === targetId);
       if (orderToView) {
         setViewingOrder(orderToView);
-        // Clear the state to prevent re-opening on subsequent renders
-        window.history.replaceState({}, document.title);
+        // Clear the state and replace URL to prevent re-opening on subsequent renders
+        window.history.replaceState({}, document.title, location.pathname);
       }
     }
-  }, [location.state, orders]);
+  }, [location.state, location.search, location.pathname, orders]);
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {

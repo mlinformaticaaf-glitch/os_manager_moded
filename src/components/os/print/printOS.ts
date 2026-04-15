@@ -803,7 +803,9 @@ export function printOSA4Dual(data: PrintData) {
         ${generateA4Styles()}
 
         body {
-          padding: 8mm 12mm;
+          padding: 8mm 12mm !important;
+          position: relative;
+          box-sizing: border-box;
         }
 
         .os-copy {
@@ -930,6 +932,61 @@ export function printOSA4Dual(data: PrintData) {
           margin: 8px 0;
         }
 
+        .labels-container {
+          position: fixed;
+          bottom: 12mm;
+          left: 0;
+          right: 0;
+          display: flex;
+          gap: 15mm;
+          justify-content: center;
+          page-break-inside: avoid;
+        }
+
+        .equipment-label {
+          width: 50mm;
+          height: 30mm;
+          border: 1px dashed #666;
+          padding: 3mm;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #fff;
+        }
+
+        .label-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          overflow: hidden;
+        }
+
+        .label-os {
+          font-size: 10px;
+          font-weight: bold;
+          color: #000;
+        }
+
+        .label-client {
+          font-size: 8px;
+          color: #333;
+          word-wrap: break-word;
+          line-height: 1.1;
+        }
+
+        .label-phone {
+          font-size: 8px;
+          color: #333;
+        }
+
+        .label-qr {
+          width: 20mm;
+          height: 20mm;
+          margin-left: 2mm;
+        }
+
         @media print {
           body {
             print-color-adjust: exact;
@@ -942,6 +999,19 @@ export function printOSA4Dual(data: PrintData) {
       ${copy1}
       <hr class="dual-divider" />
       ${copy2}
+      
+      <div class="labels-container">
+        ${Array(2).fill(`
+          <div class="equipment-label">
+            <div class="label-info">
+              <div class="label-os">OS ${formatOSNumber(data.order.order_number, data.order.created_at)}</div>
+              <div class="label-client">${data.order.client?.name || 'Cliente não informado'}</div>
+              <div class="label-phone">${data.order.client?.phone || '-'}</div>
+            </div>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`${window.location.origin}/os?id=${data.order.id}`)}" class="label-qr" alt="QR Code" crossorigin="anonymous" />
+          </div>
+        `).join('')}
+      </div>
     </body>
     </html>
   `;
@@ -1217,6 +1287,121 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
         ${footerMessage}
         <br>
         ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+      </div>
+    </body>
+    </html>
+  `;
+
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.print();
+    };
+  }
+}
+
+export function printOSGabarito() {
+  const content = `
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+      <meta charset="UTF-8">
+      <title>Gabarito de Etiquetas</title>
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: Arial, Helvetica, sans-serif;
+          font-size: 10px;
+          color: #333;
+          padding: 8mm 12mm !important;
+          max-width: 210mm;
+          margin: 0 auto;
+          position: relative;
+        }
+
+        .labels-container {
+          position: fixed;
+          bottom: 12mm;
+          left: 0;
+          right: 0;
+          display: flex;
+          gap: 15mm;
+          justify-content: center;
+          page-break-inside: avoid;
+        }
+
+        .equipment-label {
+          width: 50mm;
+          height: 30mm;
+          border: 1px dashed #666;
+          padding: 3mm;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #fff;
+        }
+
+        .label-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          overflow: hidden;
+        }
+
+        .label-os {
+          font-size: 10px;
+          font-weight: bold;
+          color: #000;
+        }
+
+        .label-client {
+          font-size: 8px;
+          color: #333;
+          word-wrap: break-word;
+          line-height: 1.1;
+        }
+
+        .label-phone {
+          font-size: 8px;
+          color: #333;
+        }
+
+        .label-qr {
+          width: 20mm;
+          height: 20mm;
+          margin-left: 2mm;
+        }
+
+        @media print {
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <h1 style="text-align:center; padding: 50mm 0; color:#ccc;">GABARITO PARA AJUSTE DE ETIQUETAS NO RODAPÉ<br><br>Imprima esta folha em tamanho A4 para verificar o alinhamento físico</h1>
+      <div class="labels-container">
+        ${Array(2).fill(`
+          <div class="equipment-label">
+            <div class="label-info">
+              <div class="label-os">OS 000000</div>
+              <div class="label-client">NOME FANTASIA DO CLIENTE COMPLETO PARA TESTE</div>
+              <div class="label-phone">(00) 00000-0000</div>
+            </div>
+            <div class="label-qr" style="display:flex; justify-content:center; align-items:center; background:#f9f9f9; color:#bbb; font-size:6px; text-align:center;">QR CODE EX/M</div>
+          </div>
+        `).join('')}
       </div>
     </body>
     </html>
