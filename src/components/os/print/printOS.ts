@@ -1308,7 +1308,7 @@ export function printOSGabarito() {
     <html lang="pt-BR">
     <head>
       <meta charset="UTF-8">
-      <title>Gabarito de Etiquetas</title>
+      <title></title>
       <style>
         * {
           margin: 0;
@@ -1379,6 +1379,10 @@ export function printOSGabarito() {
           width: 20mm;
           height: 20mm;
           margin-left: 2mm;
+        }
+
+        @page {
+          margin: 0;
         }
 
         @media print {
