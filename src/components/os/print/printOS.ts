@@ -934,7 +934,7 @@ export function printOSA4Dual(data: PrintData) {
 
         .labels-container {
           position: fixed;
-          bottom: 12mm;
+          bottom: 20mm;
           left: 0;
           right: 0;
           display: flex;
@@ -1328,7 +1328,7 @@ export function printOSGabarito() {
 
         .labels-container {
           position: fixed;
-          bottom: 12mm;
+          bottom: 20mm;
           left: 0;
           right: 0;
           display: flex;
