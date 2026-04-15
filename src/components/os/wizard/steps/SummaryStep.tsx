@@ -2,6 +2,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { WizardFormData, WizardItemData } from '../types';
 import { STATUS_CONFIG, PRIORITY_CONFIG, OSDefaultStatus } from '@/types/serviceOrder';
 import { useStatusSettings } from '@/hooks/useStatusSettings';
@@ -19,8 +25,13 @@ import {
   Loader2,
   Check,
   Printer,
+  FileText,
+  Copy,
+  Receipt,
   MessageCircle,
 } from 'lucide-react';
+
+type PrintType = 'a4' | 'a4-dual' | 'thermal';
 
 interface SummaryStepProps {
   formData: WizardFormData;
@@ -28,7 +39,7 @@ interface SummaryStepProps {
   onSubmit: () => void;
   isSubmitting: boolean;
   createdOrderId?: string | null;
-  onPrint?: () => void;
+  onPrint?: (type: PrintType) => void;
   onWhatsApp?: () => void;
 }
 
@@ -85,22 +96,35 @@ export function SummaryStep({
         <Card className="border-green-200">
           <CardContent className="p-4 sm:p-8 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                size="lg"
-                className="h-16 flex items-center justify-center gap-3 border-2 hover:bg-muted"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  onPrint?.();
-                }}
-              >
-                <Printer className="h-6 w-6" />
-                <div className="text-left">
-                  <p className="font-bold text-sm">Imprimir OS</p>
-                  <p className="text-xs text-muted-foreground">Formato A4</p>
-                </div>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="h-16 flex items-center justify-center gap-3 border-2 hover:bg-muted w-full"
+                  >
+                    <Printer className="h-6 w-6" />
+                    <div className="text-left">
+                      <p className="font-bold text-sm">Imprimir OS</p>
+                      <p className="text-xs text-muted-foreground">Escolher formato</p>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  <DropdownMenuItem onClick={() => onPrint?.('a4')}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    A4 - Uma via
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onPrint?.('a4-dual')}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    A4 - Duas Vias
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onPrint?.('thermal')}>
+                    <Receipt className="h-4 w-4 mr-2" />
+                    Térmica (58mm)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 variant="outline"
                 size="lg"

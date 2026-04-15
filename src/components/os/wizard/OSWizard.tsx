@@ -12,7 +12,7 @@ import { SummaryStep } from './steps/SummaryStep';
 import { WizardStep, WizardFormData, WizardItemData, WIZARD_STEPS } from './types';
 import { useServiceOrders, useServiceOrderItems } from '@/hooks/useServiceOrders';
 import { ServiceOrder, ServiceOrderItem } from '@/types/serviceOrder';
-import { promptShareBeforePrintOSA4 } from '@/components/os/print/printOS';
+import { printOSA4, printOSA4Dual, printOSThermal } from '@/components/os/print/printOS';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { useClients } from '@/hooks/useClients';
 import { useEquipment } from '@/hooks/useEquipment';
@@ -155,7 +155,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
     );
   }, [formData, createOrder, markStepCompleted]);
 
-  const handlePrint = useCallback(async () => {
+  const handlePrint = useCallback(async (type: 'a4' | 'a4-dual' | 'thermal') => {
     if (!createdOrder) return;
 
     const items: ServiceOrderItem[] = formData.items.map((item, index) => ({
@@ -177,7 +177,7 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
         : null,
     };
 
-    await promptShareBeforePrintOSA4({
+    const printData = {
       order: orderWithClient,
       items,
       companyName: settings?.name || 'Assistência Técnica',
@@ -190,7 +190,15 @@ export function OSWizard({ open, onOpenChange }: OSWizardProps) {
       logoUrl: settings?.logo_url || undefined,
       warrantyTerms: settings?.warranty_terms || undefined,
       footerMessage: settings?.footer_message || 'Obrigado pela preferência!',
-    });
+    };
+
+    if (type === 'a4') {
+      printOSA4(printData);
+    } else if (type === 'a4-dual') {
+      printOSA4Dual(printData);
+    } else {
+      printOSThermal(printData);
+    }
   }, [createdOrder, formData, clients, settings]);
 
   const handleWhatsApp = useCallback(() => {
