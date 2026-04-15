@@ -1390,17 +1390,10 @@ export function printOSGabarito() {
       </style>
     </head>
     <body>
-      <h1 style="text-align:center; padding: 50mm 0; color:#ccc;">GABARITO PARA AJUSTE DE ETIQUETAS NO RODAPÉ<br><br>Imprima esta folha em tamanho A4 para verificar o alinhamento físico</h1>
+
       <div class="labels-container">
         ${Array(2).fill(`
-          <div class="equipment-label">
-            <div class="label-info">
-              <div class="label-os">OS 000000</div>
-              <div class="label-client">NOME FANTASIA DO CLIENTE COMPLETO PARA TESTE</div>
-              <div class="label-phone">(00) 00000-0000</div>
-            </div>
-            <div class="label-qr" style="display:flex; justify-content:center; align-items:center; background:#f9f9f9; color:#bbb; font-size:6px; text-align:center;">QR CODE EX/M</div>
-          </div>
+          <div class="equipment-label"></div>
         `).join('')}
       </div>
     </body>
