@@ -108,6 +108,10 @@ export default function Suppliers() {
         supplier={editingSupplier}
         onSubmit={handleFormSubmit}
         isSubmitting={createSupplier.isPending || updateSupplier.isPending}
+        onDelete={() => {
+          setFormOpen(false);
+          setDeletingSupplier(editingSupplier);
+        }}
       />
 
       {/* Delete Dialog */}

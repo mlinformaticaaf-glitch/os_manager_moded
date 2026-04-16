@@ -54,6 +54,7 @@ interface ProductFormProps {
   product?: Product | null;
   onSubmit: (data: ProductFormData) => void;
   isSubmitting?: boolean;
+  onDelete?: () => void;
 }
 
 export function ProductForm({
@@ -62,6 +63,7 @@ export function ProductForm({
   product,
   onSubmit,
   isSubmitting,
+  onDelete,
 }: ProductFormProps) {
   useMobileBackButton(open, () => onOpenChange(false));
 
@@ -315,16 +317,27 @@ export function ProductForm({
               </div>
             </ScrollArea>
 
-            <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
+            <div className="shrink-0 flex flex-wrap gap-3 p-4 sm:p-6 border-t bg-muted/20 justify-end">
+              {product && onDelete && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="mr-auto"
+                  onClick={onDelete}
+                  disabled={isSubmitting}
+                >
+                  Excluir
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="flex-1"
+                className="flex-1 sm:flex-none"
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
+              <Button type="submit" disabled={isSubmitting} className="flex-1 sm:flex-none">
                 {isSubmitting ? 'Salvando...' : product ? 'Atualizar' : 'Cadastrar'}
               </Button>
             </div>

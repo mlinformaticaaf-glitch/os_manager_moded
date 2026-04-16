@@ -45,6 +45,7 @@ interface ClientFormProps {
   client?: Client | null;
   onSubmit: (data: ClientFormData) => void;
   isSubmitting?: boolean;
+  onDelete?: () => void;
 }
 
 export function ClientForm({
@@ -53,6 +54,7 @@ export function ClientForm({
   client,
   onSubmit,
   isSubmitting,
+  onDelete,
 }: ClientFormProps) {
   useMobileBackButton(open, () => onOpenChange(false));
 
@@ -239,11 +241,22 @@ export function ClientForm({
               </div>
             </ScrollArea>
 
-            <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
+            <div className="shrink-0 flex flex-wrap gap-3 p-4 sm:p-6 border-t bg-muted/20 justify-end">
+              {client && onDelete && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="mr-auto"
+                  onClick={onDelete}
+                  disabled={isSubmitting}
+                >
+                  Excluir
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 sm:flex-none"
                 onClick={() => onOpenChange(false)}
               >
                 Cancelar

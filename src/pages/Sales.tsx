@@ -229,6 +229,10 @@ export default function Sales() {
                 isSubmitting={createSale.isPending || updateSale.isPending}
                 editingSale={editingSale}
                 editingItems={editingItems}
+                onDelete={() => {
+                    setFormOpen(false);
+                    setDeletingSale(editingSale);
+                }}
             />
 
             {/* Delete Dialog */}

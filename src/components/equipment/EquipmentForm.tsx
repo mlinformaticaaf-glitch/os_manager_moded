@@ -37,6 +37,7 @@ interface EquipmentFormProps {
   equipment: Equipment | null;
   onSubmit: (data: { description: string; active: boolean }) => Promise<void>;
   isSubmitting: boolean;
+  onDelete?: () => void;
 }
 
 export function EquipmentForm({
@@ -45,6 +46,7 @@ export function EquipmentForm({
   equipment,
   onSubmit,
   isSubmitting,
+  onDelete,
 }: EquipmentFormProps) {
   useMobileBackButton(open, () => onOpenChange(false));
 
@@ -138,16 +140,27 @@ export function EquipmentForm({
               </div>
             </ScrollArea>
 
-            <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
+            <div className="shrink-0 flex flex-wrap gap-3 p-4 sm:p-6 border-t bg-muted/20 justify-end">
+              {equipment && onDelete && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="mr-auto"
+                  onClick={onDelete}
+                  disabled={isSubmitting}
+                >
+                  Excluir
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 sm:flex-none"
                 onClick={() => onOpenChange(false)}
               >
                 Cancelar
               </Button>
-              <Button type="submit" className="flex-1" disabled={isSubmitting}>
+              <Button type="submit" className="flex-1 sm:flex-none" disabled={isSubmitting}>
                 {isSubmitting ? 'Salvando...' : equipment ? 'Atualizar' : 'Cadastrar'}
               </Button>
             </div>

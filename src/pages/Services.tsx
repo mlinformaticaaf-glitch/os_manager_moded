@@ -104,6 +104,10 @@ export default function Services() {
         service={editingService}
         onSubmit={handleFormSubmit}
         isSubmitting={createService.isPending || updateService.isPending}
+        onDelete={() => {
+          setFormOpen(false);
+          setDeletingService(editingService);
+        }}
       />
 
       {/* Delete Dialog */}

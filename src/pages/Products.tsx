@@ -141,6 +141,10 @@ export default function Products() {
         product={editingProduct}
         onSubmit={handleFormSubmit}
         isSubmitting={createProduct.isPending || updateProduct.isPending}
+        onDelete={() => {
+          setFormOpen(false);
+          setDeletingProduct(editingProduct);
+        }}
       />
 
       {/* Delete Dialog */}

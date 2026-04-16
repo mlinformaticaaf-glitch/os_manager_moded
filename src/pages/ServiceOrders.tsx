@@ -361,6 +361,10 @@ export default function ServiceOrders() {
         onSubmit={handleFormSubmit}
         isSubmitting={createOrder.isPending || updateOrder.isPending}
         existingItems={editingOrderItems}
+        onDelete={() => {
+          setFormOpen(false);
+          setDeletingOrder(editingOrder);
+        }}
       />
 
       {/* Detail View */}

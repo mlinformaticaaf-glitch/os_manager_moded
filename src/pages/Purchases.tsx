@@ -224,6 +224,10 @@ export default function Purchases() {
         isSubmitting={createPurchase.isPending || updatePurchase.isPending}
         editingPurchase={editingPurchase}
         editingItems={editingItems}
+        onDelete={() => {
+          setFormOpen(false);
+          setDeletingPurchase(editingPurchase);
+        }}
       />
 
       {/* Delete Dialog */}

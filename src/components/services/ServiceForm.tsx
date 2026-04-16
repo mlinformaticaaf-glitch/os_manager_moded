@@ -46,6 +46,7 @@ interface ServiceFormProps {
   service?: Service | null;
   onSubmit: (data: ServiceFormData) => void;
   isSubmitting?: boolean;
+  onDelete?: () => void;
 }
 
 export function ServiceForm({
@@ -54,6 +55,7 @@ export function ServiceForm({
   service,
   onSubmit,
   isSubmitting,
+  onDelete,
 }: ServiceFormProps) {
   useMobileBackButton(open, () => onOpenChange(false));
 
@@ -263,16 +265,27 @@ export function ServiceForm({
               </div>
             </ScrollArea>
 
-            <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
+            <div className="shrink-0 flex flex-wrap gap-3 p-4 sm:p-6 border-t bg-muted/20 justify-end">
+              {service && onDelete && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="mr-auto"
+                  onClick={onDelete}
+                  disabled={isSubmitting}
+                >
+                  Excluir
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="flex-1"
+                className="flex-1 sm:flex-none"
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
+              <Button type="submit" disabled={isSubmitting} className="flex-1 sm:flex-none">
                 {isSubmitting ? 'Salvando...' : service ? 'Atualizar' : 'Cadastrar'}
               </Button>
             </div>

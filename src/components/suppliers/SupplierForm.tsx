@@ -47,9 +47,10 @@ interface SupplierFormProps {
   supplier?: Supplier | null;
   onSubmit: (data: SupplierFormData) => void;
   isSubmitting: boolean;
+  onDelete?: () => void;
 }
 
-export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitting }: SupplierFormProps) {
+export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitting, onDelete }: SupplierFormProps) {
   useMobileBackButton(open, () => onOpenChange(false));
 
   const form = useForm<SupplierFormData>({
@@ -287,11 +288,22 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
           </div>
         </ScrollArea>
 
-        <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
-          <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+        <div className="shrink-0 flex flex-wrap gap-3 p-4 sm:p-6 border-t bg-muted/20 justify-end">
+          {supplier && onDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              className="mr-auto"
+              onClick={onDelete}
+              disabled={isSubmitting}
+            >
+              Excluir
+            </Button>
+          )}
+          <Button type="button" variant="outline" className="flex-1 sm:flex-none" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button form="supplier-form" type="submit" className="flex-1" disabled={isSubmitting}>
+          <Button form="supplier-form" type="submit" className="flex-1 sm:flex-none" disabled={isSubmitting}>
             {isSubmitting ? 'Salvando...' : supplier ? 'Atualizar' : 'Cadastrar'}
           </Button>
         </div>

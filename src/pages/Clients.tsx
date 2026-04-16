@@ -112,6 +112,10 @@ export default function Clients() {
         client={editingClient}
         onSubmit={handleFormSubmit}
         isSubmitting={createClient.isPending || updateClient.isPending}
+        onDelete={() => {
+          setFormOpen(false);
+          setDeletingClient(editingClient);
+        }}
       />
 
       {/* Delete Confirmation */}

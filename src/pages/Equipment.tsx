@@ -114,6 +114,10 @@ export default function EquipmentPage() {
         equipment={editingEquipment}
         onSubmit={handleFormSubmit}
         isSubmitting={createEquipment.isPending || updateEquipment.isPending}
+        onDelete={() => {
+          setFormOpen(false);
+          setDeletingEquipment(editingEquipment);
+        }}
       />
 
       {/* Delete Dialog */}

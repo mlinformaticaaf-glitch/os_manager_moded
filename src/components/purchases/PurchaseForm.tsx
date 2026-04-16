@@ -70,9 +70,10 @@ interface PurchaseFormProps {
     notes: string | null;
   } | null;
   editingItems?: Omit<PurchaseItem, 'id' | 'purchase_id'>[];
+  onDelete?: () => void;
 }
 
-export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editingPurchase, editingItems }: PurchaseFormProps) {
+export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editingPurchase, editingItems, onDelete }: PurchaseFormProps) {
   useMobileBackButton(open, () => onOpenChange(false));
 
   const { suppliers } = useSuppliers();
@@ -541,11 +542,22 @@ export function PurchaseForm({ open, onOpenChange, onSubmit, isSubmitting, editi
           </form>
         </Form>
 
-        <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20">
-          <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+        <div className="shrink-0 flex gap-3 p-4 sm:p-6 border-t bg-muted/20 flex-wrap sm:flex-nowrap justify-end">
+          {isEditing && onDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              className="w-full sm:w-auto sm:mr-auto"
+              onClick={onDelete}
+              disabled={isSubmitting}
+            >
+              Excluir
+            </Button>
+          )}
+          <Button type="button" variant="outline" className="flex-1 sm:flex-none" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button form="purchase-form" type="submit" className="flex-1" disabled={isSubmitting || items.length === 0}>
+          <Button form="purchase-form" type="submit" className="flex-1 sm:flex-none" disabled={isSubmitting || items.length === 0}>
             {isSubmitting ? 'Salvando...' : isEditing ? 'Salvar Alterações' : 'Registrar Compra'}
           </Button>
         </div>

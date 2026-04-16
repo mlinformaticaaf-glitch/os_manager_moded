@@ -96,6 +96,7 @@ interface OSFormProps {
   onSubmit: (data: OSFormData & { items: ItemFormData[]; total_services: number; total_products: number; total: number }) => void;
   isSubmitting?: boolean;
   existingItems?: ServiceOrderItem[];
+  onDelete?: () => void;
 }
 
 export function OSForm({
@@ -105,6 +106,7 @@ export function OSForm({
   onSubmit,
   isSubmitting,
   existingItems = [],
+  onDelete,
 }: OSFormProps) {
   const { statusConfig, orderedStatuses } = useStatusSettings();
   const { toast } = useToast();
@@ -1184,6 +1186,17 @@ export function OSForm({
               </ScrollArea>
 
               <div className="shrink-0 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 p-4 sm:p-6 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                {order && onDelete && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="w-full sm:w-auto sm:mr-auto h-11 sm:h-10"
+                    onClick={onDelete}
+                    disabled={isSubmitting}
+                  >
+                    Excluir
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="outline"

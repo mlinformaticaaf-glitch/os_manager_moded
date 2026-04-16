@@ -579,29 +579,29 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
                 </div>
               </ScrollArea>
 
-            <div className="flex gap-3 p-4 sm:p-6 border-t bg-card shrink-0">
+            <div className="flex flex-wrap gap-3 p-4 sm:p-6 border-t bg-card shrink-0 justify-end">
               {isEditing && (
                 <Button
                   type="button"
-                  variant="outline"
-                  size="icon"
-                  className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  variant="destructive"
+                  className="mr-auto"
                   onClick={() => setShowDeleteDialog(true)}
+                  disabled={createTransaction.isPending || updateTransaction.isPending}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  Excluir
                 </Button>
               )}
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
+                className="flex-1 sm:flex-none"
                 onClick={() => onOpenChange(false)}
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
-                className="flex-1"
+                className="flex-1 sm:flex-none"
                 disabled={createTransaction.isPending || updateTransaction.isPending}
               >
                 {createTransaction.isPending || updateTransaction.isPending ? 'Salvando...' : isEditing ? 'Atualizar' : 'Cadastrar'}

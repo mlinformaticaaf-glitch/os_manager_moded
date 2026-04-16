@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,11 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+
+  // URL to redirect to after login (from ProtectedRoute state)
+  const from = (location.state as { from?: string } | null)?.from || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +106,7 @@ export default function Auth() {
           // Show email confirmation message
           setEmailSent(true);
         } else {
-          navigate("/");
+          navigate(from, { replace: true });
         }
       }
     } finally {
