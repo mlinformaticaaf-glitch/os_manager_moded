@@ -118,19 +118,17 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
-        <div className="shrink-0 p-4 sm:p-6 pb-0">
-          <DialogHeader>
-            <DialogTitle>{supplier ? 'Editar Fornecedor' : 'Novo Fornecedor'}</DialogTitle>
-            <DialogDescription>
-              {supplier ? 'Atualize as informações do fornecedor' : 'Preencha os dados do novo fornecedor'}
-            </DialogDescription>
-          </DialogHeader>
-        </div>
+        <Form {...form}>
+          <form id="supplier-form" onSubmit={form.handleSubmit(handleSubmit)} className="flex-1 min-h-0 flex flex-col">
+            <DialogHeader className="shrink-0 p-4 sm:p-6 border-b">
+              <DialogTitle>{supplier ? 'Editar Fornecedor' : 'Novo Fornecedor'}</DialogTitle>
+              <DialogDescription>
+                {supplier ? 'Atualize as informações do fornecedor' : 'Preencha os dados do novo fornecedor'}
+              </DialogDescription>
+            </DialogHeader>
 
-        <ScrollArea className="flex-1 min-h-0">
-          <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
-            <Form {...form}>
-              <form id="supplier-form" onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-4">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
                 <FormField
                   control={form.control}
                   name="name"
@@ -283,30 +281,30 @@ export function SupplierForm({ open, onOpenChange, supplier, onSubmit, isSubmitt
                     </FormItem>
                   )}
                 />
-              </form>
-            </Form>
-          </div>
-        </ScrollArea>
+              </div>
+            </ScrollArea>
 
-        <div className="shrink-0 flex flex-wrap gap-3 p-4 sm:p-6 border-t bg-muted/20 justify-end">
-          {supplier && onDelete && (
-            <Button
-              type="button"
-              variant="destructive"
-              className="mr-auto"
-              onClick={onDelete}
-              disabled={isSubmitting}
-            >
-              Excluir
-            </Button>
-          )}
-          <Button type="button" variant="outline" className="flex-1 sm:flex-none" onClick={() => onOpenChange(false)}>
-            Cancelar
-          </Button>
-          <Button form="supplier-form" type="submit" className="flex-1 sm:flex-none" disabled={isSubmitting}>
-            {isSubmitting ? 'Salvando...' : supplier ? 'Atualizar' : 'Cadastrar'}
-          </Button>
-        </div>
+            <div className="shrink-0 flex flex-wrap gap-3 p-4 sm:p-6 border-t bg-muted/20 justify-end">
+              {supplier && onDelete && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="mr-auto"
+                  onClick={onDelete}
+                  disabled={isSubmitting}
+                >
+                  Excluir
+                </Button>
+              )}
+              <Button type="button" variant="outline" className="flex-1 sm:flex-none" onClick={() => onOpenChange(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" className="flex-1 sm:flex-none" disabled={isSubmitting}>
+                {isSubmitting ? 'Salvando...' : supplier ? 'Atualizar' : 'Cadastrar'}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

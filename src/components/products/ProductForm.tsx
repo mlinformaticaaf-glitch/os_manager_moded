@@ -132,18 +132,16 @@ export function ProductForm({
       <DialogContent className="sm:max-w-lg w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="flex-1 min-h-0 flex flex-col">
-            <div className="shrink-0 p-4 sm:p-6 pb-0">
-              <DialogHeader>
-                <DialogTitle>
-                  {product ? 'Editar Produto' : 'Novo Produto'}
-                </DialogTitle>
-                <DialogDescription>
-                  {product
-                    ? `Código: ${formatProductCode(product.code)} • Atualize as informações do produto`
-                    : 'O código será gerado automaticamente'}
-                </DialogDescription>
-              </DialogHeader>
-            </div>
+            <DialogHeader className="shrink-0 p-4 sm:p-6 border-b">
+              <DialogTitle>
+                {product ? 'Editar Produto' : 'Novo Produto'}
+              </DialogTitle>
+              <DialogDescription>
+                {product
+                  ? `Código: ${formatProductCode(product.code)} • Atualize as informações do produto`
+                  : 'O código será gerado automaticamente'}
+              </DialogDescription>
+            </DialogHeader>
 
             <ScrollArea className="flex-1 min-h-0">
               <div className="p-4 sm:p-6 space-y-4 w-[96%] mx-auto sm:w-full max-w-[96%] sm:max-w-full min-w-0 overflow-x-hidden">
