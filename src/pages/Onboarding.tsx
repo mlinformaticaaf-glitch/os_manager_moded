@@ -52,16 +52,19 @@ export default function Onboarding() {
     setIsLoading(true);
 
     try {
-      // Get existing service orders count for this user
-      const { data: existingOrders, error: countError } = await supabase
+      // Keep the sequence aligned with the largest OS number already used.
+      const { data: latestOrder, error: latestOrderError } = await supabase
         .from("service_orders")
-        .select("id", { count: "exact" })
-        .eq("user_id", user.id);
+        .select("order_number")
+        .eq("user_id", user.id)
+        .order("order_number", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      if (countError) throw countError;
+      if (latestOrderError) throw latestOrderError;
 
-      const existingCount = existingOrders?.length || 0;
-      const osNextNumber = data.os_initial_number + existingCount;
+      const maxOrderNumber = latestOrder?.order_number ?? 0;
+      const osNextNumber = Math.max(data.os_initial_number, maxOrderNumber + 1);
 
       // Update or insert company settings
       const { error: settingsError } = await supabase
@@ -111,13 +114,11 @@ export default function Onboarding() {
     setIsLoading(true);
 
     try {
-      // Mark onboarding as completed with default OS number
+      // Mark onboarding as completed without resetting an existing OS sequence.
       const { error: settingsError } = await supabase
         .from("company_settings")
         .update({
           onboarding_completed: true,
-          os_initial_number: 1,
-          os_next_number: 1,
         })
         .eq("user_id", user.id);
 
