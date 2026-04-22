@@ -252,7 +252,7 @@ export function SaleForm({ open, onOpenChange, onSubmit, isSubmitting, editingSa
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-2xl w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
+            <DialogContent className="sm:max-w-2xl w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[90dvh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
                 <div className="w-full sm:w-full mr-auto flex flex-col flex-1 h-full min-h-0">
                     <Form {...form}>
                         <form

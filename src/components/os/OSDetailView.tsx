@@ -81,7 +81,7 @@ export function OSDetailView({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg">
         <div className="shrink-0 border-b">
-          <DialogHeader className="px-4 sm:px-6 py-3 sm:py-4">
+          <DialogHeader className="px-4 sm:px-6 pr-12 sm:pr-14 py-3 sm:py-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <DialogTitle className="flex items-center gap-3">
                 <span className="text-xl sm:text-2xl font-bold">OS #{formatOSNumber(order.order_number, order.created_at)}</span>

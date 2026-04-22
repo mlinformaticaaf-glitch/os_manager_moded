@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileDown, FileSpreadsheet, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { DREData, ReportPeriod } from "./types";
-import { exportDREPDF, exportDREExcel } from "./exportUtils";
+import { exportDREPDF, exportDRECSV } from "./exportUtils";
 
 interface DREReportProps {
   data: DREData;
@@ -64,10 +64,10 @@ export function DREReport({ data, period }: DREReportProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => exportDREExcel(data, period)}
+            onClick={() => exportDRECSV(data, period)}
           >
             <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Excel
+            CSV
           </Button>
         </div>
       </CardHeader>

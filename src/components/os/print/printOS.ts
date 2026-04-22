@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatOSNumber } from '@/lib/osUtils';
 import jsPDF from 'jspdf';
+import { escapeHtml, escapeHtmlAttribute } from '@/lib/security';
 
 interface PrintData {
   order: ServiceOrder;
@@ -16,6 +17,122 @@ interface PrintData {
   warrantyTerms?: string;
   footerMessage?: string;
 }
+
+const OS_LABEL_LAYOUT = {
+  pageWidth: 210,
+  pageHeight: 297,
+  width: 50,
+  height: 30,
+  gap: 15,
+  bottom: 5,
+  padding: 3,
+  qrSize: 20,
+};
+
+const generateOSLabelStyles = (template = false) => {
+  const totalWidth = OS_LABEL_LAYOUT.width * 2 + OS_LABEL_LAYOUT.gap;
+  const left = (OS_LABEL_LAYOUT.pageWidth - totalWidth) / 2;
+  const top = OS_LABEL_LAYOUT.pageHeight - OS_LABEL_LAYOUT.bottom - OS_LABEL_LAYOUT.height;
+
+  return `
+        .labels-container {
+          position: fixed;
+          left: ${left}mm;
+          top: ${top}mm;
+          width: ${totalWidth}mm;
+          height: ${OS_LABEL_LAYOUT.height}mm;
+          display: grid;
+          grid-template-columns: ${OS_LABEL_LAYOUT.width}mm ${OS_LABEL_LAYOUT.width}mm;
+          column-gap: ${OS_LABEL_LAYOUT.gap}mm;
+          page-break-inside: avoid;
+          z-index: 10;
+        }
+
+        .equipment-label {
+          width: ${OS_LABEL_LAYOUT.width}mm;
+          height: ${OS_LABEL_LAYOUT.height}mm;
+          border: ${template ? '0.35mm solid #000' : '0.2mm dashed #666'};
+          padding: ${OS_LABEL_LAYOUT.padding}mm;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #fff;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .equipment-label::before,
+        .equipment-label::after {
+          content: "";
+          position: absolute;
+          background: ${template ? '#000' : 'transparent'};
+          pointer-events: none;
+        }
+
+        .equipment-label::before {
+          left: 50%;
+          top: 1.5mm;
+          bottom: 1.5mm;
+          width: 0.15mm;
+          transform: translateX(-50%);
+          opacity: ${template ? '0.2' : '0'};
+        }
+
+        .equipment-label::after {
+          left: 1.5mm;
+          right: 1.5mm;
+          top: 50%;
+          height: 0.15mm;
+          transform: translateY(-50%);
+          opacity: ${template ? '0.2' : '0'};
+        }
+
+        .label-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          overflow: hidden;
+        }
+
+        .label-os {
+          font-size: 10px;
+          font-weight: bold;
+          color: #000;
+        }
+
+        .label-client {
+          font-size: 8px;
+          color: #333;
+          word-wrap: break-word;
+          line-height: 1.1;
+        }
+
+        .label-phone {
+          font-size: 8px;
+          color: #333;
+        }
+
+        .label-qr {
+          width: ${OS_LABEL_LAYOUT.qrSize}mm;
+          height: ${OS_LABEL_LAYOUT.qrSize}mm;
+          margin-left: 2mm;
+        }
+
+        .template-label-number {
+          display: ${template ? 'block' : 'none'};
+          position: absolute;
+          left: 2mm;
+          top: 1.5mm;
+          font-size: 7px;
+          font-weight: bold;
+          color: #000;
+          background: #fff;
+          padding-right: 1mm;
+        }
+  `;
+};
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('pt-BR', {
@@ -39,19 +156,20 @@ const getPaymentMethodLabel = (method: string | null) => {
 function generateA4Body({ order, items, companyName = 'Assistência Técnica', companyPhone, companyAddress, companyEmail, companyDocument, logoUrl, warrantyTerms, footerMessage = 'Obrigado pela preferência!' }: PrintData, copyLabel?: string) {
   const services = items.filter(i => i.type === 'service');
   const products = items.filter(i => i.type === 'product');
+  const safeLogoUrl = logoUrl ? escapeHtmlAttribute(logoUrl) : '';
 
   return `
       <div class="os-copy">
-        ${copyLabel ? `<div style="text-align: right; font-size: 8px; font-weight: bold; color: #888; margin-bottom: 4px;">${copyLabel}</div>` : ''}
+        ${copyLabel ? `<div style="text-align: right; font-size: 8px; font-weight: bold; color: #888; margin-bottom: 4px;">${escapeHtml(copyLabel)}</div>` : ''}
         <div class="header">
           <div class="company-info" style="display: flex; align-items: center; gap: 12px;">
-            ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-height: 60px; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />` : ''}
+            ${safeLogoUrl ? `<img src="${safeLogoUrl}" alt="Logo" style="max-height: 60px; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />` : ''}
             <div>
-              <h1>${companyName}</h1>
-              ${companyDocument ? `<p>${companyDocument}</p>` : ''}
-              ${companyPhone ? `<p>📞 ${companyPhone}</p>` : ''}
-              ${companyEmail ? `<p>✉️ ${companyEmail}</p>` : ''}
-              ${companyAddress ? `<p>📍 ${companyAddress}</p>` : ''}
+              <h1>${escapeHtml(companyName)}</h1>
+              ${companyDocument ? `<p>${escapeHtml(companyDocument)}</p>` : ''}
+              ${companyPhone ? `<p>Telefone: ${escapeHtml(companyPhone)}</p>` : ''}
+              ${companyEmail ? `<p>E-mail: ${escapeHtml(companyEmail)}</p>` : ''}
+              ${companyAddress ? `<p>${escapeHtml(companyAddress)}</p>` : ''}
             </div>
           </div>
           <div class="os-info">
@@ -69,15 +187,15 @@ function generateA4Body({ order, items, companyName = 'Assistência Técnica', c
             <div class="info-grid">
               <div class="info-item">
                 <label>Nome</label>
-                <span>${order.client.name}</span>
+                <span>${escapeHtml(order.client.name)}</span>
               </div>
               <div class="info-item">
                 <label>Telefone</label>
-                <span>${order.client.phone || '-'}</span>
+                <span>${escapeHtml(order.client.phone || '-')}</span>
               </div>
               <div class="info-item">
                 <label>E-mail</label>
-                <span>${order.client.email || '-'}</span>
+                <span>${escapeHtml(order.client.email || '-')}</span>
               </div>
             </div>
           </div>
@@ -87,10 +205,10 @@ function generateA4Body({ order, items, companyName = 'Assistência Técnica', c
           <div class="section">
             <div class="section-title">Equipamento</div>
             <div class="equipment-box">
-              <div class="equipment-title">${order.equipment}${order.brand ? ` - ${order.brand}` : ''}${order.model ? ` ${order.model}` : ''}</div>
+              <div class="equipment-title">${escapeHtml(order.equipment)}${order.brand ? ` - ${escapeHtml(order.brand)}` : ''}${order.model ? ` ${escapeHtml(order.model)}` : ''}</div>
               <div class="equipment-details">
-                ${order.serial_number ? `<span>S/N: ${order.serial_number}</span>` : ''}
-                ${order.accessories ? `<span>Acessórios: ${order.accessories}</span>` : ''}
+                ${order.serial_number ? `<span>S/N: ${escapeHtml(order.serial_number)}</span>` : ''}
+                ${order.accessories ? `<span>Acessórios: ${escapeHtml(order.accessories)}</span>` : ''}
               </div>
             </div>
           </div>
@@ -101,20 +219,20 @@ function generateA4Body({ order, items, companyName = 'Assistência Técnica', c
           <div class="description-grid">
             <div class="problem-box">
               <strong>Problema Relatado:</strong>
-              <p>${order.reported_issue}</p>
+              <p>${escapeHtml(order.reported_issue)}</p>
             </div>
             ${order.diagnosis || order.solution ? `
               <div>
                 ${order.diagnosis ? `
                   <div class="diagnosis-box" style="margin-bottom: ${order.solution ? '4px' : '0'}">
                     <strong>Diagnóstico:</strong>
-                    <p>${order.diagnosis}</p>
+                    <p>${escapeHtml(order.diagnosis)}</p>
                   </div>
                 ` : ''}
                 ${order.solution ? `
                   <div class="solution-box">
                     <strong>Solução:</strong>
-                    <p>${order.solution}</p>
+                    <p>${escapeHtml(order.solution)}</p>
                   </div>
                 ` : ''}
               </div>
@@ -143,7 +261,7 @@ function generateA4Body({ order, items, companyName = 'Assistência Técnica', c
                         const itemTotal = s.quantity * s.unit_price;
                         return `
                         <tr>
-                          <td>${s.description}</td>
+                          <td>${escapeHtml(s.description)}</td>
                           <td class="right">${s.quantity}</td>
                           <td class="right">${formatCurrency(s.unit_price)}</td>
                           <td class="right">${formatCurrency(itemTotal)}</td>
@@ -170,7 +288,7 @@ function generateA4Body({ order, items, companyName = 'Assistência Técnica', c
                         const itemTotal = p.quantity * p.unit_price;
                         return `
                         <tr>
-                          <td>${p.description}</td>
+                          <td>${escapeHtml(p.description)}</td>
                           <td class="right">${p.quantity}</td>
                           <td class="right">${formatCurrency(p.unit_price)}</td>
                           <td class="right">${formatCurrency(itemTotal)}</td>
@@ -189,7 +307,7 @@ function generateA4Body({ order, items, companyName = 'Assistência Técnica', c
             ${(order.warranty_until || warrantyTerms) ? `
               <div class="warranty-notice">
                 ${order.warranty_until ? `<strong>⚠️ Garantia até ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}</strong>` : ''}
-                ${warrantyTerms ? `<p style="margin-top: ${order.warranty_until ? '4px' : '0'};">${warrantyTerms}</p>` : (order.warranty_until ? '<p style="margin-top: 4px;">- Cobre defeitos de serviço. Não se aplica a mau uso, quedas ou danos por terceiros.</p>' : '')}
+                ${warrantyTerms ? `<p style="margin-top: ${order.warranty_until ? '4px' : '0'};">${escapeHtml(warrantyTerms)}</p>` : (order.warranty_until ? '<p style="margin-top: 4px;">- Cobre defeitos de serviço. Não se aplica a mau uso, quedas ou danos por terceiros.</p>' : '')}
               </div>
             ` : ''}
             <div class="signatures">
@@ -223,14 +341,14 @@ function generateA4Body({ order, items, companyName = 'Assistência Técnica', c
               <span>${formatCurrency(order.total)}</span>
             </div>
             <div class="payment-info">
-              Pagamento: ${getPaymentMethodLabel(order.payment_method)}
+              Pagamento: ${escapeHtml(getPaymentMethodLabel(order.payment_method))}
             </div>
           </div>
         </div>
 
         ${footerMessage ? `
           <div style="text-align: center; margin-top: 12px; font-size: 9px; color: #666;">
-            ${footerMessage}
+            ${escapeHtml(footerMessage)}
           </div>
         ` : ''}
       </div>
@@ -773,7 +891,7 @@ export async function sendOSA4PDFToWhatsApp(data: PrintData, phone: string) {
     `PDF da OS ${formatOSNumber(data.order.order_number, data.order.created_at)} gerado. ` +
       `Anexe o arquivo ${fileName} no WhatsApp para concluir o envio.`,
   );
-  window.open(`https://wa.me/${cleanedPhone}?text=${fallbackMessage}`, '_blank');
+  window.open(`https://wa.me/${cleanedPhone}?text=${fallbackMessage}`, '_blank', 'noopener,noreferrer');
 }
 
 export function printOSA4(data: PrintData) {
@@ -802,10 +920,18 @@ export function printOSA4Dual(data: PrintData) {
       <style>
         ${generateA4Styles()}
 
+        @page {
+          size: A4 portrait;
+          margin: 0;
+        }
+
         body {
           padding: 8mm 12mm !important;
           position: relative;
           box-sizing: border-box;
+          width: 210mm;
+          min-height: 297mm;
+          padding-bottom: 42mm !important;
         }
 
         .os-copy {
@@ -932,60 +1058,7 @@ export function printOSA4Dual(data: PrintData) {
           margin: 8px 0;
         }
 
-        .labels-container {
-          position: fixed;
-          bottom: 5mm;
-          left: 0;
-          right: 0;
-          display: flex;
-          gap: 15mm;
-          justify-content: center;
-          page-break-inside: avoid;
-        }
-
-        .equipment-label {
-          width: 50mm;
-          height: 30mm;
-          border: 1px dashed #666;
-          padding: 3mm;
-          box-sizing: border-box;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background: #fff;
-        }
-
-        .label-info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          overflow: hidden;
-        }
-
-        .label-os {
-          font-size: 10px;
-          font-weight: bold;
-          color: #000;
-        }
-
-        .label-client {
-          font-size: 8px;
-          color: #333;
-          word-wrap: break-word;
-          line-height: 1.1;
-        }
-
-        .label-phone {
-          font-size: 8px;
-          color: #333;
-        }
-
-        .label-qr {
-          width: 20mm;
-          height: 20mm;
-          margin-left: 2mm;
-        }
+        ${generateOSLabelStyles()}
 
         @media print {
           body {
@@ -1003,10 +1076,11 @@ export function printOSA4Dual(data: PrintData) {
       <div class="labels-container">
         ${Array(2).fill(`
           <div class="equipment-label">
+            <span class="template-label-number"></span>
             <div class="label-info">
               <div class="label-os">OS ${formatOSNumber(data.order.order_number, data.order.created_at)}</div>
-              <div class="label-client">${data.order.client?.name || 'Cliente não informado'}</div>
-              <div class="label-phone">${data.order.client?.phone || '-'}</div>
+              <div class="label-client">${escapeHtml(data.order.client?.name || 'Cliente não informado')}</div>
+              <div class="label-phone">${escapeHtml(data.order.client?.phone || '-')}</div>
             </div>
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`${window.location.origin}/os?id=${data.order.id}`)}" class="label-qr" alt="QR Code" crossorigin="anonymous" />
           </div>
@@ -1170,8 +1244,8 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
     </head>
     <body>
       <div class="header">
-        <h1>${companyName}</h1>
-        ${companyPhone ? `<div class="phone">${companyPhone}</div>` : ''}
+        <h1>${escapeHtml(companyName)}</h1>
+        ${companyPhone ? `<div class="phone">${escapeHtml(companyPhone)}</div>` : ''}
       </div>
 
       <div class="divider"></div>
@@ -1187,25 +1261,25 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
         <div class="info-row">
           <span class="label">Cliente:</span>
         </div>
-        <div style="font-size: 11px; font-weight: bold;">${order.client.name}</div>
-        ${order.client.phone ? `<div style="font-size: 9px;">Tel: ${order.client.phone}</div>` : ''}
+        <div style="font-size: 11px; font-weight: bold;">${escapeHtml(order.client.name)}</div>
+        ${order.client.phone ? `<div style="font-size: 9px;">Tel: ${escapeHtml(order.client.phone)}</div>` : ''}
       ` : ''}
 
       ${order.equipment ? `
         <div class="divider"></div>
         <div class="section-title">Equipamento</div>
-        <div style="font-size: 10px;">${order.equipment}${order.brand ? ` ${order.brand}` : ''}${order.model ? ` ${order.model}` : ''}</div>
-        ${order.serial_number ? `<div style="font-size: 8px;">S/N: ${order.serial_number}</div>` : ''}
+        <div style="font-size: 10px;">${escapeHtml(order.equipment)}${order.brand ? ` ${escapeHtml(order.brand)}` : ''}${order.model ? ` ${escapeHtml(order.model)}` : ''}</div>
+        ${order.serial_number ? `<div style="font-size: 8px;">S/N: ${escapeHtml(order.serial_number)}</div>` : ''}
       ` : ''}
 
       <div class="divider"></div>
       <div class="section-title">Problema</div>
-      <div style="font-size: 9px;">${order.reported_issue.substring(0, 150)}${order.reported_issue.length > 150 ? '...' : ''}</div>
+      <div style="font-size: 9px;">${escapeHtml(order.reported_issue.substring(0, 150))}${order.reported_issue.length > 150 ? '...' : ''}</div>
 
       ${order.solution ? `
         <div class="divider"></div>
         <div class="section-title">Solução</div>
-        <div style="font-size: 9px;">${order.solution.substring(0, 150)}${order.solution.length > 150 ? '...' : ''}</div>
+        <div style="font-size: 9px;">${escapeHtml(order.solution.substring(0, 150))}${order.solution.length > 150 ? '...' : ''}</div>
       ` : ''}
 
       ${services.length > 0 ? `
@@ -1215,7 +1289,7 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
           const itemTotal = s.quantity * s.unit_price;
           return `
           <div class="item-row">
-            <div class="item-name">${s.quantity}x ${s.description.substring(0, 22)}${s.description.length > 22 ? '...' : ''}</div>
+            <div class="item-name">${s.quantity}x ${escapeHtml(s.description.substring(0, 22))}${s.description.length > 22 ? '...' : ''}</div>
             <div class="item-details">
               <span>@ ${formatCurrency(s.unit_price)}</span>
               <span>${formatCurrency(itemTotal)}</span>
@@ -1231,7 +1305,7 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
           const itemTotal = p.quantity * p.unit_price;
           return `
           <div class="item-row">
-            <div class="item-name">${p.quantity}x ${p.description.substring(0, 22)}${p.description.length > 22 ? '...' : ''}</div>
+            <div class="item-name">${p.quantity}x ${escapeHtml(p.description.substring(0, 22))}${p.description.length > 22 ? '...' : ''}</div>
             <div class="item-details">
               <span>@ ${formatCurrency(p.unit_price)}</span>
               <span>${formatCurrency(itemTotal)}</span>
@@ -1271,7 +1345,7 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
         <div class="divider"></div>
         <div style="font-size: 8px; text-align: center;">
           ${order.warranty_until ? `Garantia até: ${format(new Date(order.warranty_until), "dd/MM/yyyy", { locale: ptBR })}` : ''}
-          ${warrantyTerms ? `${order.warranty_until ? '<br>' : ''}${warrantyTerms}` : ''}
+          ${warrantyTerms ? `${order.warranty_until ? '<br>' : ''}${escapeHtml(warrantyTerms)}` : ''}
         </div>
       ` : ''}
 
@@ -1284,7 +1358,7 @@ export function printOSThermal({ order, items, companyName = 'Assistência Técn
 
       <div class="footer">
         <div class="divider"></div>
-        ${footerMessage}
+        ${escapeHtml(footerMessage)}
         <br>
         ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}
       </div>
@@ -1308,7 +1382,7 @@ export function printOSGabarito() {
     <html lang="pt-BR">
     <head>
       <meta charset="UTF-8">
-      <title></title>
+      <title>Gabarito de Etiquetas OS</title>
       <style>
         * {
           margin: 0;
@@ -1320,68 +1394,16 @@ export function printOSGabarito() {
           font-family: Arial, Helvetica, sans-serif;
           font-size: 10px;
           color: #333;
-          padding: 8mm 12mm !important;
-          max-width: 210mm;
-          margin: 0 auto;
+          width: 210mm;
+          min-height: 297mm;
+          margin: 0;
           position: relative;
         }
 
-        .labels-container {
-          position: fixed;
-          bottom: 5mm;
-          left: 0;
-          right: 0;
-          display: flex;
-          gap: 15mm;
-          justify-content: center;
-          page-break-inside: avoid;
-        }
-
-        .equipment-label {
-          width: 50mm;
-          height: 30mm;
-          border: 1px dashed #666;
-          padding: 3mm;
-          box-sizing: border-box;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background: #fff;
-        }
-
-        .label-info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          overflow: hidden;
-        }
-
-        .label-os {
-          font-size: 10px;
-          font-weight: bold;
-          color: #000;
-        }
-
-        .label-client {
-          font-size: 8px;
-          color: #333;
-          word-wrap: break-word;
-          line-height: 1.1;
-        }
-
-        .label-phone {
-          font-size: 8px;
-          color: #333;
-        }
-
-        .label-qr {
-          width: 20mm;
-          height: 20mm;
-          margin-left: 2mm;
-        }
+        ${generateOSLabelStyles(true)}
 
         @page {
+          size: A4 portrait;
           margin: 0;
         }
 
@@ -1396,8 +1418,10 @@ export function printOSGabarito() {
     <body>
 
       <div class="labels-container">
-        ${Array(2).fill(`
-          <div class="equipment-label"></div>
+        ${[1, 2].map((labelNumber) => `
+          <div class="equipment-label">
+            <span class="template-label-number">Etiqueta ${labelNumber}</span>
+          </div>
         `).join('')}
       </div>
     </body>

@@ -50,7 +50,7 @@ function ManualViewModal({ manual, open, onOpenChange }: { manual: Manual | null
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-5xl w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[90vh] flex flex-col p-0 overflow-hidden bg-background border-border rounded-none sm:rounded-lg">
+            <DialogContent className="max-w-5xl w-full max-w-full sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[90dvh] flex flex-col p-0 overflow-hidden bg-background border-border rounded-none sm:rounded-lg">
                 <DialogHeader className="p-4 sm:p-6 border-b bg-muted/20 shrink-0">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="min-w-0 w-full">
@@ -373,7 +373,7 @@ export default function Manuals() {
                                     Novo Manual
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-4xl w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden bg-background border-border rounded-none sm:rounded-lg">
+                            <DialogContent className="max-w-4xl w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[90dvh] p-0 flex flex-col gap-0 overflow-hidden bg-background border-border rounded-none sm:rounded-lg">
                                 <div className="shrink-0 p-4 sm:p-6 pb-0 min-w-0">
                                     <DialogHeader className="min-w-0">
                                         <DialogTitle className="whitespace-normal break-words">{editingManual ? 'Editar Manual Operacional' : 'Criar Novo Manual Operacional'}</DialogTitle>

@@ -253,7 +253,7 @@ export function TransactionForm({ open, onOpenChange, transaction }: Transaction
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
-          className="sm:max-w-lg w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-auto sm:max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg"
+          className="sm:max-w-lg w-full max-w-[100vw] sm:w-[calc(100vw-32px)] h-[100dvh] sm:h-[90dvh] p-0 flex flex-col gap-0 overflow-hidden rounded-none sm:rounded-lg"
         >
           <Form {...form}>
             <form

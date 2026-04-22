@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, FileSpreadsheet, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BalanceData, ReportPeriod } from "./types";
-import { exportBalancePDF, exportBalanceExcel } from "./exportUtils";
+import { exportBalancePDF, exportBalanceCSV } from "./exportUtils";
 
 interface BalanceReportProps {
   data: BalanceData;
@@ -34,10 +34,10 @@ export function BalanceReport({ data, period }: BalanceReportProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => exportBalanceExcel(data, period)}
+            onClick={() => exportBalanceCSV(data, period)}
           >
             <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Excel
+            CSV
           </Button>
         </div>
       </CardHeader>

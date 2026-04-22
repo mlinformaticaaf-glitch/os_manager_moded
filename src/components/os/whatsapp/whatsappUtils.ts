@@ -247,7 +247,7 @@ export function openWhatsApp(phone: string, message: string) {
     const cleanedPhone = cleanPhoneNumber(phone);
     const encodedMessage = encodeURIComponent(message);
     const url = `https://wa.me/${cleanedPhone}?text=${encodedMessage}`;
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener,noreferrer');
   } catch (error) {
     console.error('Error opening WhatsApp:', error);
   }

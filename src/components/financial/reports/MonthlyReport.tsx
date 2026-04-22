@@ -4,7 +4,7 @@ import { FileDown, FileSpreadsheet } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import { MonthlyData, ReportPeriod } from "./types";
-import { exportMonthlyPDF, exportMonthlyExcel } from "./exportUtils";
+import { exportMonthlyPDF, exportMonthlyCSV } from "./exportUtils";
 
 interface MonthlyReportProps {
   data: MonthlyData[];
@@ -44,10 +44,10 @@ export function MonthlyReport({ data, period }: MonthlyReportProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => exportMonthlyExcel(data, period)}
+            onClick={() => exportMonthlyCSV(data, period)}
           >
             <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Excel
+            CSV
           </Button>
         </div>
       </CardHeader>

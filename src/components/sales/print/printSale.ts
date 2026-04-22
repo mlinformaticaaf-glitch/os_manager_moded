@@ -2,6 +2,7 @@ import { Sale, SaleItem, SALE_PAYMENT_METHOD_OPTIONS } from '@/types/sale';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatSaleNumber } from '@/lib/saleUtils';
+import { escapeHtml, escapeHtmlAttribute } from '@/lib/security';
 
 interface PrintData {
   sale: Sale;
@@ -29,18 +30,20 @@ const getPaymentMethodLabel = (method: string | null) => {
 };
 
 function generateA4Body({ sale, items, companyName = 'Sistema de Vendas', companyPhone, companyAddress, companyEmail, companyDocument, logoUrl, footerMessage = 'Obrigado pela preferência!' }: PrintData, copyLabel?: string) {
+  const safeLogoUrl = logoUrl ? escapeHtmlAttribute(logoUrl) : '';
+
   return `
       <div class="sale-copy">
-        ${copyLabel ? `<div style="text-align: right; font-size: 8px; font-weight: bold; color: #888; margin-bottom: 4px;">${copyLabel}</div>` : ''}
+        ${copyLabel ? `<div style="text-align: right; font-size: 8px; font-weight: bold; color: #888; margin-bottom: 4px;">${escapeHtml(copyLabel)}</div>` : ''}
         <div class="header">
           <div class="company-info" style="display: flex; align-items: center; gap: 12px;">
-            ${logoUrl ? `<img src="${logoUrl}" alt="Logo" style="max-height: 60px; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />` : ''}
+            ${safeLogoUrl ? `<img src="${safeLogoUrl}" alt="Logo" style="max-height: 60px; max-width: 120px; object-fit: contain;" crossorigin="anonymous" />` : ''}
             <div>
-              <h1>${companyName}</h1>
-              ${companyDocument ? `<p>${companyDocument}</p>` : ''}
-              ${companyPhone ? `<p>📞 ${companyPhone}</p>` : ''}
-              ${companyEmail ? `<p>✉️ ${companyEmail}</p>` : ''}
-              ${companyAddress ? `<p>📍 ${companyAddress}</p>` : ''}
+              <h1>${escapeHtml(companyName)}</h1>
+              ${companyDocument ? `<p>${escapeHtml(companyDocument)}</p>` : ''}
+              ${companyPhone ? `<p>Telefone: ${escapeHtml(companyPhone)}</p>` : ''}
+              ${companyEmail ? `<p>E-mail: ${escapeHtml(companyEmail)}</p>` : ''}
+              ${companyAddress ? `<p>${escapeHtml(companyAddress)}</p>` : ''}
             </div>
           </div>
           <div class="sale-info">
@@ -55,7 +58,7 @@ function generateA4Body({ sale, items, companyName = 'Sistema de Vendas', compan
             <div class="info-grid">
               <div class="info-item">
                 <label>Nome</label>
-                <span>${sale.client.name}</span>
+                <span>${escapeHtml(sale.client.name)}</span>
               </div>
             </div>
           </div>
@@ -75,7 +78,7 @@ function generateA4Body({ sale, items, companyName = 'Sistema de Vendas', compan
             <tbody>
               ${items.map(item => `
                 <tr>
-                  <td>${item.product_name}</td>
+                  <td>${escapeHtml(item.product_name)}</td>
                   <td class="right">${item.quantity}</td>
                   <td class="right">${formatCurrency(item.unit_price)}</td>
                   <td class="right">${formatCurrency(item.total)}</td>
@@ -114,14 +117,14 @@ function generateA4Body({ sale, items, companyName = 'Sistema de Vendas', compan
               <span>${formatCurrency(sale.total)}</span>
             </div>
             <div class="payment-info">
-              Pagamento: ${getPaymentMethodLabel(sale.payment_method)}
+              Pagamento: ${escapeHtml(getPaymentMethodLabel(sale.payment_method))}
             </div>
           </div>
         </div>
 
         ${footerMessage ? `
           <div style="text-align: center; margin-top: 24px; font-size: 10px; color: #666;">
-            ${footerMessage}
+            ${escapeHtml(footerMessage)}
           </div>
         ` : ''}
       </div>
@@ -387,8 +390,8 @@ export function printSaleThermal({ sale, items, companyName = 'Sistema de Vendas
     </head>
     <body onload="window.print();">
       <div class="header">
-        <h1>${companyName}</h1>
-        ${companyPhone ? `<p>${companyPhone}</p>` : ''}
+        <h1>${escapeHtml(companyName)}</h1>
+        ${companyPhone ? `<p>${escapeHtml(companyPhone)}</p>` : ''}
       </div>
       
       <div class="divider"></div>
@@ -403,7 +406,7 @@ export function printSaleThermal({ sale, items, companyName = 'Sistema de Vendas
       ${sale.client ? `
         <div class="info-row">
           <span>CLI:</span>
-          <span>${sale.client.name.substring(0, 15)}</span>
+          <span>${escapeHtml(sale.client.name.substring(0, 15))}</span>
         </div>
       ` : ''}
       
@@ -412,7 +415,7 @@ export function printSaleThermal({ sale, items, companyName = 'Sistema de Vendas
       <div>
         ${items.map(item => `
           <div class="item-row">
-            <div>${item.product_name}</div>
+            <div>${escapeHtml(item.product_name)}</div>
             <div class="item-details">
               <span>${item.quantity} x ${formatCurrency(item.unit_price).replace('R$', '')}</span>
               <span>${formatCurrency(item.total).replace('R$', '')}</span>
@@ -454,7 +457,7 @@ export function printSaleThermal({ sale, items, companyName = 'Sistema de Vendas
       </div>
       
       <div class="footer">
-        <p>${footerMessage}</p>
+        <p>${escapeHtml(footerMessage)}</p>
         <p>${format(new Date(), "dd/MM/yyyy HH:mm:ss")}</p>
       </div>
       
