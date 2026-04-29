@@ -24,7 +24,7 @@ const OS_LABEL_LAYOUT = {
   width: 50,
   height: 30,
   gap: 15,
-  bottom: 5,
+  bottom: 15,
   padding: 3,
   qrSize: 20,
 };
@@ -579,7 +579,7 @@ function generateA4Styles() {
         .signatures {
           display: flex;
           gap: 40px;
-          margin-top: 20px;
+          margin-top: 30px;
         }
         
         .signature-line {
@@ -908,8 +908,8 @@ export function printOSA4(data: PrintData) {
 }
 
 export function printOSA4Dual(data: PrintData) {
-  const copy1 = generateA4Body(data, '1ª Via - Estabelecimento');
-  const copy2 = generateA4Body(data, '2ª Via - Cliente');
+  const copy1 = generateA4Body(data, '1ª Via - Cliente');
+  const copy2 = generateA4Body(data, '2ª Via - Estabelecimento');
 
   const content = `
     <!DOCTYPE html>
@@ -931,12 +931,12 @@ export function printOSA4Dual(data: PrintData) {
           box-sizing: border-box;
           width: 210mm;
           min-height: 297mm;
-          padding-bottom: 42mm !important;
+          padding-bottom: 52mm !important;
         }
 
         .os-copy {
           page-break-after: auto;
-          font-size: 8px;
+          font-size: 10px;
         }
 
         .os-copy .header {
@@ -945,23 +945,23 @@ export function printOSA4Dual(data: PrintData) {
         }
 
         .os-copy .company-info h1 {
-          font-size: 12px;
+          font-size: 14px;
         }
 
         .os-copy .company-info p {
-          font-size: 7px;
+          font-size: 9px;
         }
 
         .os-copy .os-number {
-          font-size: 11px;
+          font-size: 13px;
         }
 
         .os-copy .os-date {
-          font-size: 7px;
+          font-size: 9px;
         }
 
         .os-copy .status-badge {
-          font-size: 7px;
+          font-size: 9px;
           padding: 1px 6px;
         }
 
@@ -970,17 +970,17 @@ export function printOSA4Dual(data: PrintData) {
         }
 
         .os-copy .section-title {
-          font-size: 7px;
+          font-size: 9px;
           padding-bottom: 2px;
           margin-bottom: 4px;
         }
 
         .os-copy .info-item label {
-          font-size: 6px;
+          font-size: 8px;
         }
 
         .os-copy .info-item span {
-          font-size: 8px;
+          font-size: 10px;
         }
 
         .os-copy .equipment-box {
@@ -988,11 +988,11 @@ export function printOSA4Dual(data: PrintData) {
         }
 
         .os-copy .equipment-title {
-          font-size: 9px;
+          font-size: 11px;
         }
 
         .os-copy .equipment-details {
-          font-size: 7px;
+          font-size: 9px;
           margin-top: 2px;
         }
 
@@ -1000,15 +1000,15 @@ export function printOSA4Dual(data: PrintData) {
         .os-copy .diagnosis-box,
         .os-copy .solution-box {
           padding: 4px;
-          font-size: 7px;
+          font-size: 9px;
         }
 
         .os-copy table {
-          font-size: 7px;
+          font-size: 9px;
         }
 
         .os-copy th {
-          font-size: 6px;
+          font-size: 8px;
           padding: 2px 4px;
         }
 
@@ -1022,29 +1022,29 @@ export function printOSA4Dual(data: PrintData) {
         }
 
         .os-copy .totals-row {
-          font-size: 7px;
+          font-size: 9px;
         }
 
         .os-copy .totals-row.total {
-          font-size: 10px;
+          font-size: 12px;
         }
 
         .os-copy .payment-info {
-          font-size: 7px;
+          font-size: 9px;
         }
 
         .os-copy .warranty-notice {
           padding: 4px;
-          font-size: 7px;
+          font-size: 9px;
         }
 
         .os-copy .signatures {
-          margin-top: 10px;
+          margin-top: 20px;
           gap: 20px;
         }
 
         .os-copy .signature-line span {
-          font-size: 6px;
+          font-size: 8px;
         }
 
         .os-copy img {
